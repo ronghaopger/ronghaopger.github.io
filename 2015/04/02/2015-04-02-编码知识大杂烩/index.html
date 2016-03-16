@@ -1,0 +1,815 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="编码," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.5.0" />
+
+
+
+
+
+
+<meta name="description" content="零、万物归宗ASCII码（American Standard Code for Information Interchange，美国标准信息交换代码），最原始最直观的表示方式，一个字节表示一个字符，一个字节=8位，那么一个字节就有256(2的8次方)种状态。这又分为标准ASCII和扩展ASCII，其中：
+标准ASCII (十进制0~127) 使用一个字节中除去最高位以外的7 位来表示所有的大写和小">
+<meta property="og:type" content="article">
+<meta property="og:title" content="编码知识大杂烩">
+<meta property="og:url" content="https://ronghaopger.github.io/2015/04/02/2015-04-02-编码知识大杂烩/index.html">
+<meta property="og:site_name" content="RongHao">
+<meta property="og:description" content="零、万物归宗ASCII码（American Standard Code for Information Interchange，美国标准信息交换代码），最原始最直观的表示方式，一个字节表示一个字符，一个字节=8位，那么一个字节就有256(2的8次方)种状态。这又分为标准ASCII和扩展ASCII，其中：
+标准ASCII (十进制0~127) 使用一个字节中除去最高位以外的7 位来表示所有的大写和小">
+<meta property="og:image" content="https://raw.githubusercontent.com/ronghaopger/ronghaopger.github.io/master/_posts/2015-4-2/011613340767508.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/ronghaopger/ronghaopger.github.io/master/_posts/2015-4-2/021431404673196.png">
+<meta property="og:updated_time" content="2016-03-14T01:50:36.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="编码知识大杂烩">
+<meta name="twitter:description" content="零、万物归宗ASCII码（American Standard Code for Information Interchange，美国标准信息交换代码），最原始最直观的表示方式，一个字节表示一个字符，一个字节=8位，那么一个字节就有256(2的8次方)种状态。这又分为标准ASCII和扩展ASCII，其中：
+标准ASCII (十进制0~127) 使用一个字节中除去最高位以外的7 位来表示所有的大写和小">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/ronghaopger/ronghaopger.github.io/master/_posts/2015-4-2/011613340767508.png">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> 编码知识大杂烩 | RongHao </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?30e3928ea4b052828e74eb233dfa4825";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">RongHao</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                编码知识大杂烩
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2015-04-02T12:00:00+08:00" content="2015-04-02">
+              2015-04-02
+            </time>
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2015/04/02/2015-04-02-编码知识大杂烩/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/04/02/2015-04-02-编码知识大杂烩/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="零、万物归宗"><a href="#零、万物归宗" class="headerlink" title="零、万物归宗"></a>零、万物归宗</h1><h2 id="ASCII码"><a href="#ASCII码" class="headerlink" title="ASCII码"></a>ASCII码</h2><p>（American Standard Code for Information Interchange，美国标准信息交换代码），最原始最直观的表示方式，一个字节表示一个字符，一个字节=8位，那么一个字节就有256(2的8次方)种状态。这又分为标准ASCII和扩展ASCII，其中：</p>
+<h3 id="标准ASCII"><a href="#标准ASCII" class="headerlink" title="标准ASCII"></a>标准ASCII</h3><p> (十进制0~127) 使用一个字节中除去最高位以外的7 位来表示所有的大写和小写字母，数字0 到9、标点符号，以及在美式英语中使用的特殊控制字符。</p>
+<blockquote>
+<p> Tips：标准ASCII中使用了一种简单的方法来检验代码在传送过程中是否出错，即奇偶校验，一个字节中的最高位就是奇偶校验位，一般分奇校验和偶校验两种。奇校验规定：正确的代码一个字节中1的个数必须是奇数，若非奇数，则在最高位添1；偶校验规定：正确的代码一个字节中1的个数必须是偶数，若非偶数，则在最高位添1。这种方法挺简陋，如果一个字节中有两位同时变了，就检验不出来了。</p>
+</blockquote>
+<p>　　这么看来标准ASCII码是够美国人用了，可是法国人、阿拉伯人不高兴了，不是还有后128位嘛，所以就有了扩展ASCII：</p>
+<h3 id="扩展ASCII"><a href="#扩展ASCII" class="headerlink" title="扩展ASCII"></a>扩展ASCII</h3><p> (十进制128~256)  允许将每个字符的第8 位用于确定附加的128 个特殊符号字符、外来语字母和图形符号。</p>
+<p>　　可是问题又来了，虽说前128个大家都一样，可是后128个就不敢苟同了，比如130(二进制10000010)在法语编码中代表了é，在希伯来语编码中却代表了字母Gimel (ג)，在俄语编码中又会代表另一个符号，而且亚洲人还没发话，我们的汉字该怎么表示？几万个汉字哪能用这256种码表示全。这就有了下面中国的标准GB2312：</p>
+<h1 id="一、一步一步来"><a href="#一、一步一步来" class="headerlink" title="一、一步一步来"></a>一、一步一步来</h1><h2 id="GB2312"><a href="#GB2312" class="headerlink" title="GB2312"></a>GB2312</h2><p> 每个汉字及符号用两个字节来表示，理论上可以表示256*256 = 65536 个符号。实际上它收录有6763个简体汉字，682个符号，共7445个字符；</p>
+<p> <strong>优点</strong>：适用于简体中文环境，属于中国国家标准，通行于大陆，新加坡等地也使用此编码； </p>
+<p> <strong>缺点</strong>：不兼容繁体中文，其汉字集合过少。 </p>
+<p> 接下来很显然，港台人不愿意了，所以：</p>
+<h2 id="GBK"><a href="#GBK" class="headerlink" title="GBK"></a>GBK</h2><p> 它完全向下兼容GB2312，算是对GB2312的内码扩展(理论上不是有65536种嘛)，当然也是两个字节表示一个符号。收录有21003个汉字，883个符号，共21886个字符； </p>
+<p> <strong>优点</strong>：适用于简繁中文共存的环境，为简体Windows所使用，向下完全兼容gb2312，向上支持 ISO-10646 国际标准 ；所有字符都可以一对一映射到Unicode2.0上；</p>
+<p> <strong>缺点</strong>：不属于官方标准，和Big5之间需要转换；很多搜索引擎都不能很好地支持GBK汉字。</p>
+<p> 就算考虑了港台人，56个民族没有考虑到的还有太多，终于，发了个大招：</p>
+<h2 id="GB18030"><a href="#GB18030" class="headerlink" title="GB18030"></a>GB18030</h2><p> 用4个字节来表示一个符号，理论上足够了；收录了27484个汉字，同时收录了藏文、蒙文、维吾尔文等主要的少数民族文字。 </p>
+<p> <strong>优点</strong>：可以收录所有你能想到的文字和符号，属于中国最新的国家标准； </p>
+<p> <strong>缺点</strong>：目前支持它的软件较少。</p>
+<h1 id="二、梦想还可以更大"><a href="#二、梦想还可以更大" class="headerlink" title="二、梦想还可以更大"></a>二、梦想还可以更大</h1><h2 id="Unicode字符集"><a href="#Unicode字符集" class="headerlink" title="Unicode字符集"></a>Unicode字符集</h2><p> 如果有一种编码，将世界上所有的符号都纳入其中，每一个符号都给予一个独一无二的编码，那么乱码问题就会消失，这就是Unicode。</p>
+<p> 需要强调的是，Unicode是字符集，而UTF-8、UTF-16、UTF-32是Unicode字符集的三种实现方式。</p>
+<h3 id="UTF-8"><a href="#UTF-8" class="headerlink" title="UTF-8"></a>UTF-8</h3><p> 它是一种变长的编码方式，它可以用1~4个字节表示一个符号，根据不同的符号而变化字节长度。</p>
+ <figure><br>    <a href="https://raw.githubusercontent.com/ronghaopger/ronghaopger.github.io/master/_posts/2015-4-2/011613340767508.png" target="_blank" rel="external"><img src="https://raw.githubusercontent.com/ronghaopger/ronghaopger.github.io/master/_posts/2015-4-2/011613340767508.png" alt=""></a><br></figure>
+
+<p> 如图：UTF-8编码非常简单。如果一个字节的第一位是0，则这个字节单独就是一个字符；如果第一位是1，则连续有多少个1，就表示当前字符占用多少个字节。可以看出，比如对于英文字母a，UTF-8跟ASCII码的表示是一样的，所以UTF-8兼容ASCII码。</p>
+<blockquote>
+<p>　　Tips1: UTF-8编码适用于网络数据传输，前缀码能让程序员很方便地用遍历的方法定位一段网络传输过来的字符串中出问题的字符，而不会影响到其他字符，保持能显示部分最大化，这对那些工作在较差网络环境下时很有利。而那些所有非前缀多字节编码在这种场合下最后的结果都是必须丢弃从出错点开始到结尾的所有编码，无论是GB码还是Unicode/UTF-16。</p>
+<p>　　Tips2: UTF-8表示一个英文字符需要1个字节，而表示中文里我们常用到的汉字都需要3个字节。所以英文网站多是用UTF-8，而我们中文网站多是用GB码，我看腾讯、网易用的是GB2312。</p>
+</blockquote>
+<h3 id="UTF-16"><a href="#UTF-16" class="headerlink" title="UTF-16"></a>UTF-16</h3><p> 它也是变长的，可以用2个字节或者4个字节来表示一个符号。Windows系统下的Unicode方式默认就是指UTF-16。</p>
+<blockquote>
+<p>　　Tips1: Windows NT内核的字符表示为UTF-16 little endian。为什么呢？我自己的理解是：首先Unicode字符集全球通用，其次用UTF-8编码解码，我们的程序需要不断去处理那些前缀码的逻辑，效率较低。而对于UTF-16，大多数字符都可以用两个字节来表示，处理起来so easy。</p>
+</blockquote>
+<h3 id="UTF-32"><a href="#UTF-32" class="headerlink" title="UTF-32"></a>UTF-32</h3><p> 是定长的，用4个字节表示一个符号，就空间而言，是非常没有效率的，使用也很少，就不讨论了。</p>
+<h3 id="文件用的哪种呢"><a href="#文件用的哪种呢" class="headerlink" title="文件用的哪种呢"></a>文件用的哪种呢</h3><p> 要知道具体是哪种编码方式,需要判断文本开头的标志,下面是所有编码对应的开头标志：</p>
+<p> 开头标志　　     编码方式</p>
+<p> EF BB BF　　　 UTF-8</p>
+<p> FE FF　　　　 　UTF-16, little endian</p>
+<p> FF FE　　　　　 UTF-16, big endian</p>
+<p> FF FE 00 00　　UTF-32, little endian.</p>
+<p> 00 00 FE FF　　UTF-32, big-endian.</p>
+<blockquote>
+<p>关于表中的big endian 和 little endian，举个例子，以汉字”严”为例，Unicode码是4E25，需要用两个字节存储，一个字节是4E，另一个字节是25。存储的时候，4E在前，25在后，就是big endian方式，也就是第一个字节在前；25在前，4E在后，就是little endian方式，也就是第二个字节在前。让我联想到我们汉语里的姓名就是big endian，而英语则是little endian，:) </p>
+</blockquote>
+<h1 id="三、还在发展"><a href="#三、还在发展" class="headerlink" title="三、还在发展"></a>三、还在发展</h1><figure><br>    <a href="https://raw.githubusercontent.com/ronghaopger/ronghaopger.github.io/master/_posts/2015-4-2/021431404673196.png" target="_blank" rel="external"><img src="https://raw.githubusercontent.com/ronghaopger/ronghaopger.github.io/master/_posts/2015-4-2/021431404673196.png" alt=""></a><br>    <figcaption>字符编码表</figcaption><br></figure>
+
+<p>就这些吧，以后有收获了再补充。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/编码/" rel="tag">#编码</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2014/07/07/2014-07-07-简单实现弹出页更换头像的功能/" rel="next" title="简单实现弹出页更换头像的功能">
+                <i class="fa fa-chevron-left"></i> 简单实现弹出页更换头像的功能
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/03/15/2016-03-15-UIScrollView中draggin属性的延迟变化导致bug的解决方法/" rel="prev" title="UIScrollView中draggin属性的延迟变化导致bug的解决方法">
+                UIScrollView中draggin属性的延迟变化导致bug的解决方法 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2015/04/02/2015-04-02-编码知识大杂烩/"
+     data-title="编码知识大杂烩"
+     data-content=""
+     data-url="https://ronghaopger.github.io/2015/04/02/2015-04-02-编码知识大杂烩/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2015/04/02/2015-04-02-编码知识大杂烩/"
+           data-title="编码知识大杂烩" data-url="https://ronghaopger.github.io/2015/04/02/2015-04-02-编码知识大杂烩/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="RongHao" />
+          <p class="site-author-name" itemprop="name">RongHao</p>
+          <p class="site-description motion-element" itemprop="description">be young</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">7</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/ronghaopger" target="_blank">
+                  
+                    <i class="fa fa-globe"></i> github
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.zhihu.com/people/rong-hao" target="_blank">
+                  
+                    <i class="fa fa-globe"></i> zhihu
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/1922154151" target="_blank">
+                  
+                    <i class="fa fa-globe"></i> weibo
+                  
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        <div class="links-of-blogroll motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#零、万物归宗"><span class="nav-number">1.</span> <span class="nav-text">零、万物归宗</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ASCII码"><span class="nav-number">1.1.</span> <span class="nav-text">ASCII码</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#标准ASCII"><span class="nav-number">1.1.1.</span> <span class="nav-text">标准ASCII</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#扩展ASCII"><span class="nav-number">1.1.2.</span> <span class="nav-text">扩展ASCII</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#一、一步一步来"><span class="nav-number">2.</span> <span class="nav-text">一、一步一步来</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#GB2312"><span class="nav-number">2.1.</span> <span class="nav-text">GB2312</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GBK"><span class="nav-number">2.2.</span> <span class="nav-text">GBK</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GB18030"><span class="nav-number">2.3.</span> <span class="nav-text">GB18030</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#二、梦想还可以更大"><span class="nav-number">3.</span> <span class="nav-text">二、梦想还可以更大</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Unicode字符集"><span class="nav-number">3.1.</span> <span class="nav-text">Unicode字符集</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#UTF-8"><span class="nav-number">3.1.1.</span> <span class="nav-text">UTF-8</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UTF-16"><span class="nav-number">3.1.2.</span> <span class="nav-text">UTF-16</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UTF-32"><span class="nav-number">3.1.3.</span> <span class="nav-text">UTF-32</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#文件用的哪种呢"><span class="nav-number">3.1.4.</span> <span class="nav-text">文件用的哪种呢</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#三、还在发展"><span class="nav-number">4.</span> <span class="nav-text">三、还在发展</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">RongHao</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+
+  
+
+
+
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=0.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=0.5.0"></script>
+
+
+
+  
+  
+
+  
+  
+<script type="text/javascript" src="/js/src/scrollspy.js?v=0.5.0"></script>
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = NexT.utils.escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    NexT.motion.middleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+
+      if (CONFIG.scheme !== 'Pisces' && (CONFIG.sidebar.display === 'post' || CONFIG.sidebar.display === 'always')) {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          NexT.utils.displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=0.5.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"ronghaopger"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
+
+  
+  
+  
+
+  
+
+
+</body>
+</html>
