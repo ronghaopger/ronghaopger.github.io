@@ -41,7 +41,7 @@
 <link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Swift | iOS," />
+  <meta name="keywords" content="旅行,跑步," />
 
 
 
@@ -57,19 +57,16 @@
 
 
 
-<meta name="description" content="最近开始用Swift写项目，就先自己封装了下拉上拉的库EasyPull上传到GitHub，期间跟网友交流解决了一些没考虑到的bug，现在库已经基本稳定了，我已经应用到生产中了。
-但是，在我不断的测试中，发现一个很隐晦的bug：在拉动到临界位置左右释放后，有时不能触发刷新。随即我看了看手机上的常用应用，发现天猫、美团、今日头条等都存在这个问题，好奇之心涌上心头，一番debug后，发现罪魁祸首是UIS">
+<meta name="description" content="随心在昆明的第二天，还有没去的但不想去的景点，心里总觉得憋得慌缺点啥，在云南大学周边转了一上午，吃过午饭后就彻底无聊烦躁到极点了，这才是旅途的第二天就这状态了，不合适啊。安静下来想了想，是因为昨天在滇池旁没玩够就去了民族村，本打算逛完民族村再去滇池旁诗意一会坐坐船看看西山风景，结果民族村太好玩导致逛完后体力都消耗殆尽了，加上阴天的昆明湿冷湿冷的，出了民族村我们就直接打道回府了，仿佛在心里种下了不痛">
 <meta property="og:type" content="article">
-<meta property="og:title" content="UIScrollView中draggin属性的延迟变化导致bug的解决方法">
-<meta property="og:url" content="https://ronghaopger.github.io/2016/03/15/2016-03-15-UIScrollView中draggin属性的延迟变化导致bug的解决方法/index.html">
+<meta property="og:title" content="当我谈旅行时，我谈些什么">
+<meta property="og:url" content="https://ronghaopger.github.io/2016/04/05/2016-04-05-当我谈旅行时，我谈些什么/index.html">
 <meta property="og:site_name" content="RongHao">
-<meta property="og:description" content="最近开始用Swift写项目，就先自己封装了下拉上拉的库EasyPull上传到GitHub，期间跟网友交流解决了一些没考虑到的bug，现在库已经基本稳定了，我已经应用到生产中了。
-但是，在我不断的测试中，发现一个很隐晦的bug：在拉动到临界位置左右释放后，有时不能触发刷新。随即我看了看手机上的常用应用，发现天猫、美团、今日头条等都存在这个问题，好奇之心涌上心头，一番debug后，发现罪魁祸首是UIS">
-<meta property="og:updated_time" content="2016-03-16T05:31:51.000Z">
+<meta property="og:description" content="随心在昆明的第二天，还有没去的但不想去的景点，心里总觉得憋得慌缺点啥，在云南大学周边转了一上午，吃过午饭后就彻底无聊烦躁到极点了，这才是旅途的第二天就这状态了，不合适啊。安静下来想了想，是因为昨天在滇池旁没玩够就去了民族村，本打算逛完民族村再去滇池旁诗意一会坐坐船看看西山风景，结果民族村太好玩导致逛完后体力都消耗殆尽了，加上阴天的昆明湿冷湿冷的，出了民族村我们就直接打道回府了，仿佛在心里种下了不痛">
+<meta property="og:updated_time" content="2016-04-05T14:15:45.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="UIScrollView中draggin属性的延迟变化导致bug的解决方法">
-<meta name="twitter:description" content="最近开始用Swift写项目，就先自己封装了下拉上拉的库EasyPull上传到GitHub，期间跟网友交流解决了一些没考虑到的bug，现在库已经基本稳定了，我已经应用到生产中了。
-但是，在我不断的测试中，发现一个很隐晦的bug：在拉动到临界位置左右释放后，有时不能触发刷新。随即我看了看手机上的常用应用，发现天猫、美团、今日头条等都存在这个问题，好奇之心涌上心头，一番debug后，发现罪魁祸首是UIS">
+<meta name="twitter:title" content="当我谈旅行时，我谈些什么">
+<meta name="twitter:description" content="随心在昆明的第二天，还有没去的但不想去的景点，心里总觉得憋得慌缺点啥，在云南大学周边转了一上午，吃过午饭后就彻底无聊烦躁到极点了，这才是旅途的第二天就这状态了，不合适啊。安静下来想了想，是因为昨天在滇池旁没玩够就去了民族村，本打算逛完民族村再去滇池旁诗意一会坐坐船看看西山风景，结果民族村太好玩导致逛完后体力都消耗殆尽了，加上阴天的昆明湿冷湿冷的，出了民族村我们就直接打道回府了，仿佛在心里种下了不痛">
 
 
 
@@ -87,7 +84,7 @@
   };
 </script>
 
-  <title> UIScrollView中draggin属性的延迟变化导致bug的解决方法 | RongHao </title>
+  <title> 当我谈旅行时，我谈些什么 | RongHao </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -227,7 +224,7 @@
             
             
               
-                UIScrollView中draggin属性的延迟变化导致bug的解决方法
+                当我谈旅行时，我谈些什么
               
             
           </h1>
@@ -239,8 +236,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-03-15T15:30:00+08:00" content="2016-03-15">
-              2016-03-15
+            <time itemprop="dateCreated" datetime="2016-04-05T22:10:00+08:00" content="2016-04-05">
+              2016-04-05
             </time>
           </span>
 
@@ -250,8 +247,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/03/15/2016-03-15-UIScrollView中draggin属性的延迟变化导致bug的解决方法/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/03/15/2016-03-15-UIScrollView中draggin属性的延迟变化导致bug的解决方法/" itemprop="commentsCount"></span>
+                <a href="/2016/04/05/2016-04-05-当我谈旅行时，我谈些什么/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/04/05/2016-04-05-当我谈旅行时，我谈些什么/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -273,16 +270,16 @@
       
 
       
-        <p>最近开始用Swift写项目，就先自己封装了下拉上拉的库<a href="https://github.com/ronghaopger/EasyPull" target="_blank" rel="external">EasyPull</a>上传到GitHub，期间跟网友交流解决了一些没考虑到的bug，现在库已经基本稳定了，我已经应用到生产中了。</p>
-<p>但是，在我不断的测试中，发现一个很隐晦的bug：在拉动到<strong>临界位置</strong>左右释放后，有时不能触发刷新。随即我看了看手机上的常用应用，发现天猫、美团、今日头条等都存在这个问题，好奇之心涌上心头，一番debug后，发现罪魁祸首是UIScrollView的<code>draggin</code>属性，官方的API有介绍：</p>
-<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">var</span> dragging: <span class="type">Bool</span> &#123; <span class="keyword">get</span> &#125; <span class="comment">// returns YES if user has started scrolling. this may require some time and or distance to move to initiate dragging</span></span><br></pre></td></tr></table></figure>
-<p>也就是说<code>draggin</code>的变化有延迟，这就说明我们在用KVO对<code>contentOffset</code>进行观察时，由于<code>draggin</code>的延迟，会有异常出现，前面的那个bug就是这个延迟导致的。</p>
-<p>发现问题了，如何解决呢？</p>
-<p>首先，我想到了去实现UIScrollViewDelegate，通过<code>scrollViewDidEndDragging</code>方法来做，事实证明它没有延迟，这样做是可以达到预期效果的，但这样又是不行的！因为作为第三方库去实现UIScrollViewDelegate会跟用户的实现冲突，导致总有一方不起作用。所以在写第三方库时这个思路是不可以的，但如果是自己实现下拉上拉的话，这个思路就是可以的。</p>
-<p>到手的鸟飞了，不甘心，再加思索，能不能让我的库向系统的<code>scrollViewDidEndDragging</code>方法中注入一些我想要的逻辑呢？</p>
-<p>对的，就是这个逻辑，OC的动态运行时该出场了。代码是这样的：</p>
-<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">extension</span> <span class="title">UIViewController</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">override</span> <span class="class"><span class="keyword">class</span> <span class="title">func</span> <span class="title">initialize</span>() </span>&#123;</span><br><span class="line">        <span class="keyword">let</span> originalSelector = <span class="type">Selector</span>(<span class="string">"scrollViewDidEndDragging:willDecelerate:"</span>)</span><br><span class="line">        <span class="keyword">let</span> swizzledSelector = <span class="type">Selector</span>(<span class="string">"easy_scrollViewDidEndDragging:willDecelerate:"</span>)</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">let</span> originalMethod = class_getInstanceMethod(<span class="keyword">self</span>, originalSelector)</span><br><span class="line">        <span class="keyword">let</span> swizzledMethod = class_getInstanceMethod(<span class="keyword">self</span>, swizzledSelector)</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">let</span> didAddMethod = class_addMethod(<span class="keyword">self</span>, originalSelector, method_getImplementation(swizzledMethod), method_getTypeEncoding(swizzledMethod))</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> didAddMethod &#123;</span><br><span class="line">            class_replaceMethod(<span class="keyword">self</span>, swizzledSelector, method_getImplementation(originalMethod), method_getTypeEncoding(originalMethod))</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            method_exchangeImplementations(originalMethod, swizzledMethod);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// MARK: - Method Swizzling</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">func</span> <span class="title">easy_scrollViewDidEndDragging</span><span class="params">(scrollView: UIScrollView, willDecelerate decelerate: Bool)</span></span> &#123;</span><br><span class="line">        <span class="keyword">self</span>.easy_scrollViewDidEndDragging(scrollView, willDecelerate: decelerate)</span><br><span class="line">        <span class="comment">//<span class="doctag">TODO:</span> 在符合特定条件的情况下，调用第三方库释放刷新的操作逻辑。保证操作能及时执行！</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>OK，就是这样，运行时派上了用场。不过这个我并没有更新到我的库里，可能是足够隐晦大家都没有注意到这样的bug，等到有朝一日有人反馈了再拿出来。</p>
+        <h1 id="随心"><a href="#随心" class="headerlink" title="随心"></a>随心</h1><p>在昆明的第二天，还有没去的但不想去的景点，心里总觉得憋得慌缺点啥，在云南大学周边转了一上午，吃过午饭后就彻底无聊烦躁到极点了，这才是旅途的第二天就这状态了，不合适啊。安静下来想了想，是因为昨天在滇池旁没玩够就去了民族村，本打算逛完民族村再去滇池旁诗意一会坐坐船看看西山风景，结果民族村太好玩导致逛完后体力都消耗殆尽了，加上阴天的昆明湿冷湿冷的，出了民族村我们就直接打道回府了，仿佛在心里种下了不痛快的种子，所以今天内心一直在那闹情绪，无聊烦躁没目的，像极了平常生活中那种麻木消极的状态。缕清想法后，毅然决然重游滇池，站在奔驰于滇池的小游轮观光台上欣赏美景，远处西山朦胧神秘，头顶红嘴鸥自由翱翔，阳光照进心里，昨天行走一天的疲惫消失了，中午的消极情绪也被风吹走了。痛快过后走在滇池旁的绿茵小道上，就有了写这篇游记的冲动，是的，只要遵从内心，冲动就会一个接一个，生活才有了动力，人生才有了意义，假使我像往常一样以各种理由拒绝了内心的那个想法，可想而知我今天中午以后的时光是怎样的：下午找个就近的地方无聊烦躁的度过，之后拉上沉重的行李拖上疲惫的身体来到火车站等待10点多的火车，消极情绪一直环绕，还得以各种麻醉剂一样的自我安慰来鼓励自己去享受接下来的美景，不会有在滇池上的痛快，也不会有痛快之后写这篇感悟的冲动，也不会有写完这篇感悟后…，或许可以联想一下我在车站等车时因为无聊烦躁指不定滋生出什么事，生活或许就完全拐到了另外一个方向去了。而因为我顺从了内心，可以利用这两个多小时等车的时间静下来写写东西，身旁的媳妇受我影响也自娱自乐起来，居然用一个简单的快餐勺子摆出了各种有意思的人脸表情，快有一个表情包了，简直创意十足！如果不是这样，或许她就是不断的刷微信刷微博还抱怨着无聊，想想简直糟透了。</p>
+<h1 id="梦想"><a href="#梦想" class="headerlink" title="梦想"></a>梦想</h1><p>既然开始写了，就把想说的都说了。这次来云南是<code>飞</code>来的，本是件很正常的事，可对于我来说并不一般，因为这是我第一次坐飞机！以前是没有条件，后来有条件了却一直没有机会，这次终于飞起来了。想想自己这两年挺带劲的，前年把海看了，痛痛快快玩过几次（因为媳妇家在青岛），今年把飞机坐了，大海和飞机应该是小时候很向往的东西吧！犹记得一群小孩在操场上指着天空喊：飞机！飞机！尤其是在晚上看着一架闪着灯的飞机更是兴奋。现在也算是靠着自己的努力都亲身体验了，这里没有励志鸡血，就是告诉自己：用心生活，生活都会给你。</p>
+<h1 id="膂力"><a href="#膂力" class="headerlink" title="膂力"></a>膂力</h1><p>正好最近在看村上春树的《当我谈跑步时，我谈些什么》，膂力这个词就是从书里学到的，这两天旅途算是消化下这本书。我想强调的是耐力、专注力，或者是心力。不谈日常生活，单就旅途来说，在有限的时间和金钱下，我们的膂力决定我们看到的风景，或者说是接收到的风景。膂力强的人，每一次看到的更多一些，而一次次积累下来，就不是线性关系了，第一次多一点，第二次就多三点，第三次或许就直接多十点。所以说膂力带来的收获和成就是可观的。</p>
+<p>就像村上说的，这个世界上只有极少的人可以依靠天赋取得很大的成就，而大部分人靠的是膂力，起码前期靠的是膂力，到了一定阶段后或许会发现自己的独特之处从而取得成就，就像在贫瘠的土地上不断挖掘偶然发现了水源或是宝藏。所以说膂力是我们发现自我的基础。</p>
+<h1 id="云南之行经验"><a href="#云南之行经验" class="headerlink" title="云南之行经验"></a>云南之行经验</h1><p>这次我们的旅行路线是昆明-&gt;大理-&gt;丽江，走完这段后我总结出了大致的时间分配可以是这样的：</p>
+<p>昆明1天，路线是从大观楼-&gt;滇池-&gt;云南民族村，其中逛民族村需要3-4个小时。如果还想去西山，可以再拿出一天时间来。</p>
+<p>大理2天，在大理古城通过客栈老板找一个靠谱的团，让导游带你玩一天，可以了解大理的发展历程，白族人的风俗习惯，还可以看到天龙八部相关的东西，倚靠苍山洱海，遍地白族村寨的大理还是很美的！第一天下午可以直接去双廊，晚上住双廊的海景房，第二天从双廊出发，租个小电动沿洱海骑行，那风景简直了！</p>
+<p>丽江至少3天，第一天逛逛古城，下午可以去看丽江千古情表演，绝对震撼的表演。第二天去玉龙雪山，跟个纯玩团负责送你去雪山，你只负责玩就行，雪山的景色很不错！第三天可以去泸沽湖，因为现在丽江到泸沽湖那段正在修路，单程就需要8个小时！所以我们放弃了。但是几个月后那段高速就修好了，届时只需要两个小时就可以到泸沽湖，据同学说泸沽湖是很值得一去的。最后，如果时间充裕可以在这中间安排两天休息时间，在古城里悠哉两天也不错！</p>
+<h1 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h1><p>十天的云南之行结束了，结论是云南真的很美！值得一去。看了很多景，见了很多人，懂得生活可以有很多种姿势，尽管我还是喜欢自己这一种，随心用心走好每一步。</p>
+<p>也做一个决定，从2016.04.05开始，正式开始跑步。</p>
 
       
     </div>
@@ -297,7 +294,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/Swift-iOS/" rel="tag">#Swift | iOS</a>
+            <a href="/tags/旅行/" rel="tag">#旅行</a>
+          
+            <a href="/tags/跑步/" rel="tag">#跑步</a>
           
         </div>
       
@@ -306,17 +305,13 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2015/04/02/2015-04-02-编码知识大杂烩/" rel="next" title="编码知识大杂烩">
-                <i class="fa fa-chevron-left"></i> 编码知识大杂烩
+              <a href="/2016/03/15/2016-03-15-UIScrollView中draggin属性的延迟变化导致bug的解决方法/" rel="next" title="UIScrollView中draggin属性的延迟变化导致bug的解决方法">
+                <i class="fa fa-chevron-left"></i> UIScrollView中draggin属性的延迟变化导致bug的解决方法
               </a>
             
           </div>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2016/04/05/2016-04-05-当我谈旅行时，我谈些什么/" rel="prev" title="当我谈旅行时，我谈些什么">
-                当我谈旅行时，我谈些什么 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -331,10 +326,10 @@
 
     <div class="post-spread">
       
-        <div class="ds-share flat" data-thread-key="2016/03/15/2016-03-15-UIScrollView中draggin属性的延迟变化导致bug的解决方法/"
-     data-title="UIScrollView中draggin属性的延迟变化导致bug的解决方法"
+        <div class="ds-share flat" data-thread-key="2016/04/05/2016-04-05-当我谈旅行时，我谈些什么/"
+     data-title="当我谈旅行时，我谈些什么"
      data-content=""
-     data-url="https://ronghaopger.github.io/2016/03/15/2016-03-15-UIScrollView中draggin属性的延迟变化导致bug的解决方法/">
+     data-url="https://ronghaopger.github.io/2016/04/05/2016-04-05-当我谈旅行时，我谈些什么/">
   <div class="ds-share-inline">
     <ul  class="ds-share-icons-16">
 
@@ -361,8 +356,8 @@
           
   <div class="comments" id="comments">
     
-      <div class="ds-thread" data-thread-key="2016/03/15/2016-03-15-UIScrollView中draggin属性的延迟变化导致bug的解决方法/"
-           data-title="UIScrollView中draggin属性的延迟变化导致bug的解决方法" data-url="https://ronghaopger.github.io/2016/03/15/2016-03-15-UIScrollView中draggin属性的延迟变化导致bug的解决方法/">
+      <div class="ds-thread" data-thread-key="2016/04/05/2016-04-05-当我谈旅行时，我谈些什么/"
+           data-title="当我谈旅行时，我谈些什么" data-url="https://ronghaopger.github.io/2016/04/05/2016-04-05-当我谈旅行时，我谈些什么/">
       </div>
     
   </div>
@@ -477,7 +472,7 @@
               
             
             
-              <p class="post-toc-empty">此文章未包含目录</p>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#随心"><span class="nav-number">1.</span> <span class="nav-text">随心</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#梦想"><span class="nav-number">2.</span> <span class="nav-text">梦想</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#膂力"><span class="nav-number">3.</span> <span class="nav-text">膂力</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#云南之行经验"><span class="nav-number">4.</span> <span class="nav-text">云南之行经验</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#写在最后"><span class="nav-number">5.</span> <span class="nav-text">写在最后</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator">
