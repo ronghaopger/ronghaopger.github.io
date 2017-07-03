@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>对[foreach]的浅究到发现[yield]</title>
+  <meta name="description" content="　　闲来无事，翻了翻以前的代码，做点总结，菜鸟从这里起航，呵呵。一、List的foreach遍历　　先上代码段[1]：">
+  <meta name="author" content="Wei Wang">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="对[foreach]的浅究到发现[yield]">
+  <meta name="twitter:description" content="　　闲来无事，翻了翻以前的代码，做点总结，菜鸟从这里起航，呵呵。一、List的foreach遍历　　先上代码段[1]：">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="对[foreach]的浅究到发现[yield]">
+  <meta property="og:description" content="　　闲来无事，翻了翻以前的代码，做点总结，菜鸟从这里起航，呵呵。一、List的foreach遍历　　先上代码段[1]：">
+  
+  <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
+  <link href="/assets/images/favicon.png" rel="shortcut icon" type="image/png">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="canonical" href="http://localhost:4000/2014/06/%E5%AF%B9-foreach-%E7%9A%84%E6%B5%85%E7%A9%B6%E5%88%B0%E5%8F%91%E7%8E%B0-yield/">
+  <link rel="alternate" type="application/rss+xml" title="Hulk' Den" href="http://localhost:4000/feed.xml">
+  
+  <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
+  
+</head>
+
+
+  <body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="fa fa-list btn-mobile-menu__icon"></i>
+        <i class="fa fa-angle-up btn-mobile-close__icon hidden"></i>
+    </span>
+    
+    <header class="panel-cover panel-cover--collapsed" style="background-image: url('/assets/images/background-cover.jpg')">
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        <a href="/#blog" title="前往 Hulk' Den 的主页" class="blog-button"><img src="/assets/images/avatar.jpg" width="80" alt="Hulk' Den logo" class="panel-cover__logo logo" /></a>
+        <h1 class="panel-cover__title panel-title"><a href="/#blog" title="link to homepage for Hulk' Den" class="blog-button">Hulk' Den</a></h1>
+        
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">Vno Jekyll is a port of my Ghost theme vno.</p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+        
+        
+        <p class="panel-cover__description"><a href="https://github.com/onevcat/vno-jekyll" target="_blank">Download the theme</a></p>
+        
+        
+        <div class="navigation-wrapper">
+          <div>
+            <nav class="cover-navigation cover-navigation--primary">
+              <ul class="navigation">
+                <li class="navigation__item"><a href="/#blog" title="Visit blog" class="blog-button">Blog</a></li>
+                
+                  <li class="navigation__item"><a href="https://github.com/ronghaopger" target="_blank" title="ronghaopger">GitHub</a></li>
+                
+              </ul>
+            </nav>
+          </div>
+          
+          <div><nav class="cover-navigation navigation--social">
+  <ul class="navigation">
+
+  
+  <!-- Weibo -->
+  <li class="navigation__item">
+    <a href="http://weibo.com/做梦家荣浩" title="@做梦家荣浩 的微博" target="_blank">
+      <i class='social fa fa-weibo'></i>
+      <span class="label">Weibo</span>
+    </a>
+  </li>
+  
+
+  
+  <!-- Github -->
+  <li class="navigation__item">
+    <a href="https://github.com/ronghaopger" title="@ronghaopger 的 Github" target="_blank">
+      <i class='social fa fa-github'></i>
+      <span class="label">Github</span>
+    </a>
+  </li>
+  
+  
+  
+
+  
+
+  <!-- RSS -->
+  <li class="navigation__item">
+    <a href="/feed.xml" rel="author" title="RSS" target="_blank">
+      <i class='social fa fa-rss'></i>
+      <span class="label">RSS</span>
+    </a>
+  </li>
+
+  
+  <!-- Email -->
+  <li class="navigation__item">
+    <a href="mailto:ronghao_1989@hotmail.com" title="Contact me">
+      <i class='social fa fa-envelope'></i>
+      <span class="label">Email</span>
+    </a>
+  </li>
+  
+
+  </ul>
+</nav>
+</div>
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="panel-cover--overlay cover-disabled"></div>
+    
+  </div>
+</header>
+
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner">
+            <article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
+  <header class="post-header">
+    <div class="post-meta">
+      <time datetime="2014-06-11 12:00:00 +0000" itemprop="datePublished" class="post-meta__date date">2014-06-11</time> &#8226; <span class="post-meta__tags tags">C# | .NET</span>
+    </div>
+    <h1 class="post-title">对[foreach]的浅究到发现[yield]</h1>
+  </header>
+
+  <section class="post">
+    <p>　　闲来无事，翻了翻以前的代码，做点总结，菜鸟从这里起航，呵呵。</p>
+<h3>一、List的foreach遍历</h3>
+<p>　　先上代码段[1]：</p>
+
+<div class="language-csharp highlighter-rouge"><pre class="highlight"><code> <span class="k">class</span> <span class="nc">Program</span>
+ <span class="p">{</span>
+ 	<span class="k">static</span> <span class="k">void</span> <span class="nf">Main</span><span class="p">(</span><span class="kt">string</span><span class="p">[]</span> <span class="n">args</span><span class="p">)</span>
+   		<span class="p">{</span>
+			<span class="n">List</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="n">dayList</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="p">{</span> <span class="s">"Sun"</span><span class="p">,</span> <span class="s">"Mon"</span><span class="p">,</span> <span class="s">"Tue"</span><span class="p">,</span> <span class="s">"Wed"</span><span class="p">,</span> <span class="s">"Thr"</span><span class="p">,</span> <span class="s">"Fri"</span><span class="p">,</span> <span class="s">"Sat"</span> <span class="p">};</span>
+			<span class="k">foreach</span> <span class="p">(</span><span class="kt">var</span> <span class="n">day</span> <span class="k">in</span> <span class="n">dayList</span><span class="p">)</span>
+          	<span class="p">{</span>
+              	<span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="n">day</span><span class="p">);</span>
+            <span class="p">}</span>
+            <span class="n">Console</span><span class="p">.</span><span class="nf">ReadKey</span><span class="p">();</span>
+         <span class="p">}</span>
+     <span class="p">}</span>
+ <span class="p">}</span>
+</code></pre>
+</div>
+
+<p>　　这是我们经常用的，简单明了，这里就不赘述了。</p>
+<h3>二、对List的浅究</h3>
+<p>　　接着我就产生了疑问，List具有怎样的特性才使得foreach可以对它进行遍历呢？这个遍历是如何实现的？</p>
+<p>　　下面就来浅究，再上代码段[2]：</p>
+
+<div class="language-csharp highlighter-rouge"><pre class="highlight"><code><span class="k">public</span> <span class="k">class</span> <span class="nc">DaysList</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="p">:</span> <span class="n">System</span><span class="p">.</span><span class="n">Collections</span><span class="p">.</span><span class="n">IEnumerable</span>
+<span class="p">{</span>
+	<span class="n">T</span><span class="p">[]</span> <span class="n">daysArry</span><span class="p">;</span>
+	<span class="k">public</span> <span class="nf">DaysList</span><span class="p">(</span><span class="n">T</span><span class="p">[]</span> <span class="n">days</span><span class="p">)</span>
+	<span class="p">{</span>
+		<span class="n">daysArry</span> <span class="p">=</span> <span class="n">days</span><span class="p">;</span>
+	<span class="p">}</span>
+	<span class="k">public</span> <span class="n">System</span><span class="p">.</span><span class="n">Collections</span><span class="p">.</span><span class="n">IEnumerator</span> <span class="nf">GetEnumerator</span><span class="p">()</span>
+	<span class="p">{</span>
+		<span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="p">&lt;</span> <span class="n">daysArry</span><span class="p">.</span><span class="n">Length</span><span class="p">;</span> <span class="n">i</span><span class="p">++)</span>
+		<span class="p">{</span>
+			<span class="k">yield</span> <span class="k">return</span> <span class="n">daysArry</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">class</span> <span class="nc">Program</span>
+<span class="p">{</span>
+	<span class="k">static</span> <span class="k">void</span> <span class="nf">Main</span><span class="p">(</span><span class="kt">string</span><span class="p">[]</span> <span class="n">args</span><span class="p">)</span>
+	<span class="p">{</span>
+		<span class="kt">string</span><span class="p">[]</span> <span class="n">days</span> <span class="p">=</span> <span class="p">{</span> <span class="s">"Sun"</span><span class="p">,</span> <span class="s">"Mon"</span><span class="p">,</span> <span class="s">"Tue"</span><span class="p">,</span> <span class="s">"Wed"</span><span class="p">,</span> <span class="s">"Thr"</span><span class="p">,</span> <span class="s">"Fri"</span><span class="p">,</span> <span class="s">"Sat"</span> <span class="p">};</span>
+		<span class="kt">var</span> <span class="n">daysList</span> <span class="p">=</span> <span class="k">new</span> <span class="n">DaysList</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;(</span><span class="n">days</span><span class="p">);</span>
+		<span class="k">foreach</span> <span class="p">(</span><span class="kt">string</span> <span class="n">day</span> <span class="k">in</span> <span class="n">daysList</span><span class="p">)</span>
+		<span class="p">{</span>
+			<span class="n">System</span><span class="p">.</span><span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="n">day</span><span class="p">);</span>
+		<span class="p">}</span>
+		<span class="n">Console</span><span class="p">.</span><span class="nf">ReadKey</span><span class="p">();</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<p>　　通过查阅我们发现LIst是通过实现System.Collections.IEnumerable接口来达到可以被遍历的能力，而实现System.Collections.IEnumerable接口必须实现它里面的GetEnumerator()方法，用来<span>返回一个循环访问集合的枚举器</span>，代码段[2]中就有我对GetEnumerator()方法的实现，其中有个关键字[yield]不知大家注意到没。</p>
+<p>　　我的理解是：与其说是foreach遍历List，不如说是foreach遍历的是List中的GetEnumerator()方法返回的枚举器，注意这个枚举器实现了IEnumerator 接口，（插句话，IEnumerable接口标识某个类具备被遍历的能力，而IEnumerator 接口则使某个类真正具备这个能力！）。而当foreach对List进行循环遍历时，每个循环就是通过[yield]来分隔的。</p>
+<h3>三、对foreach的浅究</h3>
+<p>　　通过标题二，我们大概对List进行了了解，但不清楚，下面看看foreach。</p>
+<p>　　依旧代码段[3]：</p>
+
+<div class="language-csharp highlighter-rouge"><pre class="highlight"><code><span class="c1">//注意：其中类DaysList&lt;T&gt;的实现同代码段[2]一样
+//这里只展示foreach的实现。    
+</span><span class="k">class</span> <span class="nc">Program</span>
+<span class="p">{</span>
+	<span class="k">static</span> <span class="k">void</span> <span class="nf">Main</span><span class="p">(</span><span class="kt">string</span><span class="p">[]</span> <span class="n">args</span><span class="p">)</span>
+	<span class="p">{</span>
+		<span class="kt">string</span><span class="p">[]</span> <span class="n">days</span> <span class="p">=</span> <span class="p">{</span> <span class="s">"Sun"</span><span class="p">,</span> <span class="s">"Mon"</span><span class="p">,</span> <span class="s">"Tue"</span><span class="p">,</span> <span class="s">"Wed"</span><span class="p">,</span> <span class="s">"Thr"</span><span class="p">,</span> <span class="s">"Fri"</span><span class="p">,</span> <span class="s">"Sat"</span> <span class="p">};</span>
+		<span class="kt">var</span> <span class="n">daysList</span> <span class="p">=</span> <span class="k">new</span> <span class="n">DaysList</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;(</span><span class="n">days</span><span class="p">);</span>
+ 		<span class="n">System</span><span class="p">.</span><span class="n">Collections</span><span class="p">.</span><span class="n">IEnumerator</span> <span class="n">enumertor</span> <span class="p">=</span> <span class="n">daysList</span><span class="p">.</span><span class="nf">GetEnumerator</span><span class="p">();</span>
+		<span class="k">while</span> <span class="p">(</span><span class="n">enumertor</span><span class="p">.</span><span class="nf">MoveNext</span><span class="p">())</span>
+		<span class="p">{</span>             
+			<span class="n">System</span><span class="p">.</span><span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="n">enumertor</span><span class="p">.</span><span class="n">Current</span><span class="p">);</span>
+		<span class="p">}</span>
+		<span class="n">Console</span><span class="p">.</span><span class="nf">ReadLine</span><span class="p">();</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<p>　　就像上面说的，foreach其实遍历的是List中的GetEnumerator()方法返回的枚举器enumertor，而这个枚举器所实现的接口IEnumerator中定义了只读的Current属性（用来获取枚举器当前的所指的集合中的元素）、MoveNext方法（将枚举器推进到集合中的下一个元素，返回值代表是否到了集合末尾）、Reset方法（使枚举器指到集合第一个元素之前，也就是重置枚举器），明白了这些，我们就可以像代码段[3]中一样通过[while]语法来实现跟foreach一样的功能了，而上文中的[yield]关键字浅显的理解就是用来划分要遍历的集合中的每个元素的。</p>
+<p>　　最后，本来还想分析分析这个实现了IEnumerator接口的枚举器是怎么生成的，想象一下它的内部实现，应该很有意思！</p>
+<p>　　就这样吧，下班了，大家共勉！</p>
+
+  </section>
+</article>
+
+<section class="read-more">
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">最近的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/2014/06/%E5%AF%B9-yield-%E7%9A%84%E6%B5%85%E7%A9%B6%E5%88%B0%E5%8F%91%E7%8E%B0-async-await/" title="link to 对[yield]的浅究到发现[async][await]">对[yield]的浅究到发现[async][await]</a></h2>
+       <p class="excerpt">　　上篇对[foreach]的浅究到发现[yield]写完后，觉得对[yield]还没有理解清楚，想起曾经看过一位大牛的帖子讲的很深刻（链接在此），回顾了下，在这里写出自己的理解，与各位分享。一、通常的异步　　现在我们假设一种平时经常遇到的情况，现有三个方法，其中funcOne和funcTwo比较耗时需要异步执行，而且他们的逻辑是必须在funcOne执行完后才可以执行funcTwo，同理funcTwo执行完后才能执行funcThree。　　按照这样的设定，通常的做法请看代码段[1]:pub...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2014-06-12 12:00:00 +0000" class="post-list__meta--date date">2014-06-12</time> &#8226; <span class="post-list__meta--tags tags">C# | .NET</span><a class="btn-border-small" href=/2014/06/%E5%AF%B9-yield-%E7%9A%84%E6%B5%85%E7%A9%B6%E5%88%B0%E5%8F%91%E7%8E%B0-async-await/>继续阅读</a></div>
+   </div>
+   
+   
+   
+</section>
+
+<section class="post-comments">
+  
+    <div id="disqus_thread"></div>
+    <script>
+    
+    var disqus_config = function () {
+        this.page.url = "http://localhost:4000/2014/06/%E5%AF%B9-foreach-%E7%9A%84%E6%B5%85%E7%A9%B6%E5%88%B0%E5%8F%91%E7%8E%B0-yield/";
+        this.page.identifier = "/2014/06/%E5%AF%B9-foreach-%E7%9A%84%E6%B5%85%E7%A9%B6%E5%88%B0%E5%8F%91%E7%8E%B0-yield/";
+    };
+
+    var disqus_shortname = 'vno-jekyll';
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>要查看<a href="http://disqus.com/?ref_noscript"> Disqus </a>评论，请启用 JavaScript</noscript>
+    
+  
+  
+  
+  
+</section>
+
+
+            <section class="footer">
+    <footer>
+    	<span class="footer__copyright">本站点采用<a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享 署名-非商业性使用-相同方式共享 4.0 国际 许可协议</a></span>
+        <span class="footer__copyright">由 <a href="https://jekyllrb.com">Jekyll</a> 于 2017-07-03 生成，感谢 <a href="https://www.digitalocean.com/?refcode=30ed2d146762">Digital Ocean</a> 为本站提供稳定的 VPS 服务</span>
+        <span class="footer__copyright">本站由 <a href="http://ronghaopger.github.io/about/">@RongHao</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2017</span>
+    </footer>
+</section>
+
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+
+<script type="text/javascript" src="/js/main.js"></script>
+
+
+
+    
+  </body>
+
+</html>

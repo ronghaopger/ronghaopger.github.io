@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>编码知识大杂烩</title>
+  <meta name="description" content="零、万物归宗">
+  <meta name="author" content="Wei Wang">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="编码知识大杂烩">
+  <meta name="twitter:description" content="零、万物归宗">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="编码知识大杂烩">
+  <meta property="og:description" content="零、万物归宗">
+  
+  <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
+  <link href="/assets/images/favicon.png" rel="shortcut icon" type="image/png">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="canonical" href="http://localhost:4000/2015/04/%E7%BC%96%E7%A0%81%E7%9F%A5%E8%AF%86%E5%A4%A7%E6%9D%82%E7%83%A9/">
+  <link rel="alternate" type="application/rss+xml" title="Hulk' Den" href="http://localhost:4000/feed.xml">
+  
+  <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
+  
+</head>
+
+
+  <body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="fa fa-list btn-mobile-menu__icon"></i>
+        <i class="fa fa-angle-up btn-mobile-close__icon hidden"></i>
+    </span>
+    
+    <header class="panel-cover panel-cover--collapsed" style="background-image: url('/assets/images/background-cover.jpg')">
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        <a href="/#blog" title="前往 Hulk' Den 的主页" class="blog-button"><img src="/assets/images/avatar.jpg" width="80" alt="Hulk' Den logo" class="panel-cover__logo logo" /></a>
+        <h1 class="panel-cover__title panel-title"><a href="/#blog" title="link to homepage for Hulk' Den" class="blog-button">Hulk' Den</a></h1>
+        
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">Vno Jekyll is a port of my Ghost theme vno.</p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+        
+        
+        <p class="panel-cover__description"><a href="https://github.com/onevcat/vno-jekyll" target="_blank">Download the theme</a></p>
+        
+        
+        <div class="navigation-wrapper">
+          <div>
+            <nav class="cover-navigation cover-navigation--primary">
+              <ul class="navigation">
+                <li class="navigation__item"><a href="/#blog" title="Visit blog" class="blog-button">Blog</a></li>
+                
+                  <li class="navigation__item"><a href="https://github.com/ronghaopger" target="_blank" title="ronghaopger">GitHub</a></li>
+                
+              </ul>
+            </nav>
+          </div>
+          
+          <div><nav class="cover-navigation navigation--social">
+  <ul class="navigation">
+
+  
+  <!-- Weibo -->
+  <li class="navigation__item">
+    <a href="http://weibo.com/做梦家荣浩" title="@做梦家荣浩 的微博" target="_blank">
+      <i class='social fa fa-weibo'></i>
+      <span class="label">Weibo</span>
+    </a>
+  </li>
+  
+
+  
+  <!-- Github -->
+  <li class="navigation__item">
+    <a href="https://github.com/ronghaopger" title="@ronghaopger 的 Github" target="_blank">
+      <i class='social fa fa-github'></i>
+      <span class="label">Github</span>
+    </a>
+  </li>
+  
+  
+  
+
+  
+
+  <!-- RSS -->
+  <li class="navigation__item">
+    <a href="/feed.xml" rel="author" title="RSS" target="_blank">
+      <i class='social fa fa-rss'></i>
+      <span class="label">RSS</span>
+    </a>
+  </li>
+
+  
+  <!-- Email -->
+  <li class="navigation__item">
+    <a href="mailto:ronghao_1989@hotmail.com" title="Contact me">
+      <i class='social fa fa-envelope'></i>
+      <span class="label">Email</span>
+    </a>
+  </li>
+  
+
+  </ul>
+</nav>
+</div>
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="panel-cover--overlay cover-disabled"></div>
+    
+  </div>
+</header>
+
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner">
+            <article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
+  <header class="post-header">
+    <div class="post-meta">
+      <time datetime="2015-04-02 12:00:00 +0000" itemprop="datePublished" class="post-meta__date date">2015-04-02</time> &#8226; <span class="post-meta__tags tags">编码</span>
+    </div>
+    <h1 class="post-title">编码知识大杂烩</h1>
+  </header>
+
+  <section class="post">
+    <h1 id="零万物归宗">零、万物归宗</h1>
+
+<h2 id="ascii码">ASCII码</h2>
+<p>（American Standard Code for Information Interchange，美国标准信息交换代码），最原始最直观的表示方式，一个字节表示一个字符，一个字节=8位，那么一个字节就有256(2的8次方)种状态。这又分为标准ASCII和扩展ASCII，其中：</p>
+
+<h3 id="标准ascii">标准ASCII</h3>
+<p>(十进制0~127) 使用一个字节中除去最高位以外的7 位来表示所有的大写和小写字母，数字0 到9、标点符号，以及在美式英语中使用的特殊控制字符。</p>
+
+<blockquote>
+  <p>Tips：标准ASCII中使用了一种简单的方法来检验代码在传送过程中是否出错，即奇偶校验，一个字节中的最高位就是奇偶校验位，一般分奇校验和偶校验两种。奇校验规定：正确的代码一个字节中1的个数必须是奇数，若非奇数，则在最高位添1；偶校验规定：正确的代码一个字节中1的个数必须是偶数，若非偶数，则在最高位添1。这种方法挺简陋，如果一个字节中有两位同时变了，就检验不出来了。</p>
+</blockquote>
+
+<p>　　这么看来标准ASCII码是够美国人用了，可是法国人、阿拉伯人不高兴了，不是还有后128位嘛，所以就有了扩展ASCII：</p>
+
+<h3 id="扩展ascii">扩展ASCII</h3>
+<p>(十进制128~256)  允许将每个字符的第8 位用于确定附加的128 个特殊符号字符、外来语字母和图形符号。</p>
+
+<p>　　可是问题又来了，虽说前128个大家都一样，可是后128个就不敢苟同了，比如130(二进制10000010)在法语编码中代表了é，在希伯来语编码中却代表了字母Gimel (ג)，在俄语编码中又会代表另一个符号，而且亚洲人还没发话，我们的汉字该怎么表示？几万个汉字哪能用这256种码表示全。这就有了下面中国的标准GB2312：</p>
+
+<h1 id="一一步一步来">一、一步一步来</h1>
+
+<h2 id="gb2312">GB2312</h2>
+
+<p>每个汉字及符号用两个字节来表示，理论上可以表示256*256 = 65536 个符号。实际上它收录有6763个简体汉字，682个符号，共7445个字符；</p>
+
+<p><strong>优点</strong>：适用于简体中文环境，属于中国国家标准，通行于大陆，新加坡等地也使用此编码；</p>
+
+<p><strong>缺点</strong>：不兼容繁体中文，其汉字集合过少。</p>
+
+<p>接下来很显然，港台人不愿意了，所以：</p>
+
+<h2 id="gbk">GBK</h2>
+
+<p>它完全向下兼容GB2312，算是对GB2312的内码扩展(理论上不是有65536种嘛)，当然也是两个字节表示一个符号。收录有21003个汉字，883个符号，共21886个字符；</p>
+
+<p><strong>优点</strong>：适用于简繁中文共存的环境，为简体Windows所使用，向下完全兼容gb2312，向上支持 ISO-10646 国际标准 ；所有字符都可以一对一映射到Unicode2.0上；</p>
+
+<p><strong>缺点</strong>：不属于官方标准，和Big5之间需要转换；很多搜索引擎都不能很好地支持GBK汉字。</p>
+
+<p>就算考虑了港台人，56个民族没有考虑到的还有太多，终于，发了个大招：</p>
+
+<h2 id="gb18030">GB18030</h2>
+
+<p>用4个字节来表示一个符号，理论上足够了；收录了27484个汉字，同时收录了藏文、蒙文、维吾尔文等主要的少数民族文字。</p>
+
+<p><strong>优点</strong>：可以收录所有你能想到的文字和符号，属于中国最新的国家标准；</p>
+
+<p><strong>缺点</strong>：目前支持它的软件较少。</p>
+
+<h1 id="二梦想还可以更大">二、梦想还可以更大</h1>
+
+<h2 id="unicode字符集">Unicode字符集</h2>
+<p>如果有一种编码，将世界上所有的符号都纳入其中，每一个符号都给予一个独一无二的编码，那么乱码问题就会消失，这就是Unicode。</p>
+
+<p>需要强调的是，Unicode是字符集，而UTF-8、UTF-16、UTF-32是Unicode字符集的三种实现方式。</p>
+
+<h3 id="utf-8">UTF-8</h3>
+<p>它是一种变长的编码方式，它可以用1~4个字节表示一个符号，根据不同的符号而变化字节长度。</p>
+
+<figure>
+	<a href="/assets/images/2015-4-2/011613340767508.png"><img src="/assets/images/2015-4-2/011613340767508.png" alt="" /></a>
+</figure>
+
+<p>如图：UTF-8编码非常简单。如果一个字节的第一位是0，则这个字节单独就是一个字符；如果第一位是1，则连续有多少个1，就表示当前字符占用多少个字节。可以看出，比如对于英文字母a，UTF-8跟ASCII码的表示是一样的，所以UTF-8兼容ASCII码。</p>
+
+<blockquote>
+  <p>　　Tips1: UTF-8编码适用于网络数据传输，前缀码能让程序员很方便地用遍历的方法定位一段网络传输过来的字符串中出问题的字符，而不会影响到其他字符，保持能显示部分最大化，这对那些工作在较差网络环境下时很有利。而那些所有非前缀多字节编码在这种场合下最后的结果都是必须丢弃从出错点开始到结尾的所有编码，无论是GB码还是Unicode/UTF-16。</p>
+</blockquote>
+
+<blockquote>
+  <p>　　Tips2: UTF-8表示一个英文字符需要1个字节，而表示中文里我们常用到的汉字都需要3个字节。所以英文网站多是用UTF-8，而我们中文网站多是用GB码，我看腾讯、网易用的是GB2312。</p>
+</blockquote>
+
+<h3 id="utf-16">UTF-16</h3>
+<p>它也是变长的，可以用2个字节或者4个字节来表示一个符号。Windows系统下的Unicode方式默认就是指UTF-16。</p>
+
+<blockquote>
+  <p>　　Tips1: Windows NT内核的字符表示为UTF-16 little endian。为什么呢？我自己的理解是：首先Unicode字符集全球通用，其次用UTF-8编码解码，我们的程序需要不断去处理那些前缀码的逻辑，效率较低。而对于UTF-16，大多数字符都可以用两个字节来表示，处理起来so easy。</p>
+</blockquote>
+
+<h3 id="utf-32">UTF-32</h3>
+<p>是定长的，用4个字节表示一个符号，就空间而言，是非常没有效率的，使用也很少，就不讨论了。</p>
+
+<h3 id="文件用的哪种呢">文件用的哪种呢</h3>
+<p>要知道具体是哪种编码方式,需要判断文本开头的标志,下面是所有编码对应的开头标志：</p>
+
+<p>开头标志　　     编码方式</p>
+
+<p>EF BB BF　　　 UTF-8</p>
+
+<p>FE FF　　　　 　UTF-16, little endian</p>
+
+<p>FF FE　　　　　 UTF-16, big endian</p>
+
+<p>FF FE 00 00　　UTF-32, little endian.</p>
+
+<p>00 00 FE FF　　UTF-32, big-endian.</p>
+
+<blockquote>
+  <p>关于表中的big endian 和 little endian，举个例子，以汉字”严”为例，Unicode码是4E25，需要用两个字节存储，一个字节是4E，另一个字节是25。存储的时候，4E在前，25在后，就是big endian方式，也就是第一个字节在前；25在前，4E在后，就是little endian方式，也就是第二个字节在前。让我联想到我们汉语里的姓名就是big endian，而英语则是little endian，:)</p>
+</blockquote>
+
+<h1 id="三还在发展">三、还在发展</h1>
+
+<figure>
+	<a href="/assets/images/2015-4-2/021431404673196.png"><img src="/assets/images/2015-4-2/021431404673196.png" alt="" /></a>
+	<figcaption>字符编码表</figcaption>
+</figure>
+
+<p>就这些吧，以后有收获了再补充。</p>
+
+  </section>
+</article>
+
+<section class="read-more">
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">最近的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/2016/03/UIScrollView%E4%B8%ADdraggin%E5%B1%9E%E6%80%A7%E7%9A%84%E5%BB%B6%E8%BF%9F%E5%8F%98%E5%8C%96%E5%AF%BC%E8%87%B4bug%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/" title="link to UIScrollView中draggin属性的延迟变化导致bug的解决方法">UIScrollView中draggin属性的延迟变化导致bug的解决方法</a></h2>
+       <p class="excerpt">最近开始用Swift写项目，就先自己封装了下拉上拉的库EasyPull上传到GitHub，期间跟网友交流解决了一些没考虑到的bug，现在库已经基本稳定了，我已经应用到生产中了。但是，在我不断的测试中，发现一个很隐晦的bug：在拉动到临界位置左右释放后，有时不能触发刷新。随即我看了看手机上的常用应用，发现天猫、美团、今日头条等都存在这个问题，好奇之心涌上心头，一番debug后，发现罪魁祸首是UIScrollView的draggin属性，官方的API有介绍：public var draggin...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2016-03-15 15:30:00 +0000" class="post-list__meta--date date">2016-03-15</time> &#8226; <span class="post-list__meta--tags tags">Swift | iOS</span><a class="btn-border-small" href=/2016/03/UIScrollView%E4%B8%ADdraggin%E5%B1%9E%E6%80%A7%E7%9A%84%E5%BB%B6%E8%BF%9F%E5%8F%98%E5%8C%96%E5%AF%BC%E8%87%B4bug%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/>继续阅读</a></div>
+   </div>
+   
+   
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">更早的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/2014/07/%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0%E5%BC%B9%E5%87%BA%E9%A1%B5%E6%9B%B4%E6%8D%A2%E5%A4%B4%E5%83%8F%E7%9A%84%E5%8A%9F%E8%83%BD/" title="link to 简单实现弹出页更换头像的功能">简单实现弹出页更换头像的功能</a></h2>
+       <p class="excerpt">　　在Win 8应用里，对弹出页(Popup)的灵活操作必不可少，下面我们就来简单实现一个。一、先让Popup弹出到指定位置　　先来看看效果图，如图[1]：&nbsp; &nbsp; &nbsp; 　　下面是前端代码，代码段[1]：&lt;Grid Background="#0054a2"&gt;    &lt;Border Background="AliceBlue" Margin="40,40,1126,528" Width="150" Height="150"&gt;        ...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2014-07-07 12:00:00 +0000" class="post-list__meta--date date">2014-07-07</time> &#8226; <span class="post-list__meta--tags tags">C# | .NETWin8 | WP8</span><a class="btn-border-small" href=/2014/07/%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0%E5%BC%B9%E5%87%BA%E9%A1%B5%E6%9B%B4%E6%8D%A2%E5%A4%B4%E5%83%8F%E7%9A%84%E5%8A%9F%E8%83%BD/>继续阅读</a></div>
+   </div>
+   
+</section>
+
+<section class="post-comments">
+  
+    <div id="disqus_thread"></div>
+    <script>
+    
+    var disqus_config = function () {
+        this.page.url = "http://localhost:4000/2015/04/%E7%BC%96%E7%A0%81%E7%9F%A5%E8%AF%86%E5%A4%A7%E6%9D%82%E7%83%A9/";
+        this.page.identifier = "/2015/04/%E7%BC%96%E7%A0%81%E7%9F%A5%E8%AF%86%E5%A4%A7%E6%9D%82%E7%83%A9/";
+    };
+
+    var disqus_shortname = 'vno-jekyll';
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>要查看<a href="http://disqus.com/?ref_noscript"> Disqus </a>评论，请启用 JavaScript</noscript>
+    
+  
+  
+  
+  
+</section>
+
+
+            <section class="footer">
+    <footer>
+    	<span class="footer__copyright">本站点采用<a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享 署名-非商业性使用-相同方式共享 4.0 国际 许可协议</a></span>
+        <span class="footer__copyright">由 <a href="https://jekyllrb.com">Jekyll</a> 于 2017-07-03 生成，感谢 <a href="https://www.digitalocean.com/?refcode=30ed2d146762">Digital Ocean</a> 为本站提供稳定的 VPS 服务</span>
+        <span class="footer__copyright">本站由 <a href="http://ronghaopger.github.io/about/">@RongHao</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2017</span>
+    </footer>
+</section>
+
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+
+<script type="text/javascript" src="/js/main.js"></script>
+
+
+
+    
+  </body>
+
+</html>

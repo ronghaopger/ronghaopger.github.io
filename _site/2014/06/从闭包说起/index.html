@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>从闭包说起</title>
+  <meta name="description" content="&nbsp;　　世界杯车轮战开始了，连通三天，基本进入世界杯状态。看球也不能忘了玩技术，这次打算把接触c#以来的点滴总结起来，让原本模糊的概念清晰起来，博友们一起来吧！　　[闭包]接触这个词的第一感觉就是晦涩难懂，下面我们就来啃一啃。一、邂逅[闭包]　　第一次接触闭包是在js里，先来看代码段[1]：functio...">
+  <meta name="author" content="Wei Wang">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="从闭包说起">
+  <meta name="twitter:description" content="&nbsp;　　世界杯车轮战开始了，连通三天，基本进入世界杯状态。看球也不能忘了玩技术，这次打算把接触c#以来的点滴总结起来，让原本模糊的概念清晰起来，博友们一起来吧！　　[闭包]接触这个词的第一感觉就是晦涩难懂，下面我们就来啃一啃。一、邂逅[闭包]　　第一次接触闭包是在js里，先来看代码段[1]：functio...">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="从闭包说起">
+  <meta property="og:description" content="&nbsp;　　世界杯车轮战开始了，连通三天，基本进入世界杯状态。看球也不能忘了玩技术，这次打算把接触c#以来的点滴总结起来，让原本模糊的概念清晰起来，博友们一起来吧！　　[闭包]接触这个词的第一感觉就是晦涩难懂，下面我们就来啃一啃。一、邂逅[闭包]　　第一次接触闭包是在js里，先来看代码段[1]：functio...">
+  
+  <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
+  <link href="/assets/images/favicon.png" rel="shortcut icon" type="image/png">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="canonical" href="http://localhost:4000/2014/06/%E4%BB%8E%E9%97%AD%E5%8C%85%E8%AF%B4%E8%B5%B7/">
+  <link rel="alternate" type="application/rss+xml" title="Hulk' Den" href="http://localhost:4000/feed.xml">
+  
+  <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
+  
+</head>
+
+
+  <body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="fa fa-list btn-mobile-menu__icon"></i>
+        <i class="fa fa-angle-up btn-mobile-close__icon hidden"></i>
+    </span>
+    
+    <header class="panel-cover panel-cover--collapsed" style="background-image: url('/assets/images/background-cover.jpg')">
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        <a href="/#blog" title="前往 Hulk' Den 的主页" class="blog-button"><img src="/assets/images/avatar.jpg" width="80" alt="Hulk' Den logo" class="panel-cover__logo logo" /></a>
+        <h1 class="panel-cover__title panel-title"><a href="/#blog" title="link to homepage for Hulk' Den" class="blog-button">Hulk' Den</a></h1>
+        
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">Vno Jekyll is a port of my Ghost theme vno.</p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+        
+        
+        <p class="panel-cover__description"><a href="https://github.com/onevcat/vno-jekyll" target="_blank">Download the theme</a></p>
+        
+        
+        <div class="navigation-wrapper">
+          <div>
+            <nav class="cover-navigation cover-navigation--primary">
+              <ul class="navigation">
+                <li class="navigation__item"><a href="/#blog" title="Visit blog" class="blog-button">Blog</a></li>
+                
+                  <li class="navigation__item"><a href="https://github.com/ronghaopger" target="_blank" title="ronghaopger">GitHub</a></li>
+                
+              </ul>
+            </nav>
+          </div>
+          
+          <div><nav class="cover-navigation navigation--social">
+  <ul class="navigation">
+
+  
+  <!-- Weibo -->
+  <li class="navigation__item">
+    <a href="http://weibo.com/做梦家荣浩" title="@做梦家荣浩 的微博" target="_blank">
+      <i class='social fa fa-weibo'></i>
+      <span class="label">Weibo</span>
+    </a>
+  </li>
+  
+
+  
+  <!-- Github -->
+  <li class="navigation__item">
+    <a href="https://github.com/ronghaopger" title="@ronghaopger 的 Github" target="_blank">
+      <i class='social fa fa-github'></i>
+      <span class="label">Github</span>
+    </a>
+  </li>
+  
+  
+  
+
+  
+
+  <!-- RSS -->
+  <li class="navigation__item">
+    <a href="/feed.xml" rel="author" title="RSS" target="_blank">
+      <i class='social fa fa-rss'></i>
+      <span class="label">RSS</span>
+    </a>
+  </li>
+
+  
+  <!-- Email -->
+  <li class="navigation__item">
+    <a href="mailto:ronghao_1989@hotmail.com" title="Contact me">
+      <i class='social fa fa-envelope'></i>
+      <span class="label">Email</span>
+    </a>
+  </li>
+  
+
+  </ul>
+</nav>
+</div>
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="panel-cover--overlay cover-disabled"></div>
+    
+  </div>
+</header>
+
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner">
+            <article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
+  <header class="post-header">
+    <div class="post-meta">
+      <time datetime="2014-06-16 12:00:00 +0000" itemprop="datePublished" class="post-meta__date date">2014-06-16</time> &#8226; <span class="post-meta__tags tags">C# | .NET</span>
+    </div>
+    <h1 class="post-title">从闭包说起</h1>
+  </header>
+
+  <section class="post">
+    <p><span style="font-size: 15px;">&nbsp;　　世界杯车轮战开始了，连通三天，基本进入世界杯状态。看球也不能忘了玩技术，这次打算把接触c#以来的点滴总结起来，让原本模糊的概念清晰起来，博友们一起来吧！</span></p>
+<p><span style="font-size: 15px;">　　[闭包]接触这个词的第一感觉就是晦涩难懂，下面我们就来啃一啃。</span></p>
+<h3><span style="font-size: 15px;">一、邂逅[闭包]</span></h3>
+<p><span style="font-size: 15px;">　　第一次接触闭包是在js里，先来看代码段[1]：</span></p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">a</span><span class="p">()</span> <span class="p">{</span> 
+    <span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> 
+    <span class="kd">function</span> <span class="nx">b</span><span class="p">()</span> <span class="p">{</span> 
+    <span class="nx">alert</span><span class="p">(</span><span class="o">++</span><span class="nx">i</span><span class="p">);</span> 
+    <span class="p">}</span> 
+    <span class="k">return</span> <span class="nx">b</span><span class="p">;</span> 
+<span class="p">}</span> 
+<span class="kd">var</span> <span class="nx">c</span> <span class="o">=</span> <span class="nx">a</span><span class="p">();</span> 
+<span class="nx">c</span><span class="p">();</span> 
+</code></pre>
+</div>
+
+<p><span style="font-size: 15px;">　　很简单的代码，细心观察会发现变量i的作用域是在方法a中，也就是说出了方法a后变量i就不起作用了，可代码中的i依然活跃在方法c中，是不是违背了程序的基本规则呢？球出界了队员还在踢。</span></p>
+<h3><span style="font-size: 15px;">二、直面[闭包]</span></h3>
+<p><span style="font-size: 15px;">　　先来啃啃[闭包]的正经概念，[闭包(Closure)]就是<span style="color: #ff0000;">引用了</span>自由变量的表达式，通常是函数(也就是代码段[1]中的函数b)。它的特点是被引用的自由变量将和这个函数一同存在，即使<span style="color: #ff0000;">已经离开了</span>创造它的环境也不例外，通俗的讲就是大家常说的闭包延长了变量的生命期。对照代码段[1]，清晰些了吗？</span></p>
+<p><span style="font-size: 15px;">　　下面来看c#版的，代码段[2]：</span></p>
+
+<div class="language-csharp highlighter-rouge"><pre class="highlight"><code><span class="k">public</span> <span class="k">class</span> <span class="nc">Program</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">static</span> <span class="n">Action</span> <span class="nf">funcB</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"funcB Begin.."</span><span class="p">);</span>
+        <span class="kt">int</span> <span class="n">i</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span>
+        <span class="n">i</span><span class="p">++;</span>
+        <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"funcB:"</span> <span class="p">+</span> <span class="n">i</span><span class="p">);</span>
+        <span class="n">Action</span> <span class="n">action</span> <span class="p">=</span> <span class="p">()</span> <span class="p">=&gt;</span>
+        <span class="p">{</span>
+            <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"funcA:"</span> <span class="p">+</span> <span class="n">i</span><span class="p">);</span>
+        <span class="p">};</span>
+        <span class="n">i</span> <span class="p">=</span> <span class="m">100</span><span class="p">;</span>
+        <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"funcB:"</span> <span class="p">+</span> <span class="n">i</span><span class="p">);</span>
+        <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"funcB End.."</span><span class="p">);</span>
+        <span class="k">return</span> <span class="n">action</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">static</span> <span class="k">void</span> <span class="nf">Main</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="kt">var</span> <span class="n">action</span> <span class="p">=</span> <span class="nf">funcB</span><span class="p">();</span>
+        <span class="nf">action</span><span class="p">();</span>
+        <span class="n">Console</span><span class="p">.</span><span class="nf">ReadKey</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<div class="language-csharp highlighter-rouge"><pre class="highlight"><code><span class="k">public</span> <span class="k">class</span> <span class="nc">Program</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">static</span> <span class="k">async</span> <span class="n">Task</span> <span class="nf">funcA</span><span class="p">(</span><span class="n">Action</span> <span class="n">callback</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="c1">//停留5秒，缓下节奏
+</span>        <span class="k">await</span> <span class="n">Task</span><span class="p">.</span><span class="nf">Delay</span><span class="p">(</span><span class="m">5000</span><span class="p">);</span>
+        <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"funcA continue.."</span><span class="p">);</span>
+        <span class="nf">callback</span><span class="p">();</span>
+    <span class="p">}</span>
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> <span class="nf">funcB</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"funcB Begin.."</span><span class="p">);</span>
+        <span class="kt">int</span> <span class="n">i</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span>
+        <span class="n">i</span><span class="p">++;</span>
+        <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"funcB:"</span> <span class="p">+</span> <span class="n">i</span><span class="p">);</span>
+        <span class="nf">funcA</span><span class="p">(()</span> <span class="p">=&gt;</span>
+        <span class="p">{</span>
+            <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"funcA:"</span> <span class="p">+</span> <span class="n">i</span><span class="p">);</span>
+        <span class="p">});</span>
+        <span class="n">i</span> <span class="p">=</span> <span class="m">100</span><span class="p">;</span>
+        <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"funcB:"</span> <span class="p">+</span> <span class="n">i</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">static</span> <span class="k">void</span> <span class="nf">Main</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="nf">funcB</span><span class="p">();</span>
+        <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"funcB End.."</span><span class="p">);</span>
+        <span class="n">Console</span><span class="p">.</span><span class="nf">ReadKey</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<p>&nbsp;</p>
+<p><span style="font-size: 15px;">　　两个写法目的一样，就是想勾起大家的所有疑问。代码段[2]的运行结果是什么呢？为什么是这样的结果呢？[闭包]真的延长了变量的生命期吗？相信熟悉的人是清楚的，我们要做的是继续深挖。</span></p>
+<h3><span style="font-size: 15px;">三、深挖[闭包]</span></h3>
+<p><span style="font-size: 15px;">　　我们都懂这只是语法糖，它并没有违背程序的基本规律。</span><span style="font-size: 15px;">下面就抄家伙(<a href="http://cn.bing.com/knows/search?intlF=0&amp;q=.net+reflector&amp;FORM=HDRSC4" target="_blank">.NET Reflector</a>)来窥窥究竟。</span></p>
+<p><span style="font-size: 15px;"><img src="http://images.cnitblog.com/i/300379/201406/152312059525303.png" alt="" />&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<img src="http://images.cnitblog.com/i/300379/201406/152324411553822.png" alt="" /></span></p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #993366;"><span style="font-size: 16px;"> 图[1]&nbsp;</span>&nbsp;</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;<span style="color: #993366; font-size: 16px;"> 图[2]</span></p>
+<p><span style="font-size: 15px;">&nbsp; <img src="http://images.cnitblog.com/i/300379/201406/152324552493261.png" alt="" /></span></p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color: #0000ff;">&nbsp;</span><span style="color: #993366; font-size: 16px;">图[3]</span></p>
+<p><span style="font-size: 15px;"><img src="http://images.cnitblog.com/i/300379/201406/152326328588548.png" alt="" /></span></p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;<span style="color: #993366; font-size: 16px;">图[4]</span></p>
+<p><span style="font-size: 15px;">&nbsp; <img src="http://images.cnitblog.com/i/300379/201406/152322172641829.png" alt="" /></span></p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #993366; font-size: 16px;">图[5]</span></p>
+<p><span style="font-size: 15px;">一下上了5张图，不要慌，慢慢来。</span></p>
+<p><span style="font-size: 15px;">图[1]是Reflector中Program类的字段、方法、类等的名称列表。我们注意到，除去我们代码中定义的，编译器还自动生成了一个类：<span style="color: #ff0000;">c__DisplayClass1</span> ！！</span></p>
+<p><span style="font-size: 15px;">图[2]是编译器自动生成的类c__DisplayClass1中的一个方法&lt;funcB&gt;b__0的定义，其实就是funcB方法中的那个匿名函数 ()=&gt;{Console.WriteLine("funcA:" + i);} 的实现;</span></p>
+<p><span style="font-size: 15px;">图[3]是编译器自动生成的类c__DisplayClass1的实现的IL代码，请注意方法&lt;funcB&gt;b__0和公共变量i</span></p>
+<p><span style="font-size: 15px;">图[4]、图[5]是funB方法的IL代码，每一段代表的啥意思我都大概做了标注。可以看到：<span style="color: #ff0000;">在方法的一开始，编译器就初始化了c__DisplayClass1类的一个实例，之后对于变量i的操作，在IL中其实就是对于起初初始化的那个全局的c__DisplayClass1类实例中的变量i的操作，所以说[闭包]延长了变量的生命期是假象，其实我们一直在操作一个全局的类实例的变量。</span><br /></span></p>
+<h3>四、模仿[闭包]</h3>
+<p>　　<span style="font-size: 15px;">原理基本清楚了，下面我们来自己动手模仿一下编译器做的事。</span></p>
+<p><span style="font-size: 15px;">　　代码段[3]：</span></p>
+
+<div class="language-csharp highlighter-rouge"><pre class="highlight"><code><span class="k">public</span> <span class="k">class</span> <span class="nc">Program</span>
+<span class="p">{</span>
+    <span class="c1">//定义一个全局的c__DisplayClass1类型的变量。
+</span>    <span class="k">static</span> <span class="n">c__DisplayClass1</span> <span class="n">displayCls</span><span class="p">;</span>
+    <span class="c1">/// &lt;summary&gt;
+</span>    <span class="c1">/// 这就是类似于编译器的那个自定义类&lt;&gt;c__DisplayClass1
+</span>    <span class="c1">/// &lt;/summary&gt;
+</span>    <span class="k">sealed</span> <span class="k">class</span> <span class="nc">c__DisplayClass1</span>
+    <span class="p">{</span>
+        <span class="k">public</span> <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+
+        <span class="k">public</span> <span class="k">void</span> <span class="nf">b_0</span><span class="p">()</span>
+        <span class="p">{</span>
+            <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"funcA:"</span> <span class="p">+</span> <span class="n">i</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">public</span> <span class="k">static</span> <span class="n">Action</span> <span class="nf">funcB</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="n">displayCls</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">c__DisplayClass1</span><span class="p">();</span>
+        <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"funcB Begin.."</span><span class="p">);</span>
+        <span class="n">displayCls</span><span class="p">.</span><span class="n">i</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span>
+        <span class="n">displayCls</span><span class="p">.</span><span class="n">i</span><span class="p">++;</span>
+        <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"funcB:"</span> <span class="p">+</span> <span class="n">displayCls</span><span class="p">.</span><span class="n">i</span><span class="p">);</span>
+        <span class="n">Action</span> <span class="n">action</span> <span class="p">=</span> <span class="n">displayCls</span><span class="p">.</span><span class="n">b_0</span><span class="p">;</span>
+        <span class="n">displayCls</span><span class="p">.</span><span class="n">i</span> <span class="p">=</span> <span class="m">100</span><span class="p">;</span>
+        <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"funcB:"</span> <span class="p">+</span> <span class="n">displayCls</span><span class="p">.</span><span class="n">i</span><span class="p">);</span>
+        <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"funcB End.."</span><span class="p">);</span>
+        <span class="k">return</span> <span class="n">action</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">static</span> <span class="k">void</span> <span class="nf">Main</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="kt">var</span> <span class="n">action</span> <span class="p">=</span> <span class="nf">funcB</span><span class="p">();</span>
+        <span class="nf">action</span><span class="p">();</span>
+        <span class="n">Console</span><span class="p">.</span><span class="nf">ReadKey</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<p><span style="font-size: 15px;">　　编译器费尽心思给我们做了一个语法糖，让我们的编程更加轻松优雅。</span></p>
+<h3>五、终极想象</h3>
+<p><span style="font-size: 15px;">　　只上代码，代码段[4]：</span></p>
+
+<div class="language-csharp highlighter-rouge"><pre class="highlight"><code><span class="k">public</span> <span class="k">class</span> <span class="nc">Program</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">static</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">Action</span><span class="p">&gt;</span> <span class="nf">funcB</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="n">List</span><span class="p">&lt;</span><span class="n">Action</span><span class="p">&gt;</span> <span class="n">list</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">Action</span><span class="p">&gt;();</span>
+        <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"funcB Begin.."</span><span class="p">);</span>
+        <span class="kt">int</span> <span class="n">i</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span>
+        <span class="n">i</span><span class="p">++;</span>
+        <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"funcB:"</span> <span class="p">+</span> <span class="n">i</span><span class="p">);</span>
+        <span class="n">Action</span> <span class="n">action1</span> <span class="p">=</span> <span class="p">()</span> <span class="p">=&gt;</span>
+        <span class="p">{</span>
+            <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"funcA:"</span> <span class="p">+</span> <span class="n">i</span><span class="p">);</span>
+            <span class="n">i</span> <span class="p">=</span> <span class="m">200</span><span class="p">;</span>
+        <span class="p">};</span>
+        <span class="n">Action</span> <span class="n">action2</span> <span class="p">=</span> <span class="p">()</span> <span class="p">=&gt;</span>
+        <span class="p">{</span>
+            <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"funcA:"</span> <span class="p">+</span> <span class="n">i</span><span class="p">);</span>
+        <span class="p">};</span>
+        <span class="n">i</span> <span class="p">=</span> <span class="m">100</span><span class="p">;</span>
+        <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"funcB:"</span> <span class="p">+</span> <span class="n">i</span><span class="p">);</span>
+        <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"funcB End.."</span><span class="p">);</span>
+        <span class="n">list</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="n">action1</span><span class="p">);</span>
+        <span class="n">list</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="n">action2</span><span class="p">);</span>
+        <span class="k">return</span> <span class="n">list</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">static</span> <span class="k">void</span> <span class="nf">Main</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="kt">var</span> <span class="n">action</span> <span class="p">=</span> <span class="nf">funcB</span><span class="p">();</span>
+        <span class="n">action</span><span class="p">[</span><span class="m">0</span><span class="p">]();</span>
+        <span class="n">action</span><span class="p">[</span><span class="m">1</span><span class="p">]();</span>
+        <span class="n">Console</span><span class="p">.</span><span class="nf">ReadKey</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<p>　<span style="font-size: 15px;">　运行结果是什么呢？自己动手，丰衣足食</span>。</p>
+<p>&nbsp;</p>
+<p><span style="font-size: 15px;">　　就到这儿吧，有问题的地方希望各位指正，敬礼！</span></p>
+<p><span style="font-size: 15px;">　　</span></p>
+
+  </section>
+</article>
+
+<section class="read-more">
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">最近的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/2014/06/%E5%B0%86%E8%87%AA%E5%AE%9A%E4%B9%89%E7%9A%84%E5%80%BC%E7%B1%BB%E5%9E%8B%E7%94%A8%E4%BD%9C%E5%AD%97%E5%85%B8%E7%9A%84%E9%94%AE-%E8%A6%81%E7%89%B9%E5%88%AB%E6%B3%A8%E6%84%8F%E4%BB%80%E4%B9%88/" title="link to 将自定义的值类型用作字典的键，要特别注意什么？">将自定义的值类型用作字典的键，要特别注意什么？</a></h2>
+       <p class="excerpt">　　前天关注了老赵的微信公众号：赵人希。昨天就推送了一个快速问答，下面把我的答题经历跟大家分享，希望对于菜鸟同胞们有所帮助启发。　　其实这个问题在他的博客里有专门的篇幅讲解，我猜到了，哈哈。但是大牛讲问题都是在一个高度上，水平差点的需要费点力气才能理解，而这个过程就是拉进我们与大牛距离的过程，用心总结下，才能不断强化自己靠近他们。一、通常的字典用法（熟练可直接略过）　　在我平时的编码中，用的最频繁的就是代码段[1]：public class Example{    public stati...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2014-06-18 12:00:00 +0000" class="post-list__meta--date date">2014-06-18</time> &#8226; <span class="post-list__meta--tags tags">C# | .NET</span><a class="btn-border-small" href=/2014/06/%E5%B0%86%E8%87%AA%E5%AE%9A%E4%B9%89%E7%9A%84%E5%80%BC%E7%B1%BB%E5%9E%8B%E7%94%A8%E4%BD%9C%E5%AD%97%E5%85%B8%E7%9A%84%E9%94%AE-%E8%A6%81%E7%89%B9%E5%88%AB%E6%B3%A8%E6%84%8F%E4%BB%80%E4%B9%88/>继续阅读</a></div>
+   </div>
+   
+   
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">更早的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/2014/06/%E5%AF%B9-yield-%E7%9A%84%E6%B5%85%E7%A9%B6%E5%88%B0%E5%8F%91%E7%8E%B0-async-await/" title="link to 对[yield]的浅究到发现[async][await]">对[yield]的浅究到发现[async][await]</a></h2>
+       <p class="excerpt">　　上篇对[foreach]的浅究到发现[yield]写完后，觉得对[yield]还没有理解清楚，想起曾经看过一位大牛的帖子讲的很深刻（链接在此），回顾了下，在这里写出自己的理解，与各位分享。一、通常的异步　　现在我们假设一种平时经常遇到的情况，现有三个方法，其中funcOne和funcTwo比较耗时需要异步执行，而且他们的逻辑是必须在funcOne执行完后才可以执行funcTwo，同理funcTwo执行完后才能执行funcThree。　　按照这样的设定，通常的做法请看代码段[1]:pub...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2014-06-12 12:00:00 +0000" class="post-list__meta--date date">2014-06-12</time> &#8226; <span class="post-list__meta--tags tags">C# | .NET</span><a class="btn-border-small" href=/2014/06/%E5%AF%B9-yield-%E7%9A%84%E6%B5%85%E7%A9%B6%E5%88%B0%E5%8F%91%E7%8E%B0-async-await/>继续阅读</a></div>
+   </div>
+   
+</section>
+
+<section class="post-comments">
+  
+    <div id="disqus_thread"></div>
+    <script>
+    
+    var disqus_config = function () {
+        this.page.url = "http://localhost:4000/2014/06/%E4%BB%8E%E9%97%AD%E5%8C%85%E8%AF%B4%E8%B5%B7/";
+        this.page.identifier = "/2014/06/%E4%BB%8E%E9%97%AD%E5%8C%85%E8%AF%B4%E8%B5%B7/";
+    };
+
+    var disqus_shortname = 'vno-jekyll';
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>要查看<a href="http://disqus.com/?ref_noscript"> Disqus </a>评论，请启用 JavaScript</noscript>
+    
+  
+  
+  
+  
+</section>
+
+
+            <section class="footer">
+    <footer>
+    	<span class="footer__copyright">本站点采用<a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享 署名-非商业性使用-相同方式共享 4.0 国际 许可协议</a></span>
+        <span class="footer__copyright">由 <a href="https://jekyllrb.com">Jekyll</a> 于 2017-07-03 生成，感谢 <a href="https://www.digitalocean.com/?refcode=30ed2d146762">Digital Ocean</a> 为本站提供稳定的 VPS 服务</span>
+        <span class="footer__copyright">本站由 <a href="http://ronghaopger.github.io/about/">@RongHao</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2017</span>
+    </footer>
+</section>
+
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+
+<script type="text/javascript" src="/js/main.js"></script>
+
+
+
+    
+  </body>
+
+</html>

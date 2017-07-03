@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>对[yield]的浅究到发现[async][await]</title>
+  <meta name="description" content="　　上篇对[foreach]的浅究到发现[yield]写完后，觉得对[yield]还没有理解清楚，想起曾经看过一位大牛的帖子讲的很深刻（链接在此），回顾了下，在这里写出自己的理解，与各位分享。一、通常的异步　　现在我们假设一种平时经常遇到的情况，现有三个方法，其中funcOne和funcTwo比较耗时需要异步执行...">
+  <meta name="author" content="Wei Wang">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="对[yield]的浅究到发现[async][await]">
+  <meta name="twitter:description" content="　　上篇对[foreach]的浅究到发现[yield]写完后，觉得对[yield]还没有理解清楚，想起曾经看过一位大牛的帖子讲的很深刻（链接在此），回顾了下，在这里写出自己的理解，与各位分享。一、通常的异步　　现在我们假设一种平时经常遇到的情况，现有三个方法，其中funcOne和funcTwo比较耗时需要异步执行...">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="对[yield]的浅究到发现[async][await]">
+  <meta property="og:description" content="　　上篇对[foreach]的浅究到发现[yield]写完后，觉得对[yield]还没有理解清楚，想起曾经看过一位大牛的帖子讲的很深刻（链接在此），回顾了下，在这里写出自己的理解，与各位分享。一、通常的异步　　现在我们假设一种平时经常遇到的情况，现有三个方法，其中funcOne和funcTwo比较耗时需要异步执行...">
+  
+  <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
+  <link href="/assets/images/favicon.png" rel="shortcut icon" type="image/png">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="canonical" href="http://localhost:4000/2014/06/%E5%AF%B9-yield-%E7%9A%84%E6%B5%85%E7%A9%B6%E5%88%B0%E5%8F%91%E7%8E%B0-async-await/">
+  <link rel="alternate" type="application/rss+xml" title="Hulk' Den" href="http://localhost:4000/feed.xml">
+  
+  <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
+  
+</head>
+
+
+  <body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="fa fa-list btn-mobile-menu__icon"></i>
+        <i class="fa fa-angle-up btn-mobile-close__icon hidden"></i>
+    </span>
+    
+    <header class="panel-cover panel-cover--collapsed" style="background-image: url('/assets/images/background-cover.jpg')">
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        <a href="/#blog" title="前往 Hulk' Den 的主页" class="blog-button"><img src="/assets/images/avatar.jpg" width="80" alt="Hulk' Den logo" class="panel-cover__logo logo" /></a>
+        <h1 class="panel-cover__title panel-title"><a href="/#blog" title="link to homepage for Hulk' Den" class="blog-button">Hulk' Den</a></h1>
+        
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">Vno Jekyll is a port of my Ghost theme vno.</p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+        
+        
+        <p class="panel-cover__description"><a href="https://github.com/onevcat/vno-jekyll" target="_blank">Download the theme</a></p>
+        
+        
+        <div class="navigation-wrapper">
+          <div>
+            <nav class="cover-navigation cover-navigation--primary">
+              <ul class="navigation">
+                <li class="navigation__item"><a href="/#blog" title="Visit blog" class="blog-button">Blog</a></li>
+                
+                  <li class="navigation__item"><a href="https://github.com/ronghaopger" target="_blank" title="ronghaopger">GitHub</a></li>
+                
+              </ul>
+            </nav>
+          </div>
+          
+          <div><nav class="cover-navigation navigation--social">
+  <ul class="navigation">
+
+  
+  <!-- Weibo -->
+  <li class="navigation__item">
+    <a href="http://weibo.com/做梦家荣浩" title="@做梦家荣浩 的微博" target="_blank">
+      <i class='social fa fa-weibo'></i>
+      <span class="label">Weibo</span>
+    </a>
+  </li>
+  
+
+  
+  <!-- Github -->
+  <li class="navigation__item">
+    <a href="https://github.com/ronghaopger" title="@ronghaopger 的 Github" target="_blank">
+      <i class='social fa fa-github'></i>
+      <span class="label">Github</span>
+    </a>
+  </li>
+  
+  
+  
+
+  
+
+  <!-- RSS -->
+  <li class="navigation__item">
+    <a href="/feed.xml" rel="author" title="RSS" target="_blank">
+      <i class='social fa fa-rss'></i>
+      <span class="label">RSS</span>
+    </a>
+  </li>
+
+  
+  <!-- Email -->
+  <li class="navigation__item">
+    <a href="mailto:ronghao_1989@hotmail.com" title="Contact me">
+      <i class='social fa fa-envelope'></i>
+      <span class="label">Email</span>
+    </a>
+  </li>
+  
+
+  </ul>
+</nav>
+</div>
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="panel-cover--overlay cover-disabled"></div>
+    
+  </div>
+</header>
+
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner">
+            <article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
+  <header class="post-header">
+    <div class="post-meta">
+      <time datetime="2014-06-12 12:00:00 +0000" itemprop="datePublished" class="post-meta__date date">2014-06-12</time> &#8226; <span class="post-meta__tags tags">C# | .NET</span>
+    </div>
+    <h1 class="post-title">对[yield]的浅究到发现[async][await]</h1>
+  </header>
+
+  <section class="post">
+    <p>　　<span style="font-size: 15px;">上篇<a href="http://www.cnblogs.com/such/p/3782512.html" target="_blank">对[foreach]的浅究到发现[yield]</a>写完后，觉得对[yield]还没有理解清楚，想起曾经看过一位大牛的帖子讲的很深刻（<a href="http://www.cnblogs.com/yuyijq/archive/2011/02/24/1963326.html" target="_blank">链接在此</a>），回顾了下，在这里写出自己的理解，与各位分享。</span></p>
+<h3><span style="font-size: 15px;">一、通常的异步</span></h3>
+<p><span style="font-size: 15px;">　　现在我们假设一种平时经常遇到的情况，现有三个方法，其中funcOne和funcTwo比较耗时需要异步执行，而且他们的逻辑是必须在funcOne执行完后才可以执行funcTwo，同理funcTwo执行完后才能执行funcThree。</span></p>
+<p><span style="font-size: 15px;">　　按照这样的设定，通常的做法请看</span><span style="font-size: 15px;">代码段[1]:</span></p>
+
+<div class="language-csharp highlighter-rouge"><pre class="highlight"><code><span class="k">public</span> <span class="k">class</span> <span class="nc">Program</span>
+<span class="p">{</span>
+	<span class="k">public</span> <span class="k">delegate</span> <span class="k">void</span> <span class="nf">CallBack</span><span class="p">(</span><span class="kt">string</span> <span class="n">nextName</span><span class="p">);</span>
+	<span class="k">public</span> <span class="k">void</span> <span class="nf">funcOne</span><span class="p">(</span><span class="n">CallBack</span> <span class="n">callback</span><span class="p">)</span>
+	<span class="p">{</span>
+		<span class="n">ThreadPool</span><span class="p">.</span><span class="nf">QueueUserWorkItem</span><span class="p">((</span><span class="n">state1</span><span class="p">)</span> <span class="p">=&gt;</span>
+		<span class="p">{</span>
+			<span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"[One] async Continue!"</span><span class="p">);</span>
+			<span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"[One] do something!"</span><span class="p">);</span>
+			<span class="nf">callback</span><span class="p">(</span><span class="s">"Called Two"</span><span class="p">);</span>
+		<span class="p">});</span>
+	<span class="p">}</span>
+	<span class="k">public</span> <span class="k">void</span> <span class="nf">funcTwo</span><span class="p">(</span><span class="n">CallBack</span> <span class="n">callback</span><span class="p">)</span>
+	<span class="p">{</span>
+		<span class="n">ThreadPool</span><span class="p">.</span><span class="nf">QueueUserWorkItem</span><span class="p">((</span><span class="n">state2</span><span class="p">)</span> <span class="p">=&gt;</span>
+		<span class="p">{</span>
+			<span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"[Two] async Continue!"</span><span class="p">);</span>
+			<span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"[Two] do something!"</span><span class="p">);</span>
+			<span class="nf">callback</span><span class="p">(</span><span class="s">"Called Three"</span><span class="p">);</span>
+			<span class="p">});</span>
+	<span class="p">}</span>
+     <span class="k">public</span> <span class="k">void</span> <span class="nf">funcThree</span><span class="p">(</span><span class="n">CallBack</span> <span class="n">callback</span><span class="p">)</span>
+     <span class="p">{</span>
+         <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"[Three] do something!"</span><span class="p">);</span>
+         <span class="nf">callback</span><span class="p">(</span><span class="s">"Called ..."</span><span class="p">);</span>
+     <span class="p">}</span>
+     <span class="k">static</span> <span class="k">void</span> <span class="nf">Main</span><span class="p">()</span>
+     <span class="p">{</span>
+         <span class="n">Program</span> <span class="n">p</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">Program</span><span class="p">();</span>
+         <span class="n">p</span><span class="p">.</span><span class="nf">funcOne</span><span class="p">((</span><span class="n">name1</span><span class="p">)</span> <span class="p">=&gt;</span>
+         <span class="p">{</span>
+             <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="n">name1</span><span class="p">);</span>
+             <span class="n">p</span><span class="p">.</span><span class="nf">funcTwo</span><span class="p">((</span><span class="n">name2</span><span class="p">)</span> <span class="p">=&gt;</span>
+             <span class="p">{</span>
+                 <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="n">name2</span><span class="p">);</span>
+                 <span class="c1">//执行funcThree
+</span>                 <span class="n">p</span><span class="p">.</span><span class="nf">funcThree</span><span class="p">((</span><span class="n">name3</span><span class="p">)</span> <span class="p">=&gt;</span>
+                 <span class="p">{</span>
+                     <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="n">name3</span><span class="p">);</span>
+                     <span class="c1">//当然还有可能继续嵌套
+</span>                     <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"End!"</span><span class="p">);</span>
+                 <span class="p">});</span>
+             <span class="p">});</span>
+         <span class="p">});</span>
+         <span class="n">Console</span><span class="p">.</span><span class="nf">Read</span><span class="p">();</span>
+     <span class="p">}</span>
+ <span class="p">}</span>
+</code></pre>
+</div>
+
+<p><span style="font-size: 15px;">　　</span><span style="font-size: 15px; font-family: verdana, Arial, Helvetica, sans-serif; line-height: 1.5;">相信看完代码后我们的感觉是一样的，好繁琐，就是不断的嵌套！那有没有方法可以避免这样呢，也就是说用同步的写法来写异步程序。</span></p>
+<h3><span style="font-size: 15px;">二、改进后的异步</span></h3>
+<p><span style="font-size: 15px;">　　该[yield]粉墨登场了，先看代码段[2]：</span></p>
+
+<div class="language-csharp highlighter-rouge"><pre class="highlight"><code><span class="c1">//三个方法以及委托CallBack的定义不变，此处不再列出。
+//新增了静态的全局变量enumerator，和静态方法funcList.
+</span><span class="k">public</span> <span class="k">static</span> <span class="n">System</span><span class="p">.</span><span class="n">Collections</span><span class="p">.</span><span class="n">IEnumerator</span> <span class="n">enumerator</span> <span class="p">=</span> <span class="nf">funcList</span><span class="p">();</span>
+<span class="k">public</span> <span class="k">static</span> <span class="n">System</span><span class="p">.</span><span class="n">Collections</span><span class="p">.</span><span class="n">IEnumerator</span> <span class="nf">funcList</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">Program</span> <span class="n">p</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">Program</span><span class="p">();</span>
+    <span class="n">p</span><span class="p">.</span><span class="nf">funcOne</span><span class="p">((</span><span class="n">name1</span><span class="p">)</span> <span class="p">=&gt;</span>
+    <span class="p">{</span>
+        <span class="n">enumerator</span><span class="p">.</span><span class="nf">MoveNext</span><span class="p">();</span>
+    <span class="p">});</span>
+    <span class="k">yield</span> <span class="k">return</span> <span class="m">1</span><span class="p">;</span>
+    <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"Called Two"</span><span class="p">);</span>
+    <span class="n">p</span><span class="p">.</span><span class="nf">funcTwo</span><span class="p">((</span><span class="n">name2</span><span class="p">)</span> <span class="p">=&gt;</span>
+    <span class="p">{</span>
+        <span class="n">enumerator</span><span class="p">.</span><span class="nf">MoveNext</span><span class="p">();</span>
+    <span class="p">});</span>
+    <span class="k">yield</span> <span class="k">return</span> <span class="m">2</span><span class="p">;</span>
+    <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"Called Three"</span><span class="p">);</span>
+    <span class="n">p</span><span class="p">.</span><span class="nf">funcThree</span><span class="p">((</span><span class="n">name3</span><span class="p">)</span> <span class="p">=&gt;</span>
+    <span class="p">{</span>
+        <span class="c1">//当然还有可能继续嵌套
+</span>    <span class="p">});</span>
+    <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"Called ..."</span><span class="p">);</span>
+    <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"End!"</span><span class="p">);</span>
+    <span class="k">yield</span> <span class="k">return</span> <span class="m">3</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">//变化后的Main函数
+</span><span class="k">static</span> <span class="k">void</span> <span class="nf">Main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">enumerator</span><span class="p">.</span><span class="nf">MoveNext</span><span class="p">();</span>
+    <span class="n">Console</span><span class="p">.</span><span class="nf">Read</span><span class="p">();</span>
+<span class="p">}</span>    
+</code></pre>
+</div>
+
+<p><span style="font-size: 15px;">　　</span><span style="font-size: 15px; font-family: verdana, Arial, Helvetica, sans-serif; line-height: 1.5;">现在看看，是不是清爽了一些，没有无止尽的嵌套。代码中我们只需要定义一个迭代器，在迭代器中调用需要同步执行的方法，用[yield]来分隔，各方法通过在callback里调用迭代器的MoveNext()方法来保持同步。</span></p>
+<p><span style="font-size: 15px;">　　通过这样的实践，我们可以理解为每当[yield return ..]，程序会把迭代器的[上下文环境]暂时保存下来，等到MoveNext()时，再调出来继续执行到下一个[yield return ..]。</span></p>
+<h3><span style="font-size: 15px; line-height: 22.5px;">三、是我想太多</span></h3>
+<p><span style="font-size: 15px; line-height: 22.5px;">　　以上纯属瞎扯，在.net 4.5之后，我们有了神器：async/await，下面看看多么简洁吧。</span></p>
+<p><span style="font-size: 15px; line-height: 22.5px;">　　代码段[3]：</span></p>
+
+<div class="language-csharp highlighter-rouge"><pre class="highlight"><code><span class="k">public</span> <span class="k">class</span> <span class="nc">Program</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">async</span> <span class="n">Task</span> <span class="nf">funcOne</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"[One] async Continue!"</span><span class="p">);</span>
+        <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"[One] do something!"</span><span class="p">);</span>
+        <span class="c1">//await ...
+</span>    <span class="p">}</span>
+    <span class="k">public</span> <span class="k">async</span> <span class="n">Task</span> <span class="nf">funcTwo</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"[Two] async Continue!"</span><span class="p">);</span>
+        <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"[Two] do something!"</span><span class="p">);</span>
+        <span class="c1">//await ...
+</span>    <span class="p">}</span>
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">funcThree</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"[Three] do something!"</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">public</span> <span class="k">static</span> <span class="k">async</span> <span class="n">Task</span> <span class="nf">funcList</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="n">Program</span> <span class="n">p</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">Program</span><span class="p">();</span>
+        <span class="k">await</span> <span class="n">p</span><span class="p">.</span><span class="nf">funcOne</span><span class="p">();</span>
+        <span class="k">await</span> <span class="n">p</span><span class="p">.</span><span class="nf">funcTwo</span><span class="p">();</span>
+        <span class="n">p</span><span class="p">.</span><span class="nf">funcThree</span><span class="p">();</span>
+        <span class="c1">//无尽的嵌套可以继续await下去。
+</span>        <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"End!"</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">static</span> <span class="k">void</span> <span class="nf">Main</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="nf">funcList</span><span class="p">();</span>
+        <span class="n">Console</span><span class="p">.</span><span class="nf">Read</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<p>　　<span style="font-size: 15px;">我已经感觉到了您的惊叹之情。</span></p>
+<p>　　<span style="font-size: 15px;">async修饰符将方法指定为异步方法（注意！：异步不异步，并不是async说了算，如果这个方法中没有await语句，就算用了async修饰符，它依然是同步执行，因为它就没有异步基因）。</span></p>
+<p><span style="font-size: 15px;">　　被指定为异步方法后，方法的返回值只能为Task、Task&lt;TResult&gt;或者void，返回的Task对象用来表示这个异步方法，你可以对这个Task对象进行控制来操作这个异步方法，详细的可以参考msdn中给出的<a href="http://msdn.microsoft.com/zh-cn/library/system.threading.tasks.task.aspx" target="_blank">Task解释与示例代码</a>。</span></p>
+<p><span style="font-size: 15px;">　　await用于挂起主线程(这里的主线程是相对的)，等待这个异步方法执行完成并返回，接着才继续执行主线程的方法。用了await，主线程才能得到异步方法返回的Task对象，以便于在主线程中对它进行操作。如果一个异步方法调用时没有用await，那么它就会去异步执行，主线程不会等待，就像我们代码段[3]中Main方法里对funcList方法的调用那样。</span></p>
+<p>&nbsp;</p>
+<p><span style="font-size: 15px;">　　最后就分析到这儿吧，希望各位兄弟博友能一起讨论，共同进步。</span></p>
+<p><span style="font-size: 15px;">　　当然，别吝啬您的[赞]哦 :)</span></p>
+<p>&nbsp;</p>
+<p>&nbsp;<span style="color: #ff0000; font-size: 16px;">更新：</span>现在大家看到的是改进之后的文章，在此谢谢文章下面几位高手的讨论，让我学会了不少。抱拳！<span style="font-size: 15px;"><br /></span></p>
+<p>&nbsp;</p>
+<p><span style="font-size: 15px;">　　</span></p>
+<p>&nbsp;</p>
+
+  </section>
+</article>
+
+<section class="read-more">
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">最近的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/2014/06/%E4%BB%8E%E9%97%AD%E5%8C%85%E8%AF%B4%E8%B5%B7/" title="link to 从闭包说起">从闭包说起</a></h2>
+       <p class="excerpt">&nbsp;　　世界杯车轮战开始了，连通三天，基本进入世界杯状态。看球也不能忘了玩技术，这次打算把接触c#以来的点滴总结起来，让原本模糊的概念清晰起来，博友们一起来吧！　　[闭包]接触这个词的第一感觉就是晦涩难懂，下面我们就来啃一啃。一、邂逅[闭包]　　第一次接触闭包是在js里，先来看代码段[1]：function a() {     var i = 0;     function b() {     alert(++i);     }     return b; } var c = a(...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2014-06-16 12:00:00 +0000" class="post-list__meta--date date">2014-06-16</time> &#8226; <span class="post-list__meta--tags tags">C# | .NET</span><a class="btn-border-small" href=/2014/06/%E4%BB%8E%E9%97%AD%E5%8C%85%E8%AF%B4%E8%B5%B7/>继续阅读</a></div>
+   </div>
+   
+   
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">更早的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/2014/06/%E5%AF%B9-foreach-%E7%9A%84%E6%B5%85%E7%A9%B6%E5%88%B0%E5%8F%91%E7%8E%B0-yield/" title="link to 对[foreach]的浅究到发现[yield]">对[foreach]的浅究到发现[yield]</a></h2>
+       <p class="excerpt">　　闲来无事，翻了翻以前的代码，做点总结，菜鸟从这里起航，呵呵。一、List的foreach遍历　　先上代码段[1]： class Program { 	static void Main(string[] args)   		{			List&lt;string&gt; dayList = new List&lt;string&gt; { "Sun", "Mon", "Tue", "Wed", "Thr", "Fri", "Sat" };			foreach (var day in day...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2014-06-11 12:00:00 +0000" class="post-list__meta--date date">2014-06-11</time> &#8226; <span class="post-list__meta--tags tags">C# | .NET</span><a class="btn-border-small" href=/2014/06/%E5%AF%B9-foreach-%E7%9A%84%E6%B5%85%E7%A9%B6%E5%88%B0%E5%8F%91%E7%8E%B0-yield/>继续阅读</a></div>
+   </div>
+   
+</section>
+
+<section class="post-comments">
+  
+    <div id="disqus_thread"></div>
+    <script>
+    
+    var disqus_config = function () {
+        this.page.url = "http://localhost:4000/2014/06/%E5%AF%B9-yield-%E7%9A%84%E6%B5%85%E7%A9%B6%E5%88%B0%E5%8F%91%E7%8E%B0-async-await/";
+        this.page.identifier = "/2014/06/%E5%AF%B9-yield-%E7%9A%84%E6%B5%85%E7%A9%B6%E5%88%B0%E5%8F%91%E7%8E%B0-async-await/";
+    };
+
+    var disqus_shortname = 'vno-jekyll';
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>要查看<a href="http://disqus.com/?ref_noscript"> Disqus </a>评论，请启用 JavaScript</noscript>
+    
+  
+  
+  
+  
+</section>
+
+
+            <section class="footer">
+    <footer>
+    	<span class="footer__copyright">本站点采用<a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享 署名-非商业性使用-相同方式共享 4.0 国际 许可协议</a></span>
+        <span class="footer__copyright">由 <a href="https://jekyllrb.com">Jekyll</a> 于 2017-07-03 生成，感谢 <a href="https://www.digitalocean.com/?refcode=30ed2d146762">Digital Ocean</a> 为本站提供稳定的 VPS 服务</span>
+        <span class="footer__copyright">本站由 <a href="http://ronghaopger.github.io/about/">@RongHao</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2017</span>
+    </footer>
+</section>
+
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+
+<script type="text/javascript" src="/js/main.js"></script>
+
+
+
+    
+  </body>
+
+</html>

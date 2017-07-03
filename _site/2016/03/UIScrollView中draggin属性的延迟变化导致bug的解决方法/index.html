@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>UIScrollView中draggin属性的延迟变化导致bug的解决方法</title>
+  <meta name="description" content="最近开始用Swift写项目，就先自己封装了下拉上拉的库EasyPull上传到GitHub，期间跟网友交流解决了一些没考虑到的bug，现在库已经基本稳定了，我已经应用到生产中了。">
+  <meta name="author" content="Wei Wang">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="UIScrollView中draggin属性的延迟变化导致bug的解决方法">
+  <meta name="twitter:description" content="最近开始用Swift写项目，就先自己封装了下拉上拉的库EasyPull上传到GitHub，期间跟网友交流解决了一些没考虑到的bug，现在库已经基本稳定了，我已经应用到生产中了。">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="UIScrollView中draggin属性的延迟变化导致bug的解决方法">
+  <meta property="og:description" content="最近开始用Swift写项目，就先自己封装了下拉上拉的库EasyPull上传到GitHub，期间跟网友交流解决了一些没考虑到的bug，现在库已经基本稳定了，我已经应用到生产中了。">
+  
+  <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
+  <link href="/assets/images/favicon.png" rel="shortcut icon" type="image/png">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="canonical" href="http://localhost:4000/2016/03/UIScrollView%E4%B8%ADdraggin%E5%B1%9E%E6%80%A7%E7%9A%84%E5%BB%B6%E8%BF%9F%E5%8F%98%E5%8C%96%E5%AF%BC%E8%87%B4bug%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/">
+  <link rel="alternate" type="application/rss+xml" title="Hulk' Den" href="http://localhost:4000/feed.xml">
+  
+  <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
+  
+</head>
+
+
+  <body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="fa fa-list btn-mobile-menu__icon"></i>
+        <i class="fa fa-angle-up btn-mobile-close__icon hidden"></i>
+    </span>
+    
+    <header class="panel-cover panel-cover--collapsed" style="background-image: url('/assets/images/background-cover.jpg')">
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        <a href="/#blog" title="前往 Hulk' Den 的主页" class="blog-button"><img src="/assets/images/avatar.jpg" width="80" alt="Hulk' Den logo" class="panel-cover__logo logo" /></a>
+        <h1 class="panel-cover__title panel-title"><a href="/#blog" title="link to homepage for Hulk' Den" class="blog-button">Hulk' Den</a></h1>
+        
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">Vno Jekyll is a port of my Ghost theme vno.</p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+        
+        
+        <p class="panel-cover__description"><a href="https://github.com/onevcat/vno-jekyll" target="_blank">Download the theme</a></p>
+        
+        
+        <div class="navigation-wrapper">
+          <div>
+            <nav class="cover-navigation cover-navigation--primary">
+              <ul class="navigation">
+                <li class="navigation__item"><a href="/#blog" title="Visit blog" class="blog-button">Blog</a></li>
+                
+                  <li class="navigation__item"><a href="https://github.com/ronghaopger" target="_blank" title="ronghaopger">GitHub</a></li>
+                
+              </ul>
+            </nav>
+          </div>
+          
+          <div><nav class="cover-navigation navigation--social">
+  <ul class="navigation">
+
+  
+  <!-- Weibo -->
+  <li class="navigation__item">
+    <a href="http://weibo.com/做梦家荣浩" title="@做梦家荣浩 的微博" target="_blank">
+      <i class='social fa fa-weibo'></i>
+      <span class="label">Weibo</span>
+    </a>
+  </li>
+  
+
+  
+  <!-- Github -->
+  <li class="navigation__item">
+    <a href="https://github.com/ronghaopger" title="@ronghaopger 的 Github" target="_blank">
+      <i class='social fa fa-github'></i>
+      <span class="label">Github</span>
+    </a>
+  </li>
+  
+  
+  
+
+  
+
+  <!-- RSS -->
+  <li class="navigation__item">
+    <a href="/feed.xml" rel="author" title="RSS" target="_blank">
+      <i class='social fa fa-rss'></i>
+      <span class="label">RSS</span>
+    </a>
+  </li>
+
+  
+  <!-- Email -->
+  <li class="navigation__item">
+    <a href="mailto:ronghao_1989@hotmail.com" title="Contact me">
+      <i class='social fa fa-envelope'></i>
+      <span class="label">Email</span>
+    </a>
+  </li>
+  
+
+  </ul>
+</nav>
+</div>
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="panel-cover--overlay cover-disabled"></div>
+    
+  </div>
+</header>
+
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner">
+            <article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
+  <header class="post-header">
+    <div class="post-meta">
+      <time datetime="2016-03-15 15:30:00 +0000" itemprop="datePublished" class="post-meta__date date">2016-03-15</time> &#8226; <span class="post-meta__tags tags">Swift | iOS</span>
+    </div>
+    <h1 class="post-title">UIScrollView中draggin属性的延迟变化导致bug的解决方法</h1>
+  </header>
+
+  <section class="post">
+    <p>最近开始用Swift写项目，就先自己封装了下拉上拉的库<a href="https://github.com/ronghaopger/EasyPull">EasyPull</a>上传到GitHub，期间跟网友交流解决了一些没考虑到的bug，现在库已经基本稳定了，我已经应用到生产中了。</p>
+
+<p>但是，在我不断的测试中，发现一个很隐晦的bug：在拉动到<strong>临界位置</strong>左右释放后，有时不能触发刷新。随即我看了看手机上的常用应用，发现天猫、美团、今日头条等都存在这个问题，好奇之心涌上心头，一番debug后，发现罪魁祸首是UIScrollView的<code class="highlighter-rouge">draggin</code>属性，官方的API有介绍：</p>
+
+<div class="language-swift highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">dragging</span><span class="p">:</span> <span class="kt">Bool</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span> <span class="c1">// returns YES if user has started scrolling. this may require some time and or distance to move to initiate dragging</span>
+</code></pre>
+</div>
+
+<p>也就是说<code class="highlighter-rouge">draggin</code>的变化有延迟，这就说明我们在用KVO对<code class="highlighter-rouge">contentOffset</code>进行观察时，由于<code class="highlighter-rouge">draggin</code>的延迟，会有异常出现，前面的那个bug就是这个延迟导致的。</p>
+
+<p>发现问题了，如何解决呢？</p>
+
+<p>首先，我想到了去实现UIScrollViewDelegate，通过<code class="highlighter-rouge">scrollViewDidEndDragging</code>方法来做，事实证明它没有延迟，这样做是可以达到预期效果的，但这样又是不行的！因为作为第三方库去实现UIScrollViewDelegate会跟用户的实现冲突，导致总有一方不起作用。所以在写第三方库时这个思路是不可以的，如果不使用第三方库的话，这个思路还是可以的。</p>
+
+<p>到手的鸟飞了，不甘心，再加思索，能不能让我的库向系统的<code class="highlighter-rouge">scrollViewDidEndDragging</code>方法中注入一些我想要的逻辑呢？</p>
+
+<p>自然OC的动态运行时该出场了。代码是这样的：</p>
+
+<div class="language-swift highlighter-rouge"><pre class="highlight"><code><span class="kd">extension</span> <span class="kt">UIViewController</span> <span class="p">{</span>
+    <span class="kd">private</span> <span class="kd">struct</span> <span class="kt">AssociatedKeys</span> <span class="p">{</span>
+        <span class="kd">static</span> <span class="k">var</span> <span class="nv">OnceToken</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="p">}</span>
+    
+    <span class="kd">public</span> <span class="k">override</span> <span class="kd">class</span> <span class="kd">func</span> <span class="nf">initialize</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nf">dispatch_once</span><span class="p">(</span><span class="o">&amp;</span><span class="kt">AssociatedKeys</span><span class="o">.</span><span class="kt">OnceToken</span><span class="p">,</span> <span class="p">{</span>
+            <span class="k">let</span> <span class="nv">originalSelector</span> <span class="o">=</span> <span class="kd">#selector(</span><span class="nf">UIScrollViewDelegate.scrollViewDidEndDragging(_:willDecelerate:)</span><span class="kd">)</span>
+            <span class="k">let</span> <span class="nv">swizzledSelector</span> <span class="o">=</span> <span class="kd">#selector(</span><span class="nf">UIViewController.easy_scrollViewDidEndDragging(_:willDecelerate:)</span><span class="kd">)</span>
+            
+            <span class="k">let</span> <span class="nv">originalMethod</span> <span class="o">=</span> <span class="nf">class_getInstanceMethod</span><span class="p">(</span><span class="k">self</span><span class="o">.</span><span class="nf">classForCoder</span><span class="p">(),</span> <span class="n">originalSelector</span><span class="p">)</span>
+            <span class="k">let</span> <span class="nv">swizzledMethod</span> <span class="o">=</span> <span class="nf">class_getInstanceMethod</span><span class="p">(</span><span class="k">self</span><span class="o">.</span><span class="nf">classForCoder</span><span class="p">(),</span> <span class="n">swizzledSelector</span><span class="p">)</span>
+            
+            <span class="k">let</span> <span class="nv">didAddMethod</span> <span class="o">=</span> <span class="nf">class_addMethod</span><span class="p">(</span><span class="k">self</span><span class="o">.</span><span class="nf">classForCoder</span><span class="p">(),</span> <span class="n">originalSelector</span><span class="p">,</span> <span class="nf">method_getImplementation</span><span class="p">(</span><span class="n">swizzledMethod</span><span class="p">),</span> <span class="nf">method_getTypeEncoding</span><span class="p">(</span><span class="n">swizzledMethod</span><span class="p">))</span>
+            
+            <span class="k">if</span> <span class="n">didAddMethod</span> <span class="p">{</span>
+                <span class="nf">class_replaceMethod</span><span class="p">(</span><span class="k">self</span><span class="o">.</span><span class="nf">classForCoder</span><span class="p">(),</span> <span class="n">swizzledSelector</span><span class="p">,</span> <span class="nf">method_getImplementation</span><span class="p">(</span><span class="n">originalMethod</span><span class="p">),</span> <span class="nf">method_getTypeEncoding</span><span class="p">(</span><span class="n">originalMethod</span><span class="p">))</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="nf">method_exchangeImplementations</span><span class="p">(</span><span class="n">originalMethod</span><span class="p">,</span> <span class="n">swizzledMethod</span><span class="p">);</span>
+            <span class="p">}</span>
+        <span class="p">})</span>
+    <span class="p">}</span>
+    
+    <span class="c1">// MARK: - Method Swizzling</span>
+    <span class="kd">public</span> <span class="kd">func</span> <span class="nf">easy_scrollViewDidEndDragging</span><span class="p">(</span><span class="nv">scrollView</span><span class="p">:</span> <span class="kt">UIScrollView</span><span class="p">,</span> <span class="n">willDecelerate</span> <span class="nv">decelerate</span><span class="p">:</span> <span class="kt">Bool</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">//self.easy_scrollViewDidEndDragging(scrollView, willDecelerate: decelerate) </span>
+        <span class="c1">//因为originalMethod不存在，所以swizzledSelector的方法交换就是失败的，再调用这句的结果就是死循环。</span>
+        
+        <span class="c1">//TODO: 在符合特定条件的情况下，调用第三方库释放刷新的操作逻辑。保证操作能及时执行！</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<p>这个思路看似不错，逼格也高，但是认真看代码你会不会发现这个用法跟平时不太一样呢，我们交换的是UIScrollViewDelegate.scrollViewDidEndDragging(_:willDecelerate:)的实现，UIScrollViewDelegate根本就没有实现，所以这段代码我们只是做到了给UIViewController增加了scrollViewDidEndDragging的实现。当用户在viewContrller里自己实现scrollViewDidEndDragging时，这个方法就失效了。</p>
+
+<p>还是不行，继续思考，发现就只有一个方法能做到最方便了，用户在自己的baseViewController里定义scrollViewDidEndDragging方法，就搞定。当然子类在需要时可以重写，但是记得super. scrollViewDidEndDragging。</p>
+
+<div class="language-swift highlighter-rouge"><pre class="highlight"><code><span class="kd">class</span> <span class="kt">BaseViewController</span><span class="p">:</span> <span class="kt">UIViewController</span> <span class="p">{</span>
+	<span class="o">.........</span>
+	<span class="o">.........</span>
+
+    <span class="kd">func</span> <span class="nf">scrollViewDidEndDragging</span><span class="p">(</span><span class="nv">scrollView</span><span class="p">:</span> <span class="kt">UIScrollView</span><span class="p">,</span> <span class="n">willDecelerate</span> <span class="nv">decelerate</span><span class="p">:</span> <span class="kt">Bool</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">//TODO: 在符合特定条件的情况下，调用第三方库释放刷新的操作逻辑。保证操作能及时执行！</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<p>搞定！</p>
+
+  </section>
+</article>
+
+<section class="read-more">
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">最近的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/2016/04/%E5%BD%93%E6%88%91%E8%B0%88%E6%97%85%E8%A1%8C%E6%97%B6-%E6%88%91%E8%B0%88%E4%BA%9B%E4%BB%80%E4%B9%88/" title="link to 当我谈旅行时，我谈些什么">当我谈旅行时，我谈些什么</a></h2>
+       <p class="excerpt">随心在昆明的第二天，还有没去的但不想去的景点，心里总觉得憋得慌缺点啥，在云南大学周边转了一上午，吃过午饭后就彻底无聊烦躁到极点了，这才是旅途的第二天就这状态了，不合适啊。安静下来想了想，是因为昨天在滇池旁没玩够就去了民族村，本打算逛完民族村再去滇池旁诗意一会坐坐船看看西山风景，结果民族村太好玩导致逛完后体力都消耗殆尽了，加上阴天的昆明湿冷湿冷的，出了民族村我们就直接打道回府了，仿佛在心里种下了不痛快的种子，所以今天内心一直在那闹情绪，无聊烦躁没目的，像极了平常生活中那种麻木消极的状态。缕清...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2016-04-05 22:10:00 +0000" class="post-list__meta--date date">2016-04-05</time> &#8226; <span class="post-list__meta--tags tags">旅行跑步</span><a class="btn-border-small" href=/2016/04/%E5%BD%93%E6%88%91%E8%B0%88%E6%97%85%E8%A1%8C%E6%97%B6-%E6%88%91%E8%B0%88%E4%BA%9B%E4%BB%80%E4%B9%88/>继续阅读</a></div>
+   </div>
+   
+   
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">更早的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/2015/04/%E7%BC%96%E7%A0%81%E7%9F%A5%E8%AF%86%E5%A4%A7%E6%9D%82%E7%83%A9/" title="link to 编码知识大杂烩">编码知识大杂烩</a></h2>
+       <p class="excerpt">零、万物归宗ASCII码（American Standard Code for Information Interchange，美国标准信息交换代码），最原始最直观的表示方式，一个字节表示一个字符，一个字节=8位，那么一个字节就有256(2的8次方)种状态。这又分为标准ASCII和扩展ASCII，其中：标准ASCII(十进制0~127) 使用一个字节中除去最高位以外的7 位来表示所有的大写和小写字母，数字0 到9、标点符号，以及在美式英语中使用的特殊控制字符。  Tips：标准ASCII中...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2015-04-02 12:00:00 +0000" class="post-list__meta--date date">2015-04-02</time> &#8226; <span class="post-list__meta--tags tags">编码</span><a class="btn-border-small" href=/2015/04/%E7%BC%96%E7%A0%81%E7%9F%A5%E8%AF%86%E5%A4%A7%E6%9D%82%E7%83%A9/>继续阅读</a></div>
+   </div>
+   
+</section>
+
+<section class="post-comments">
+  
+    <div id="disqus_thread"></div>
+    <script>
+    
+    var disqus_config = function () {
+        this.page.url = "http://localhost:4000/2016/03/UIScrollView%E4%B8%ADdraggin%E5%B1%9E%E6%80%A7%E7%9A%84%E5%BB%B6%E8%BF%9F%E5%8F%98%E5%8C%96%E5%AF%BC%E8%87%B4bug%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/";
+        this.page.identifier = "/2016/03/UIScrollView%E4%B8%ADdraggin%E5%B1%9E%E6%80%A7%E7%9A%84%E5%BB%B6%E8%BF%9F%E5%8F%98%E5%8C%96%E5%AF%BC%E8%87%B4bug%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/";
+    };
+
+    var disqus_shortname = 'vno-jekyll';
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>要查看<a href="http://disqus.com/?ref_noscript"> Disqus </a>评论，请启用 JavaScript</noscript>
+    
+  
+  
+  
+  
+</section>
+
+
+            <section class="footer">
+    <footer>
+    	<span class="footer__copyright">本站点采用<a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享 署名-非商业性使用-相同方式共享 4.0 国际 许可协议</a></span>
+        <span class="footer__copyright">由 <a href="https://jekyllrb.com">Jekyll</a> 于 2017-07-03 生成，感谢 <a href="https://www.digitalocean.com/?refcode=30ed2d146762">Digital Ocean</a> 为本站提供稳定的 VPS 服务</span>
+        <span class="footer__copyright">本站由 <a href="http://ronghaopger.github.io/about/">@RongHao</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2017</span>
+    </footer>
+</section>
+
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+
+<script type="text/javascript" src="/js/main.js"></script>
+
+
+
+    
+  </body>
+
+</html>

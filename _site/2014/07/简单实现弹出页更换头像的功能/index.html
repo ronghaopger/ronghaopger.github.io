@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>简单实现弹出页更换头像的功能</title>
+  <meta name="description" content="　　在Win 8应用里，对弹出页(Popup)的灵活操作必不可少，下面我们就来简单实现一个。一、先让Popup弹出到指定位置　　先来看看效果图，如图[1]：&nbsp; &nbsp; &nbsp; 　　下面是前端代码，代码段[1]：&lt;Grid Background="#0054a2"&gt;    &lt;...">
+  <meta name="author" content="Wei Wang">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="简单实现弹出页更换头像的功能">
+  <meta name="twitter:description" content="　　在Win 8应用里，对弹出页(Popup)的灵活操作必不可少，下面我们就来简单实现一个。一、先让Popup弹出到指定位置　　先来看看效果图，如图[1]：&nbsp; &nbsp; &nbsp; 　　下面是前端代码，代码段[1]：&lt;Grid Background="#0054a2"&gt;    &lt;...">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="简单实现弹出页更换头像的功能">
+  <meta property="og:description" content="　　在Win 8应用里，对弹出页(Popup)的灵活操作必不可少，下面我们就来简单实现一个。一、先让Popup弹出到指定位置　　先来看看效果图，如图[1]：&nbsp; &nbsp; &nbsp; 　　下面是前端代码，代码段[1]：&lt;Grid Background="#0054a2"&gt;    &lt;...">
+  
+  <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
+  <link href="/assets/images/favicon.png" rel="shortcut icon" type="image/png">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="canonical" href="http://localhost:4000/2014/07/%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0%E5%BC%B9%E5%87%BA%E9%A1%B5%E6%9B%B4%E6%8D%A2%E5%A4%B4%E5%83%8F%E7%9A%84%E5%8A%9F%E8%83%BD/">
+  <link rel="alternate" type="application/rss+xml" title="Hulk' Den" href="http://localhost:4000/feed.xml">
+  
+  <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
+  
+</head>
+
+
+  <body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="fa fa-list btn-mobile-menu__icon"></i>
+        <i class="fa fa-angle-up btn-mobile-close__icon hidden"></i>
+    </span>
+    
+    <header class="panel-cover panel-cover--collapsed" style="background-image: url('/assets/images/background-cover.jpg')">
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        <a href="/#blog" title="前往 Hulk' Den 的主页" class="blog-button"><img src="/assets/images/avatar.jpg" width="80" alt="Hulk' Den logo" class="panel-cover__logo logo" /></a>
+        <h1 class="panel-cover__title panel-title"><a href="/#blog" title="link to homepage for Hulk' Den" class="blog-button">Hulk' Den</a></h1>
+        
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">Vno Jekyll is a port of my Ghost theme vno.</p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+        
+        
+        <p class="panel-cover__description"><a href="https://github.com/onevcat/vno-jekyll" target="_blank">Download the theme</a></p>
+        
+        
+        <div class="navigation-wrapper">
+          <div>
+            <nav class="cover-navigation cover-navigation--primary">
+              <ul class="navigation">
+                <li class="navigation__item"><a href="/#blog" title="Visit blog" class="blog-button">Blog</a></li>
+                
+                  <li class="navigation__item"><a href="https://github.com/ronghaopger" target="_blank" title="ronghaopger">GitHub</a></li>
+                
+              </ul>
+            </nav>
+          </div>
+          
+          <div><nav class="cover-navigation navigation--social">
+  <ul class="navigation">
+
+  
+  <!-- Weibo -->
+  <li class="navigation__item">
+    <a href="http://weibo.com/做梦家荣浩" title="@做梦家荣浩 的微博" target="_blank">
+      <i class='social fa fa-weibo'></i>
+      <span class="label">Weibo</span>
+    </a>
+  </li>
+  
+
+  
+  <!-- Github -->
+  <li class="navigation__item">
+    <a href="https://github.com/ronghaopger" title="@ronghaopger 的 Github" target="_blank">
+      <i class='social fa fa-github'></i>
+      <span class="label">Github</span>
+    </a>
+  </li>
+  
+  
+  
+
+  
+
+  <!-- RSS -->
+  <li class="navigation__item">
+    <a href="/feed.xml" rel="author" title="RSS" target="_blank">
+      <i class='social fa fa-rss'></i>
+      <span class="label">RSS</span>
+    </a>
+  </li>
+
+  
+  <!-- Email -->
+  <li class="navigation__item">
+    <a href="mailto:ronghao_1989@hotmail.com" title="Contact me">
+      <i class='social fa fa-envelope'></i>
+      <span class="label">Email</span>
+    </a>
+  </li>
+  
+
+  </ul>
+</nav>
+</div>
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="panel-cover--overlay cover-disabled"></div>
+    
+  </div>
+</header>
+
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner">
+            <article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
+  <header class="post-header">
+    <div class="post-meta">
+      <time datetime="2014-07-07 12:00:00 +0000" itemprop="datePublished" class="post-meta__date date">2014-07-07</time> &#8226; <span class="post-meta__tags tags">C# | .NETWin8 | WP8</span>
+    </div>
+    <h1 class="post-title">简单实现弹出页更换头像的功能</h1>
+  </header>
+
+  <section class="post">
+    <p><span style="font-size: 15px;">　　在Win 8应用里，对弹出页(Popup)的灵活操作必不可少，下面我们就来简单实现一个。</span></p>
+<h3><span style="font-size: 15px; line-height: 22.5px;">一、先让Popup弹出到指定位置</span></h3>
+<p><span style="font-size: 15px; line-height: 22.5px;">　　先来看看效果图，如图[1]：</span></p>
+<p><span style="font-size: 15px; line-height: 22.5px;">&nbsp; &nbsp; &nbsp; <img style="vertical-align: middle;" src="http://images.cnitblog.com/i/300379/201407/041627380596169.png" alt="" width="488" height="400" /></span></p>
+<p><span style="font-size: 15px; line-height: 22.5px;">　　下面是前端代码，代码段[1]：</span></p>
+
+<div class="language-xml highlighter-rouge"><pre class="highlight"><code><span class="nt">&lt;Grid</span> <span class="na">Background=</span><span class="s">"#0054a2"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;Border</span> <span class="na">Background=</span><span class="s">"AliceBlue"</span> <span class="na">Margin=</span><span class="s">"40,40,1126,528"</span> <span class="na">Width=</span><span class="s">"150"</span> <span class="na">Height=</span><span class="s">"150"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;Image</span> <span class="na">x:Name=</span><span class="s">"Img"</span> <span class="na">Width=</span><span class="s">"150"</span> <span class="na">Height=</span><span class="s">"150"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;/Border&gt;</span>
+    <span class="nt">&lt;Button</span> <span class="na">Margin=</span><span class="s">"90,241,0,477"</span> <span class="na">Content=</span><span class="s">"更换头像"</span> <span class="na">Width=</span><span class="s">"100"</span> <span class="na">Height=</span><span class="s">"50"</span> <span class="na">Click=</span><span class="s">"Button_Click"</span><span class="nt">&gt;&lt;/Button&gt;</span>
+<span class="nt">&lt;/Grid&gt;</span>
+</code></pre>
+</div>
+
+<p><span style="font-size: 15px;">　　接着是后台代码，代码段[2]：</span></p>
+
+<div class="language-csharp highlighter-rouge"><pre class="highlight"><code><span class="k">private</span> <span class="n">Popup</span> <span class="n">headPopup</span><span class="p">;</span>
+
+<span class="k">private</span> <span class="k">void</span> <span class="nf">Button_Click</span><span class="p">(</span><span class="kt">object</span> <span class="n">sender</span><span class="p">,</span> <span class="n">RoutedEventArgs</span> <span class="n">e</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">headPopup</span> <span class="p">!=</span> <span class="k">null</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">headPopup</span><span class="p">.</span><span class="n">IsOpen</span> <span class="p">=</span> <span class="p">!</span><span class="n">headPopup</span><span class="p">.</span><span class="n">IsOpen</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">else</span>
+    <span class="p">{</span>
+        <span class="n">headPopup</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">Popup</span><span class="p">();</span>
+        <span class="c1">//给headPopup添加内容
+</span>        <span class="n">HeadControl</span> <span class="n">headControl</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">HeadControl</span><span class="p">();</span>
+        <span class="n">headPopup</span><span class="p">.</span><span class="n">Child</span> <span class="p">=</span> <span class="n">headControl</span><span class="p">;</span>
+        <span class="c1">//确定headPopup的弹出位置
+</span>        <span class="n">Rect</span> <span class="n">imgRect</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">Rect</span><span class="p">(</span><span class="k">new</span> <span class="nf">Point</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">0</span><span class="p">),</span> <span class="k">new</span> <span class="nf">Size</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">0</span><span class="p">));</span>
+        <span class="n">GeneralTransform</span> <span class="n">transform</span> <span class="p">=</span> <span class="k">this</span><span class="p">.</span><span class="n">Img</span><span class="p">.</span><span class="nf">TransformToVisual</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+        <span class="n">imgRect</span> <span class="p">=</span> <span class="n">transform</span><span class="p">.</span><span class="nf">TransformBounds</span><span class="p">(</span><span class="n">imgRect</span><span class="p">);</span>
+        <span class="n">headPopup</span><span class="p">.</span><span class="n">HorizontalOffset</span> <span class="p">=</span> <span class="n">imgRect</span><span class="p">.</span><span class="n">Left</span> <span class="p">+</span> <span class="m">150</span><span class="p">;</span>
+        <span class="n">headPopup</span><span class="p">.</span><span class="n">VerticalOffset</span> <span class="p">=</span> <span class="n">imgRect</span><span class="p">.</span><span class="n">Bottom</span> <span class="p">+</span> <span class="m">130</span><span class="p">;</span>
+        <span class="c1">//弹出Popup
+</span>        <span class="n">headPopup</span><span class="p">.</span><span class="n">IsOpen</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<p>&nbsp;<span style="font-size: 15px;">　　这里比较有趣的是确定Popup的弹出位置，我们是想在头像框的右下角弹出它。代码的具体实现方式是：通过控件Img的TransformToVisual方法获得一个<span style="color: #ff0000;">通用的变换对象</span>，这个变换对象可以把控件(也就是Img)变换成控件所对应的可视化图形，比如这里的Img就可以变换成一个矩形，通过这个矩形的属性我们就可以获得页面中控件Img各个边框的水平或者垂直位移，进而可以帮助我们确定Popup的位置。</span></p>
+<p>&nbsp;</p>
+<h3><span style="font-size: 15px; line-height: 22.5px;">二、弹出框中显示和选定头像</span></h3>
+<p><span style="font-size: 15px;">　　上文中已经给Popup设定了子控件HeadControl，我们将在HeadControl里填充要显示的内容。这里有两个选择：</span></p>
+<p><span style="font-size: 15px;">　　1、在HeadControl中添加WebView控件，通过内嵌html页面来实现。</span></p>
+<p><span style="font-size: 15px;">　　2、在HeadControl中添加普通的Gridiew控件，用传统的方式绑定图片来显示。</span></p>
+<p><span style="font-size: 15px;">　　这里我们选择第一种方式，很显然，html页面可以更灵活的控制页面的样式，有助于我们做出更cool的应用！</span></p>
+<p><span style="font-size: 15px;">　　下面为HeadControl控件的前端代码，代码段[3]：</span></p>
+
+<div class="language-xml highlighter-rouge"><pre class="highlight"><code><span class="nt">&lt;Grid</span> <span class="na">HorizontalAlignment=</span><span class="s">"Left"</span> <span class="na">VerticalAlignment=</span><span class="s">"Top"</span> <span class="na">Background=</span><span class="s">"#FFFFFFFF"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;WebView</span> <span class="na">x:Name=</span><span class="s">"wvHead"</span> <span class="na">HorizontalAlignment=</span><span class="s">"Left"</span> <span class="na">VerticalAlignment=</span><span class="s">"Top"</span>  <span class="na">Margin=</span><span class="s">"0,0,0,-250"</span> <span class="na">Height=</span><span class="s">"420"</span> <span class="na">Width=</span><span class="s">"409"</span> <span class="na">LoadCompleted=</span><span class="s">"wvHead_LoadCompleted"</span> <span class="na">ScriptNotify=</span><span class="s">"wvHead_ScriptNotify"</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/Grid&gt;</span>
+</code></pre>
+</div>
+
+<p>&nbsp;　<span style="font-size: 15px;">　代码中我们为WebView控件添加了LoadCompleted事件和ScriptNotify事件。还有个未列出的HeadControl的Loaded事件。其中：</span></p>
+<p><span style="font-size: 15px;">　　 Loaded事件(HeadControl)：当加载HeadControl控件时发生。如代码段[4]：</span></p>
+
+<div class="language-csharp highlighter-rouge"><pre class="highlight"><code><span class="k">private</span> <span class="k">void</span> <span class="nf">UserControl_Loaded</span><span class="p">(</span><span class="kt">object</span> <span class="n">sender</span><span class="p">,</span> <span class="n">RoutedEventArgs</span> <span class="n">e</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">//WebView加载指定的head.html页面
+</span>    <span class="k">this</span><span class="p">.</span><span class="n">wvHead</span><span class="p">.</span><span class="nf">Navigate</span><span class="p">(</span><span class="k">new</span> <span class="nf">Uri</span><span class="p">(</span><span class="s">"ms-appx-web:///Assets/head.html"</span><span class="p">));</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<p><span style="font-size: 15px;">　　&nbsp;LoadCompleted事件(WebView)：在WebView加载完成时发生。这里用来调用head.html中的js代码来给head.html页面写入内容，如代码段[5]：</span></p>
+
+<div class="language-csharp highlighter-rouge"><pre class="highlight"><code><span class="k">private</span> <span class="k">void</span> <span class="nf">wvHead_LoadCompleted</span><span class="p">(</span><span class="kt">object</span> <span class="n">sender</span><span class="p">,</span> <span class="n">NavigationEventArgs</span> <span class="n">e</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">//构造html，用来显示头像。
+</span>    <span class="n">StringBuilder</span> <span class="n">sbSystem</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">StringBuilder</span><span class="p">();</span>
+    <span class="kt">string</span> <span class="n">systemImg</span> <span class="p">=</span> <span class="s">"&lt;li&gt;&lt;img style=\"width:60px;height:60px;\" src=\"{0}\" onclick='FaceImageClick(\"{0}\")' alt=\"\" title=\"\"/&gt;&lt;/li&gt;"</span><span class="p">;</span>
+    <span class="kt">string</span> <span class="n">systemImg6</span> <span class="p">=</span> <span class="s">"&lt;li style=\"margin-right:0;\"&gt;&lt;img style=\"width:60px;height:60px;\" src=\"{0}\" onclick='FaceImageClick(\"{0}\")' alt=\"\" title=\"\"/&gt;&lt;/li&gt;"</span><span class="p">;</span>
+    <span class="c1">//加载记录有头像信息的xml
+</span>    <span class="kt">var</span> <span class="n">xml</span> <span class="p">=</span> <span class="n">XDocument</span><span class="p">.</span><span class="nf">Load</span><span class="p">(</span><span class="s">"Assets/Portraits/Portraits.xml"</span><span class="p">);</span>
+    <span class="kt">int</span> <span class="n">syscount</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span>
+    <span class="k">foreach</span> <span class="p">(</span><span class="kt">var</span> <span class="n">ele</span> <span class="k">in</span> <span class="n">xml</span><span class="p">.</span><span class="n">Root</span><span class="p">.</span><span class="nf">Elements</span><span class="p">(</span><span class="s">"Portraits"</span><span class="p">).</span><span class="nf">Elements</span><span class="p">(</span><span class="s">"file"</span><span class="p">))</span>
+    <span class="p">{</span>
+        <span class="n">syscount</span><span class="p">++;</span>
+        <span class="c1">//每行放6个，第一个跟其他几个样式不太一样，单独处理。
+</span>        <span class="k">if</span> <span class="p">(</span><span class="n">syscount</span> <span class="p">%</span> <span class="m">6</span> <span class="p">==</span> <span class="m">0</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">sbSystem</span><span class="p">.</span><span class="nf">Append</span><span class="p">(</span><span class="kt">string</span><span class="p">.</span><span class="nf">Format</span><span class="p">(</span><span class="n">systemImg6</span><span class="p">,</span> <span class="s">"/Assets/Portraits/"</span> <span class="p">+</span> <span class="n">ele</span><span class="p">.</span><span class="nf">Attribute</span><span class="p">(</span><span class="s">"name"</span><span class="p">).</span><span class="n">Value</span><span class="p">));</span>
+        <span class="p">}</span>
+        <span class="k">else</span>
+        <span class="p">{</span>
+            <span class="n">sbSystem</span><span class="p">.</span><span class="nf">Append</span><span class="p">(</span><span class="kt">string</span><span class="p">.</span><span class="nf">Format</span><span class="p">(</span><span class="n">systemImg</span><span class="p">,</span> <span class="s">"/Assets/Portraits/"</span> <span class="p">+</span> <span class="n">ele</span><span class="p">.</span><span class="nf">Attribute</span><span class="p">(</span><span class="s">"name"</span><span class="p">).</span><span class="n">Value</span><span class="p">));</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="c1">//调用head.html中的js方法将构造好的字符串写入。
+</span>    <span class="n">wvHead</span><span class="p">.</span><span class="nf">InvokeScript</span><span class="p">(</span><span class="s">"WriteSystemHtml"</span><span class="p">,</span> <span class="k">new</span> <span class="kt">string</span><span class="p">[]</span> <span class="p">{</span> <span class="n">sbSystem</span><span class="p">.</span><span class="nf">ToString</span><span class="p">()</span> <span class="p">});</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<p><span style="font-size: 15px;">　　 ScriptNotify事件(WebView)：当包含在WebView中的内容使用JavaScript给应用程序传递字符串时发生。这里用来当head.html中图片的onclick被触发时通知后台代码哪个图片被点击了，以便于后台代码响应相应的事件。如代码段[6]：</span></p>
+
+<div class="language-csharp highlighter-rouge"><pre class="highlight"><code><span class="k">public</span> <span class="k">event</span> <span class="n">EventHandler</span> <span class="n">SelectEvent</span><span class="p">;</span>
+<span class="k">private</span> <span class="k">void</span> <span class="nf">wvHead_ScriptNotify</span><span class="p">(</span><span class="kt">object</span> <span class="n">sender</span><span class="p">,</span> <span class="n">NotifyEventArgs</span> <span class="n">e</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(!</span><span class="kt">string</span><span class="p">.</span><span class="nf">IsNullOrEmpty</span><span class="p">(</span><span class="n">e</span><span class="p">.</span><span class="n">Value</span><span class="p">))</span>
+    <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">SelectEvent</span> <span class="p">!=</span> <span class="k">null</span><span class="p">)</span>
+            <span class="nf">SelectEvent</span><span class="p">(</span><span class="n">e</span><span class="p">.</span><span class="n">Value</span><span class="p">,</span> <span class="k">null</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<p><span style="font-size: 15px;">　　有人会有疑问，上面的SelectEvent在什么时候绑定方法呢？当然是在初始化HeadControl控件时，也就是在代码段[2]中加上：</span></p>
+
+<div class="language-csharp highlighter-rouge"><pre class="highlight"><code><span class="n">headControl</span><span class="p">.</span><span class="n">SelectEvent</span> <span class="p">+=</span> <span class="n">inputInfo</span><span class="p">;</span>
+<span class="k">private</span> <span class="k">async</span> <span class="k">void</span> <span class="nf">inputInfo</span><span class="p">(</span><span class="kt">object</span> <span class="n">sender</span><span class="p">,</span> <span class="n">EventArgs</span> <span class="n">e</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">//设置Image控件图像的源
+</span>    <span class="k">this</span><span class="p">.</span><span class="n">Img</span><span class="p">.</span><span class="n">Source</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">BitmapImage</span><span class="p">(</span><span class="k">new</span> <span class="nf">Uri</span><span class="p">(</span><span class="s">"ms-appx://"</span> <span class="p">+</span> <span class="n">sender</span><span class="p">,</span> <span class="n">UriKind</span><span class="p">.</span><span class="n">RelativeOrAbsolute</span><span class="p">));</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<p>　　<span style="font-size: 15px;"><span style="color: #ff0000;">注意：</span>其实上面几个事件的<span style="color: #ff0000;">关键点</span>在于后台c#与html中的JavaScript的交互，掌握了这点，其他的就不是问题了！</span></p>
+<p><span style="font-size: 15px;">　　下面就来看看head.html里的具体实现吧，代码段[7]：</span></p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="o">&lt;</span><span class="nx">script</span> <span class="nx">type</span><span class="o">=</span><span class="s2">"text/javascript"</span><span class="o">&gt;</span>
+    <span class="kd">var</span> <span class="nx">$</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span> 
+        <span class="k">return</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">id</span> <span class="o">==</span> <span class="s1">'string'</span><span class="p">)</span> <span class="p">?</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">:</span> <span class="nx">id</span><span class="p">;</span> 
+    <span class="p">}</span>
+    <span class="c1">//设置id为systempic的div的显示内容。</span>
+    <span class="kd">var</span> <span class="nx">WriteSystemHtml</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">str</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">$</span><span class="p">(</span><span class="s2">"systempic"</span><span class="p">).</span><span class="nx">focus</span><span class="p">();</span>
+        <span class="nx">$</span><span class="p">(</span><span class="s2">"systempic"</span><span class="p">).</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="nx">str</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="kd">var</span> <span class="nx">FaceImageClick</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">facePath</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">//通知应用程序，向应用程序传递字符串。</span>
+        <span class="nb">window</span><span class="p">.</span><span class="nx">external</span><span class="p">.</span><span class="nx">notify</span><span class="p">(</span><span class="nx">facePath</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="o">&lt;</span><span class="sr">/script</span><span class="err">&gt;
+</span></code></pre>
+</div>
+
+<p>&nbsp;</p>
+<p><span style="font-size: 15px;">　　来看看最后的效果图吧！ 图[2]：</span></p>
+<p><span style="font-size: 15px;">&nbsp; &nbsp; &nbsp;&nbsp;<img src="http://images.cnitblog.com/i/300379/201407/071042016293349.png" alt="" /></span></p>
+<p>&nbsp;　　<span style="font-size: 15px;">没错，我是一名德国球迷！哈哈。&nbsp;</span><span style="font-size: 15px; line-height: 1.5;">html页面可以更生动的展现，就看你自己的需求了。</span></p>
+<p>&nbsp;</p>
+
+  </section>
+</article>
+
+<section class="read-more">
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">最近的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/2015/04/%E7%BC%96%E7%A0%81%E7%9F%A5%E8%AF%86%E5%A4%A7%E6%9D%82%E7%83%A9/" title="link to 编码知识大杂烩">编码知识大杂烩</a></h2>
+       <p class="excerpt">零、万物归宗ASCII码（American Standard Code for Information Interchange，美国标准信息交换代码），最原始最直观的表示方式，一个字节表示一个字符，一个字节=8位，那么一个字节就有256(2的8次方)种状态。这又分为标准ASCII和扩展ASCII，其中：标准ASCII(十进制0~127) 使用一个字节中除去最高位以外的7 位来表示所有的大写和小写字母，数字0 到9、标点符号，以及在美式英语中使用的特殊控制字符。  Tips：标准ASCII中...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2015-04-02 12:00:00 +0000" class="post-list__meta--date date">2015-04-02</time> &#8226; <span class="post-list__meta--tags tags">编码</span><a class="btn-border-small" href=/2015/04/%E7%BC%96%E7%A0%81%E7%9F%A5%E8%AF%86%E5%A4%A7%E6%9D%82%E7%83%A9/>继续阅读</a></div>
+   </div>
+   
+   
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">更早的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/2014/06/%E5%B0%86%E8%87%AA%E5%AE%9A%E4%B9%89%E7%9A%84%E5%80%BC%E7%B1%BB%E5%9E%8B%E7%94%A8%E4%BD%9C%E5%AD%97%E5%85%B8%E7%9A%84%E9%94%AE-%E8%A6%81%E7%89%B9%E5%88%AB%E6%B3%A8%E6%84%8F%E4%BB%80%E4%B9%88/" title="link to 将自定义的值类型用作字典的键，要特别注意什么？">将自定义的值类型用作字典的键，要特别注意什么？</a></h2>
+       <p class="excerpt">　　前天关注了老赵的微信公众号：赵人希。昨天就推送了一个快速问答，下面把我的答题经历跟大家分享，希望对于菜鸟同胞们有所帮助启发。　　其实这个问题在他的博客里有专门的篇幅讲解，我猜到了，哈哈。但是大牛讲问题都是在一个高度上，水平差点的需要费点力气才能理解，而这个过程就是拉进我们与大牛距离的过程，用心总结下，才能不断强化自己靠近他们。一、通常的字典用法（熟练可直接略过）　　在我平时的编码中，用的最频繁的就是代码段[1]：public class Example{    public stati...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2014-06-18 12:00:00 +0000" class="post-list__meta--date date">2014-06-18</time> &#8226; <span class="post-list__meta--tags tags">C# | .NET</span><a class="btn-border-small" href=/2014/06/%E5%B0%86%E8%87%AA%E5%AE%9A%E4%B9%89%E7%9A%84%E5%80%BC%E7%B1%BB%E5%9E%8B%E7%94%A8%E4%BD%9C%E5%AD%97%E5%85%B8%E7%9A%84%E9%94%AE-%E8%A6%81%E7%89%B9%E5%88%AB%E6%B3%A8%E6%84%8F%E4%BB%80%E4%B9%88/>继续阅读</a></div>
+   </div>
+   
+</section>
+
+<section class="post-comments">
+  
+    <div id="disqus_thread"></div>
+    <script>
+    
+    var disqus_config = function () {
+        this.page.url = "http://localhost:4000/2014/07/%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0%E5%BC%B9%E5%87%BA%E9%A1%B5%E6%9B%B4%E6%8D%A2%E5%A4%B4%E5%83%8F%E7%9A%84%E5%8A%9F%E8%83%BD/";
+        this.page.identifier = "/2014/07/%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0%E5%BC%B9%E5%87%BA%E9%A1%B5%E6%9B%B4%E6%8D%A2%E5%A4%B4%E5%83%8F%E7%9A%84%E5%8A%9F%E8%83%BD/";
+    };
+
+    var disqus_shortname = 'vno-jekyll';
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>要查看<a href="http://disqus.com/?ref_noscript"> Disqus </a>评论，请启用 JavaScript</noscript>
+    
+  
+  
+  
+  
+</section>
+
+
+            <section class="footer">
+    <footer>
+    	<span class="footer__copyright">本站点采用<a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享 署名-非商业性使用-相同方式共享 4.0 国际 许可协议</a></span>
+        <span class="footer__copyright">由 <a href="https://jekyllrb.com">Jekyll</a> 于 2017-07-03 生成，感谢 <a href="https://www.digitalocean.com/?refcode=30ed2d146762">Digital Ocean</a> 为本站提供稳定的 VPS 服务</span>
+        <span class="footer__copyright">本站由 <a href="http://ronghaopger.github.io/about/">@RongHao</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2017</span>
+    </footer>
+</section>
+
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+
+<script type="text/javascript" src="/js/main.js"></script>
+
+
+
+    
+  </body>
+
+</html>
