@@ -5,9 +5,178 @@
     <description>Vno Jekyll is a port of my Ghost theme vno.</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 03 Jul 2017 20:12:06 +0800</pubDate>
-    <lastBuildDate>Mon, 03 Jul 2017 20:12:06 +0800</lastBuildDate>
+    <pubDate>Sat, 15 Jul 2017 17:43:30 +0800</pubDate>
+    <lastBuildDate>Sat, 15 Jul 2017 17:43:30 +0800</lastBuildDate>
     <generator>Jekyll v3.4.0</generator>
+    
+      <item>
+        <title>iOS UI Tests 实现方案分析</title>
+        <description>&lt;p&gt;UI Tests是一个可以对UI进行测试的框架。为什么需要UI Tests呢？如果客户端分为基础层和业务层的话，业务层最终都是负责界面展示的，通常是MV(C/P/VM)，(C/P/VM)中的逻辑并不适合用Unit Tests来覆盖。对于具体的界面操作流程，UI Tests是合适的选择。&lt;/p&gt;
+
+&lt;h2 id=&quot;集成ui-tests&quot;&gt;集成UI Tests&lt;/h2&gt;
+&lt;p&gt;下图为在Xcode中为项目添加UI Tests的步骤：&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;新建Target
+&lt;img src=&quot;/assets/images/2017-7-6/UITests_AddBuddle.png&quot; alt=&quot;&quot; /&gt;&lt;/li&gt;
+  &lt;li&gt;新建Case Class
+&lt;img src=&quot;/assets/images/2017-7-6/UITests_AddCaseClass.png&quot; alt=&quot;&quot; /&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/2017-7-6/UITests_CaseClass.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;writing-ui-tests&quot;&gt;Writing UI Tests&lt;/h2&gt;
+&lt;h3 id=&quot;recording&quot;&gt;Recording&lt;/h3&gt;
+&lt;p&gt;Xcode为我们提供了把整套操作转化为代码的功能，见下图：
+&lt;img src=&quot;/assets/images/2017-7-6/UITests_XcodeRecording.png&quot; alt=&quot;&quot; /&gt;
+几个关键点：&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;方法名必须以&lt;strong&gt;test&lt;/strong&gt;开头，所在行的开头才会有一个菱形的标记，标志这个方法可以被测试。&lt;/li&gt;
+  &lt;li&gt;满足上一个条件后，把光标放在方法体内，Xcode下方的Debug area的红点就会亮起，点击这个红点就会启动APP，开始录制操作并同步生成代码。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;下面是我录制的从打开应用——&amp;gt;打开直播间——&amp;gt;在直播间发言”大家好！”的过程中生成的代码：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;- (void)testSpeakInLiveRoom {
+    [XCUIDevice sharedDevice].orientation = UIDeviceOrientationFaceUp;
+    [XCUIDevice sharedDevice].orientation = UIDeviceOrientationFaceUp;
+    [XCUIDevice sharedDevice].orientation = UIDeviceOrientationFaceUp;
+    [XCUIDevice sharedDevice].orientation = UIDeviceOrientationFaceUp;
+    [XCUIDevice sharedDevice].orientation = UIDeviceOrientationPortrait;
+    
+    XCUIApplication *app = [[XCUIApplication alloc] init];
+    [app.tabBars.buttons[@&quot;tab launch&quot;] tap];
+    [app.buttons[@&quot;\U76f4\U64ad&quot;] tap];
+    [app.buttons[@&quot;\U5f00\U59cb\U76f4\U64ad&quot;] tap];
+    [app.buttons[@&quot;mg room btn liao h&quot;] tap];
+    
+    XCUIApplication *app2 = app;
+    [app2.buttons[@&quot;\U5927\U5bb6\U597d&quot;] tap];
+    [app2.buttons[@&quot;\Uff01&quot;] tap];
+    [[[app childrenMatchingType:XCUIElementTypeWindow] elementBoundByIndex:0].buttons[@&quot;\U53d1\U9001&quot;] tap];
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;: Xcode自动生成的代码中的Unicode为”\Uxxxx”会报错，把”\U”替换为”\u”就可以了。&lt;/p&gt;
+
+&lt;p&gt;把其中的Unicode转义一下，并且精简下冗余的代码后，是这样的：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;- (void)testSpeakInLiveRoom {
+    [XCUIDevice sharedDevice].orientation = UIDeviceOrientationPortrait;
+    
+    XCUIApplication *app = [[XCUIApplication alloc] init];
+    [app.tabBars.buttons[@&quot;tab launch&quot;] tap];
+    [app.buttons[@&quot;直播&quot;] tap];
+    [app.buttons[@&quot;开始直播&quot;] tap];
+    [app.buttons[@&quot;mg room btn liao h&quot;] tap];
+    [app.buttons[@&quot;大家好&quot;] tap];
+    [app.buttons[@&quot;！&quot;] tap];
+    [[[app childrenMatchingType:XCUIElementTypeWindow] elementBoundByIndex:0].buttons[@&quot;发送&quot;] tap];
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;:这段精简的代码已经满足我们正常的阅读了，但要用于生产环境还有很大的优化空间，后面会讲到。&lt;/p&gt;
+
+&lt;h3 id=&quot;apis&quot;&gt;APIs&lt;/h3&gt;
+&lt;p&gt;通过上述Xcode自动生成并且经过我们简单修改的代码，其实已经一目了然了，启动程序后，通过API获取相应的界面元素集合，并筛选出需要的元素（如何筛选？见下一小节），然后触发一系列操作。下面是UI Tests依赖的三个类：&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;XCUIApplication&lt;/li&gt;
+  &lt;li&gt;XCUIElement&lt;/li&gt;
+  &lt;li&gt;XCUIElementQuery (实现了XCUIElementTypeQueryProvider协议)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;筛选-with-accessibility&quot;&gt;筛选 With Accessibility&lt;/h3&gt;
+&lt;p&gt;关于Accessibility，以下是apple Developer上的介绍：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Accessibility is the core technology that allows disabled users the same rich experience for iOS and macOS that other users receive. It includes a rich set of semantic data about the UI that users can use can use to guide them through using your app. Accessibility is integrated with both UIKit and AppKit and has APIs that allow you to fine-tune behaviors and what is exposed for external use. ~UI testing uses that data to perform its functions.~
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;Accessibility是iOS提供用来服务于残障人士的API，比如一位盲人在使用你的APP，当他点击到一个按钮时，系统会自动播放这个按钮的名称/用途，就是通过accessibilityLabel这个属性实现的。我们可以在编写应用界面时设置这些属性。
+同时，UI Tests也会用到Accessibility。上面Xcode自动生成的UI Tests的代码中，从元素集合app.buttons中获取/筛选一个button就是用accessibilityLabel作为下标实现的，但是如果我们自己去写UI Tests，不建议使用accessibilityLabel，而应该使用accessibilityIdentifier，因为上面已经说了accessibilityLabel更倾向用于提供名称，Xcode在UI Testing过程中可能在一个场景中有两个控件的accessibilityLabel是相同的就会报错，而accessibilityIdentifier才是唯一的ID。系统之所以使用前者可能是因为accessibilityIdentifier这个属性默认值是nil。（可以通过Xcode分别定位到这两个属性的定义来查看描述信息和默认值，辅助理解）&lt;/p&gt;
+
+&lt;h3 id=&quot;断言&quot;&gt;断言&lt;/h3&gt;
+&lt;p&gt;利用XCTest提供的XCTAssert APIs，编写符合期望的断言。比如在上述代码示例的最后，可以加入一个断言来判断”发送”的内容是否成功显示，就完成了对”发送”这个功能的测试。&lt;/p&gt;
+
+&lt;h2 id=&quot;实践难点&quot;&gt;实践难点&lt;/h2&gt;
+&lt;p&gt;经过我初步的实践和判断，在目前的项目中集成UI Tests有以下几个难点：&lt;/p&gt;
+&lt;h3 id=&quot;1筛选筛选筛选&quot;&gt;1、筛选、筛选、筛选&lt;/h3&gt;
+&lt;p&gt;上一节已经讲了如何筛选，但是想科学筛选还是需要一定的实践。UI Tests无非就是筛选—&amp;gt;触发—&amp;gt;断言，目前来看最麻烦的就是筛选这个环节。通过上述示例代码或者自己动手去录制一段代码，会发现想找到一个指定的元素Xcode会利用accessibilityLabel沿着当前view的层级逐层去定位，跟view层级绑定起来简直是一件很糟的事情，意味着你需要去熟悉凡是牵扯到的功能的view层级还得在UI变动时及时调整筛选代码，好在apple的初衷不是这样的，XCUIElementQuery实现了XCUIElementTypeQueryProvider协议，使得我们可以通过控件的ElementType（XCUIElementTypeQueryProvider中有定义）和accessibilityIdentifier轻松定位到，不再关心所到之处view的层级，见代码：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;//Xcode生成的
+[[[app childrenMatchingType:XCUIElementTypeWindow] elementBoundByIndex:0].buttons[@&quot;发送&quot;] tap];
+
+//改进后
+[app.buttons[按钮的accessibilityIdentifier] tap];
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;但是&lt;/strong&gt;：
+也有特例，比如系统控件AlertView、ActionSheet等，我们只可以定义按钮名称，想要设置accessibilityIdentifier还要另辟蹊径，这时倒是可以采用上述Xcode的方式（利用accessibilityLabel沿着当前view的层级逐层去定位）来做，见代码：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;//accessibilityIdentifier定位的方式
+app.buttons[@&quot;button的accessibilityIdentifier&quot;];
+
+//由于系统ActionSheet的button并不公开，设置accessibilityIdentifier不可行。
+//利用accessibilityLabel沿着当前view的层级逐层去定位的方式
+app.sheets.buttons[@&quot;踢出直播间24小时&quot;];
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;也就是说这两个方式都有用武之地，还是要看具体的场景和需求，有待挖掘。&lt;/p&gt;
+
+&lt;h3 id=&quot;2accessibilityidentifier管理&quot;&gt;2、accessibilityIdentifier管理&lt;/h3&gt;
+&lt;p&gt;整个APP中的每个控件都需要一个唯一的accessibilityIdentifier（或者至少是同一个ElementType的accessibilityIdentifier不能相同），这个需要制定规范统一管理。比如用控件所在类的类名+控件变量名作为accessibilityIdentifier就是个不错的选择，可以提供宏定义方便开发人员调用。&lt;/p&gt;
+
+&lt;h3 id=&quot;3多人协作&quot;&gt;3、多人协作&lt;/h3&gt;
+&lt;p&gt;一个大型APP一定是多团队多人协作，你可能只是想为直播间内一个新功能（比如小活动展示功能）添加UI Tests，但是需要涉及从打开应用到进入直播间的整段逻辑，这里就需要统一的封装，比如开直播这个功能可以统一封装，所有需要开直播的流程都可以调用。&lt;/p&gt;
+
+&lt;h3 id=&quot;4ui频繁变动&quot;&gt;4、UI频繁变动&lt;/h3&gt;
+&lt;p&gt;几个星期一个版本迭代，意味着UI一定是在不断变化，想要完善的UI Tests，就需要开发人员养成在UI变动时及时调整UI Tests的习惯。&lt;/p&gt;
+
+&lt;h2 id=&quot;总结&quot;&gt;总结&lt;/h2&gt;
+&lt;p&gt;上面说了这么多，总结下来，就诞生了这段优化之后的示例代码（用的还是accessibilityLabel请忽略）&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;-(void)testSpeakInLiveRoom {
+    [XCUIDevice sharedDevice].orientation = UIDeviceOrientationPortrait;
+    XCUIApplication *app = [[XCUIApplication alloc] init];
+    [self _openLive:app];
+    [app.buttons[@&quot;mg room btn liao h&quot;] tap];
+    NSString *text = [NSString stringWithFormat:@&quot;%f : 大家好！&quot;, [[NSDate date] timeIntervalSince1970]];
+    [app.textFields[@&quot;和大家说点什么&quot;] typeText:text];
+    [app.buttons[@&quot;发送&quot;] tap];
+    
+    NSString *showText = [NSString stringWithFormat:@&quot;Hulk Rong:%@&quot;,text];
+    XCTAssertTrue(app.tables.staticTexts[showText].exists);
+}
+
+- (void)_openLive:(XCUIApplication*)app {
+    [app.buttons[@&quot;tab launch&quot;] tap];
+    [app.buttons[@&quot;直播&quot;] tap];
+    [app.buttons[@&quot;开始直播&quot;] tap];
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;Tips&lt;/strong&gt;:来自apple Developer的UI Tests编写思路：&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Use an XCUIElementQuery to find an XCUIElement.&lt;/li&gt;
+  &lt;li&gt;Synthesize an event and send it to the XCUIElement.&lt;/li&gt;
+  &lt;li&gt;Use an assertion to compare the state of the XCUIElement against an expected reference state.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;抛砖引玉&quot;&gt;抛砖引玉&lt;/h2&gt;
+&lt;p&gt;说了这么多，基本把写一个简单的UI Tests需要知道的都说了。接下来我写几个自己想到的例子，代码在我们的工程中都有，算是抛砖引玉。&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;测试直播间发言是否成功，也就是本篇的示例代码。步骤是打开应用—&amp;gt;开直播—&amp;gt;发言—&amp;gt;判断公聊区是否有发言内容。&lt;/li&gt;
+  &lt;li&gt;测试直播间是否有热门火箭。步骤是打开应用—&amp;gt;开直播—&amp;gt;判断直播间是否有小火箭的view。（这块完整的测试还应该包括火箭被点击前后的位置变化是否正确、使用火箭的流程中各个view的出现时机和位置是否正确、使用后的提示是否正确）&lt;/li&gt;
+  &lt;li&gt;测试用户在直播间是否有踢人权限。步骤是打开应用—&amp;gt;开直播—&amp;gt;点击某个观众头像、点击管理按钮—&amp;gt;判断是否有”踢出直播间24小时”的按钮。（这块完整的测试还应该包括踢人的alertView展示是否正确、踢人成功后的提示以及公聊区的展示是否正确）&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;畅想&quot;&gt;畅想&lt;/h2&gt;
+&lt;p&gt;如果一个功能有全面合理的UI Tests覆盖，那么假如基础架构进行了重构，假如某一块业务进行了重构，假如…，你所担心的，都只需跑一遍UI Tests心里就有个大概了，如果再辅以Unit Tests，再也不怕改变带来的未知恐惧了，还给测试大大减少了负担。惊喜不惊喜，意外不意外？&lt;/p&gt;
+
+&lt;h2 id=&quot;参考&quot;&gt;参考：&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&quot;https://developer.apple.com/library/content/documentation/DeveloperTools/Conceptual/testing_with_xcode/chapters/09-ui_testing.html#//apple_ref/doc/uid/TP40014132-CH13-SW1&quot;&gt;User Interface Testing&lt;/a&gt;
+&lt;a href=&quot;https://onevcat.com/2015/09/ui-testing/&quot;&gt;WWDC15 Session笔记 - Xcode 7 UI 测试初窥&lt;/a&gt;&lt;/p&gt;
+</description>
+        <pubDate>Thu, 06 Jul 2017 23:30:00 +0800</pubDate>
+        <link>http://localhost:4000/2017/07/iOS-UI-Tests-%E5%AE%9E%E7%8E%B0%E6%96%B9%E6%A1%88%E5%88%86%E6%9E%90/</link>
+        <guid isPermaLink="true">http://localhost:4000/2017/07/iOS-UI-Tests-%E5%AE%9E%E7%8E%B0%E6%96%B9%E6%A1%88%E5%88%86%E6%9E%90/</guid>
+        
+        <category>iOS | Test</category>
+        
+        
+      </item>
     
       <item>
         <title>当我谈旅行时，我谈些什么</title>
