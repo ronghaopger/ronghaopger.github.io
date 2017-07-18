@@ -5,9 +5,106 @@
     <description>Vno Jekyll is a port of my Ghost theme vno.</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sat, 15 Jul 2017 17:43:30 +0800</pubDate>
-    <lastBuildDate>Sat, 15 Jul 2017 17:43:30 +0800</lastBuildDate>
+    <pubDate>Tue, 18 Jul 2017 19:29:43 +0800</pubDate>
+    <lastBuildDate>Tue, 18 Jul 2017 19:29:43 +0800</lastBuildDate>
     <generator>Jekyll v3.4.0</generator>
+    
+      <item>
+        <title>iOS优化界面渲染实践中的几点经验</title>
+        <description>&lt;h2 id=&quot;一圆角切割&quot;&gt;一、圆角切割&lt;/h2&gt;
+&lt;p&gt;离屏渲染这个词已经老生常谈了，常说的圆角（切割）、遮罩mask、阴影shadow都会导致GPU离屏渲染，好在apple在iOS9以后优化了圆角切割，不再会导致离屏渲染了，但事实&lt;strong&gt;并不是&lt;/strong&gt;这样的。&lt;/p&gt;
+&lt;h3 id=&quot;场景&quot;&gt;场景&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/images/2017-7-15/RoomUI_123.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;比如我们直播间上方的观众列表中的圆形头像，在iOS10.3.2系统上用Instruments查看，还是有用黄色阴影标记的离屏渲染，而且由于直播间这种特殊场景，背景视频始终在渲染，这些圆角也就&lt;strong&gt;始终&lt;/strong&gt;在离屏渲染，让人捉急。&lt;/p&gt;
+
+&lt;p&gt;我各种猜想及google均无果（有人说设置imageView的backgroundColor会引起但我们的观众头像并没有设置），最后发现是imageView的contentMode属性在作怪，把contentMode恢复成默认的ScaleToFill就好了，当然改动是在不影响显示效果的情况下。同时我也尝试了设置imageView的backgroundColor同样也会引起圆角切割的离屏渲染。&lt;/p&gt;
+&lt;h3 id=&quot;结论&quot;&gt;结论&lt;/h3&gt;
+&lt;p&gt;所以得出结论，在iOS9+上使用UIImageView并做了圆角切割的时候，&lt;strong&gt;contentMode&lt;/strong&gt;属性和&lt;strong&gt;backgroundColor&lt;/strong&gt;属性尽量使用默认值来避免GPU离屏渲染。&lt;/p&gt;
+
+&lt;h2 id=&quot;二遮罩mask&quot;&gt;二、遮罩mask&lt;/h2&gt;
+&lt;h3 id=&quot;场景-1&quot;&gt;场景&lt;/h3&gt;
+&lt;p&gt;同样老生常谈，发现问题的场景是我们直播间的看海大动画，播放期间满屏的离屏渲染，看了下代码发现用了好多的mask。捋了下动画中有关太阳的mask效果，是想用mask做一个太阳渐渐出现的效果，其实这个效果用一个不透明的图层盖在太阳上面也可以做到，不过没有mask使用起来方便，但是对于GPU来说合成图层比离屏渲染要轻松很多。&lt;/p&gt;
+&lt;h3 id=&quot;结论-1&quot;&gt;结论&lt;/h3&gt;
+&lt;p&gt;所以得出结论，遮罩mask尽量避免使用，用图层合成的方式来代替，但必须承认有些效果是图层合成代替不了的。&lt;/p&gt;
+
+&lt;h2 id=&quot;三hidden-vs-opacity&quot;&gt;三、hidden VS opacity&lt;/h2&gt;
+&lt;h3 id=&quot;场景-2&quot;&gt;场景&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/images/2017-7-15/RoomUI_234.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;这是一个莫名图层引发的血案，场景是这样的，直播间每当有进场动画的时候，都会从屏幕的左边划出一个离屏渲染的莫名图层。经过尝试发现造成这个问题的原因是CALayer的hidden属性，在给layer做动画的同时，&lt;code class=&quot;highlighter-rouge&quot;&gt;- (void)animationDidStart:(CAAnimation *)anim&lt;/code&gt;触发了layer.hidden属性的变化，造成离屏渲染莫名图层。&lt;/p&gt;
+
+&lt;p&gt;关于hidden造成离屏渲染，其实挺有意思，可以自己写个小demo，就单纯的点击一个按钮把一个layer的hidden设为NO（之前为YES），就可以观察到离屏渲染，而且是以屏幕的左上角为原点，一直延伸到这个layer所在的区域，也可以推断出系统处理hidden属性的机制，就是离屏渲染这片区域。&lt;/p&gt;
+
+&lt;p&gt;那么如何避免设置hidden属性呢，第一个想到的是在需要的时候add上，不需要时直接remove掉，但是尝试过后发现还是会引起离屏渲染，只是渲染的区域不一样了（只渲染layer的superLayer的区域，比设置hidden造成的影响小），因此可以推测hidden本质上也是remove。&lt;/p&gt;
+
+&lt;p&gt;再有一个思路就是用设置opacity来代替设置hidden，经过测试发现离屏渲染消失了！来自stackoverflow的答案也可以佐证：&lt;code class=&quot;highlighter-rouge&quot;&gt;This is the best choice, because setting hidden to true removes view from the render loop. While setting alpha to 0 just makes view transparent.&lt;/code&gt;&lt;/p&gt;
+&lt;h3 id=&quot;结论-2&quot;&gt;结论&lt;/h3&gt;
+&lt;p&gt;所以得出结论，用设置opacity来代替设置hidden性能更佳。&lt;/p&gt;
+
+&lt;h2 id=&quot;四calayer-vs-drawrect&quot;&gt;四、CALayer VS drawRect&lt;/h2&gt;
+&lt;p&gt;这其实是一个平衡的思想，GPU与CPU与内存之间的平衡。我的经验是APP瓶颈往往在CPU，所以总是会想一些办法去转移本该在CPU上的工作。&lt;/p&gt;
+&lt;h3 id=&quot;场景-3&quot;&gt;场景&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/images/2017-7-15/RoomUI_345.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;场景是这样的，我们直播间连送动画中的”x次数”的文本目前是通过重写UILabel的drawRect方法实现的，drawRect这个方法其实是最不建议使用的，它既牵扯到开辟新的内存空间（而且似乎还是挺大的空间），也牵扯到过多的利用CPU去绘制。&lt;/p&gt;
+
+&lt;p&gt;我猜想当初选择这个方法实现的原因可能是文字有渐变色的要求，还有阴影的要求。其实这样的需求可以通过CAGradientLayer和CATextLayer再配合一层CALayer做阴影效果来实现（下面有实现代码），这个方案相对于之前的方案在CPU和内存的表现上很不错，原因就是apple提供的各种CAxxxLayer是做过专门优化（硬件加速）的，所谓硬件加速应该就是充分利用了GPU的计算能力吧。&lt;/p&gt;
+
+&lt;p&gt;改进后的方案如下：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;#define mColor(hex, a) [UIColor colorWithRed:(((hex)&amp;gt;&amp;gt;16 &amp;amp; 0xff) / 255.f) green:(((hex)&amp;gt;&amp;gt;8 &amp;amp; 0xff) / 255.f) blue:(((hex)&amp;amp;0xff) / 255.f) alpha:(a)]
+
+    CAGradientLayer *gradientLayer = [CAGradientLayer layer];
+    gradientLayer.frame = CGRectMake(50, 100, 200, 50);
+    gradientLayer.colors = @[(id)mColor(0xFFEE71, 1).CGColor, (id)mColor(0xF4B60F, 1).CGColor];;
+    
+    CATextLayer *textLayer = [CATextLayer layer];
+    textLayer.frame = gradientLayer.bounds;
+    textLayer.font = (__bridge CFTypeRef _Nullable)(font);
+    textLayer.fontSize = 27;
+    textLayer.contentsScale = [UIScreen mainScreen].scale;
+    textLayer.string = @&quot;Hulk Rong&quot;;
+    
+    gradientLayer.mask = textLayer;
+    
+    CALayer* containerLayer = [CALayer layer];
+    containerLayer.shadowColor = [UIColor blackColor].CGColor;
+    containerLayer.shadowOffset = CGSizeMake(0, 1);
+    containerLayer.shadowRadius = 0;
+    containerLayer.shadowOpacity = 0.3;
+    [containerLayer addSublayer:gradientLayer];
+    [self.view.layer addSublayer:containerLayer];
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;还有一个常见场景是有时我们需要使用贝塞尔曲线（UIBezierPath）去绘制，也是下意识的去重写drawRect方法，其实设置CAShapeLayer的path属性交由GPU来渲染就可以了，同样会在CPU和内存上有不错的表现。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;但是&lt;/strong&gt;其实，如果能用一张设计给的图片来代替我们写代码去绘制是最好的了！&lt;/p&gt;
+&lt;h3 id=&quot;tips&quot;&gt;Tips&lt;/h3&gt;
+&lt;p&gt;在做实验的时候还有个有趣的发现，通过CALayer这种方式，在不断的使用相同的图层的时候，发现一段时间后内存会升到跟直接用CPU绘制时的内存差不多的情况，我猜想这也是系统做的优化，把不断重复使用的图层缓存起来了。&lt;/p&gt;
+&lt;h3 id=&quot;结论-3&quot;&gt;结论&lt;/h3&gt;
+&lt;p&gt;所以得出结论，瓶颈在CPU或者内存的时候，尽量通过各种CALayer的实现来代替重写drawRect方法，把工作转移到GPU上去。&lt;/p&gt;
+
+&lt;h2 id=&quot;五光栅化shouldrasterize&quot;&gt;五、光栅化shouldRasterize&lt;/h2&gt;
+&lt;p&gt;这个特性也牵扯到平衡的思想所以顺带一提，它是通过消耗内存来减轻GPU的计算压力，至于能不能减轻CPU的压力还是要看具体的场景。&lt;/p&gt;
+&lt;h3 id=&quot;原理&quot;&gt;原理&lt;/h3&gt;
+&lt;p&gt;光栅化是CPU将目标layer（及其所有的子layer渲染后的图层）生成一张bitmap缓存起来，再次用到时直接渲染缓存的bitmap就行，省去了CPU频繁绘制或者GPU的合成计算。这个特性适用于在使用期间不会变化的layer（变化的话缓存就不会被命中，Instruments有专门检测这个缓存是否命中的工具），如果在子layer层级很多或者有文本需要CPU绘制的情况下优化效果会好一些，可以减少GPU的图层合成计算，减少CPU的绘制工作（但是需要CPU来生成缓存的bitmap），转嫁到内存上。&lt;/p&gt;
+&lt;h3 id=&quot;场景-4&quot;&gt;场景&lt;/h3&gt;
+&lt;p&gt;直播间的公聊区域需要展示大量的文本，iOS中凡是牵扯到文本的其实都是CPU利用Core Text这个库来绘制的，包括系统的UILabel、UITextField等控件。那么公聊区域就会大量消耗CPU的资源。分析一下我们的公聊区域，首先满足一条消息的图层在展示过程中是不变的，其次消息也就是文本（还会嵌入图片），需要CPU频繁绘制文本，因为没有复杂的图层本身不需要GPU做太多合成计算所以忽略GPU，那么打开shouldRasterize&lt;strong&gt;或许&lt;/strong&gt;可以为CPU减压。&lt;/p&gt;
+&lt;h3 id=&quot;结论-4&quot;&gt;结论&lt;/h3&gt;
+&lt;p&gt;上面之所以说是&lt;strong&gt;或许&lt;/strong&gt;，我觉得是掌握这个属性的关键所在，因为根据原理推断在满足一定条件的前提下，打开shouldRasterize是一定能够减少GPU对于图层合成的计算量，但是对于CPU来说，有减少也有增加，最后净减少是正还是负还需要依据具体的场景通过Instruments来实际测量。&lt;/p&gt;
+
+&lt;h2 id=&quot;总结&quot;&gt;总结&lt;/h2&gt;
+&lt;p&gt;我觉得每一篇分享都是抛砖引玉，分享了简单的原理和碰到过的场景，但是还有很多使用场景需要集思广益，很多新的细节需要我们去发现，希望我们多多交流，共同进步。&lt;/p&gt;
+</description>
+        <pubDate>Sat, 15 Jul 2017 23:30:00 +0800</pubDate>
+        <link>http://localhost:4000/2017/07/iOS%E4%BC%98%E5%8C%96%E7%95%8C%E9%9D%A2%E6%B8%B2%E6%9F%93%E5%AE%9E%E8%B7%B5%E4%B8%AD%E7%9A%84%E5%87%A0%E7%82%B9%E7%BB%8F%E9%AA%8C/</link>
+        <guid isPermaLink="true">http://localhost:4000/2017/07/iOS%E4%BC%98%E5%8C%96%E7%95%8C%E9%9D%A2%E6%B8%B2%E6%9F%93%E5%AE%9E%E8%B7%B5%E4%B8%AD%E7%9A%84%E5%87%A0%E7%82%B9%E7%BB%8F%E9%AA%8C/</guid>
+        
+        <category>iOS</category>
+        
+        
+      </item>
     
       <item>
         <title>iOS UI Tests 实现方案分析</title>
@@ -166,8 +263,9 @@ app.sheets.buttons[@&quot;踢出直播间24小时&quot;];
 &lt;p&gt;如果一个功能有全面合理的UI Tests覆盖，那么假如基础架构进行了重构，假如某一块业务进行了重构，假如…，你所担心的，都只需跑一遍UI Tests心里就有个大概了，如果再辅以Unit Tests，再也不怕改变带来的未知恐惧了，还给测试大大减少了负担。惊喜不惊喜，意外不意外？&lt;/p&gt;
 
 &lt;h2 id=&quot;参考&quot;&gt;参考：&lt;/h2&gt;
-&lt;p&gt;&lt;a href=&quot;https://developer.apple.com/library/content/documentation/DeveloperTools/Conceptual/testing_with_xcode/chapters/09-ui_testing.html#//apple_ref/doc/uid/TP40014132-CH13-SW1&quot;&gt;User Interface Testing&lt;/a&gt;
-&lt;a href=&quot;https://onevcat.com/2015/09/ui-testing/&quot;&gt;WWDC15 Session笔记 - Xcode 7 UI 测试初窥&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://developer.apple.com/library/content/documentation/DeveloperTools/Conceptual/testing_with_xcode/chapters/09-ui_testing.html#//apple_ref/doc/uid/TP40014132-CH13-SW1&quot;&gt;User Interface Testing&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://onevcat.com/2015/09/ui-testing/&quot;&gt;WWDC15 Session笔记 - Xcode 7 UI 测试初窥&lt;/a&gt;&lt;/p&gt;
 </description>
         <pubDate>Thu, 06 Jul 2017 23:30:00 +0800</pubDate>
         <link>http://localhost:4000/2017/07/iOS-UI-Tests-%E5%AE%9E%E7%8E%B0%E6%96%B9%E6%A1%88%E5%88%86%E6%9E%90/</link>
