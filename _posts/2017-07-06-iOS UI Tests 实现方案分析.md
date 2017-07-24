@@ -80,6 +80,7 @@ XCUIApplication *app = [[XCUIApplication alloc] init];
 Accessibility is the core technology that allows disabled users the same rich experience for iOS and macOS that other users receive. It includes a rich set of semantic data about the UI that users can use can use to guide them through using your app. Accessibility is integrated with both UIKit and AppKit and has APIs that allow you to fine-tune behaviors and what is exposed for external use. ~UI testing uses that data to perform its functions.~
 ```
 Accessibility是iOS提供用来服务于残障人士的API，比如一位盲人在使用你的APP，当他点击到一个按钮时，系统会自动播放这个按钮的名称/用途，就是通过accessibilityLabel这个属性实现的。我们可以在编写应用界面时设置这些属性。
+
 同时，UI Tests也会用到Accessibility。上面Xcode自动生成的UI Tests的代码中，从元素集合app.buttons中获取/筛选一个button就是用accessibilityLabel作为下标实现的，但是如果我们自己去写UI Tests，不建议使用accessibilityLabel，而应该使用accessibilityIdentifier，因为上面已经说了accessibilityLabel更倾向用于提供名称，Xcode在UI Testing过程中可能在一个场景中有两个控件的accessibilityLabel是相同的就会报错，而accessibilityIdentifier才是唯一的ID。系统之所以使用前者可能是因为accessibilityIdentifier这个属性默认值是nil。（可以通过Xcode分别定位到这两个属性的定义来查看描述信息和默认值，辅助理解）
 
 ### 断言
