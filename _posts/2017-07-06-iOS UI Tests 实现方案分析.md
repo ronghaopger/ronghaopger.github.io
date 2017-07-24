@@ -31,22 +31,22 @@ Xcode为我们提供了把整套操作转化为代码的功能，见下图：
 下面是我录制的从打开应用——>打开直播间——>在直播间发言”大家好！”的过程中生成的代码：
 ```
 - (void)testSpeakInLiveRoom {
-    [XCUIDevice sharedDevice].orientation = UIDeviceOrientationFaceUp;
-    [XCUIDevice sharedDevice].orientation = UIDeviceOrientationFaceUp;
-    [XCUIDevice sharedDevice].orientation = UIDeviceOrientationFaceUp;
-    [XCUIDevice sharedDevice].orientation = UIDeviceOrientationFaceUp;
-    [XCUIDevice sharedDevice].orientation = UIDeviceOrientationPortrait;
-    
-    XCUIApplication *app = [[XCUIApplication alloc] init];
-    [app.tabBars.buttons[@"tab launch"] tap];
-    [app.buttons[@"\U76f4\U64ad"] tap];
-    [app.buttons[@"\U5f00\U59cb\U76f4\U64ad"] tap];
-    [app.buttons[@"mg room btn liao h"] tap];
-    
-    XCUIApplication *app2 = app;
-    [app2.buttons[@"\U5927\U5bb6\U597d"] tap];
-    [app2.buttons[@"\Uff01"] tap];
-    [[[app childrenMatchingType:XCUIElementTypeWindow] elementBoundByIndex:0].buttons[@"\U53d1\U9001"] tap];
+[XCUIDevice sharedDevice].orientation = UIDeviceOrientationFaceUp;
+[XCUIDevice sharedDevice].orientation = UIDeviceOrientationFaceUp;
+[XCUIDevice sharedDevice].orientation = UIDeviceOrientationFaceUp;
+[XCUIDevice sharedDevice].orientation = UIDeviceOrientationFaceUp;
+[XCUIDevice sharedDevice].orientation = UIDeviceOrientationPortrait;
+
+XCUIApplication *app = [[XCUIApplication alloc] init];
+[app.tabBars.buttons[@"tab launch"] tap];
+[app.buttons[@"\U76f4\U64ad"] tap];
+[app.buttons[@"\U5f00\U59cb\U76f4\U64ad"] tap];
+[app.buttons[@"mg room btn liao h"] tap];
+
+XCUIApplication *app2 = app;
+[app2.buttons[@"\U5927\U5bb6\U597d"] tap];
+[app2.buttons[@"\Uff01"] tap];
+[[[app childrenMatchingType:XCUIElementTypeWindow] elementBoundByIndex:0].buttons[@"\U53d1\U9001"] tap];
 }
 ```
 **Note**: Xcode自动生成的代码中的Unicode为”\Uxxxx”会报错，把”\U”替换为”\u”就可以了。
@@ -54,16 +54,16 @@ Xcode为我们提供了把整套操作转化为代码的功能，见下图：
 把其中的Unicode转义一下，并且精简下冗余的代码后，是这样的：
 ```
 - (void)testSpeakInLiveRoom {
-    [XCUIDevice sharedDevice].orientation = UIDeviceOrientationPortrait;
-    
-    XCUIApplication *app = [[XCUIApplication alloc] init];
-    [app.tabBars.buttons[@"tab launch"] tap];
-    [app.buttons[@"直播"] tap];
-    [app.buttons[@"开始直播"] tap];
-    [app.buttons[@"mg room btn liao h"] tap];
-    [app.buttons[@"大家好"] tap];
-    [app.buttons[@"！"] tap];
-    [[[app childrenMatchingType:XCUIElementTypeWindow] elementBoundByIndex:0].buttons[@"发送"] tap];
+[XCUIDevice sharedDevice].orientation = UIDeviceOrientationPortrait;
+
+XCUIApplication *app = [[XCUIApplication alloc] init];
+[app.tabBars.buttons[@"tab launch"] tap];
+[app.buttons[@"直播"] tap];
+[app.buttons[@"开始直播"] tap];
+[app.buttons[@"mg room btn liao h"] tap];
+[app.buttons[@"大家好"] tap];
+[app.buttons[@"！"] tap];
+[[[app childrenMatchingType:XCUIElementTypeWindow] elementBoundByIndex:0].buttons[@"发送"] tap];
 }
 ```
 **Note**:这段精简的代码已经满足我们正常的阅读了，但要用于生产环境还有很大的优化空间，后面会讲到。
@@ -84,6 +84,11 @@ Accessibility是iOS提供用来服务于残障人士的API，比如一位盲人�
 
 ### 断言
 利用XCTest提供的XCTAssert APIs，编写符合期望的断言。比如在上述代码示例的最后，可以加入一个断言来判断”发送”的内容是否成功显示，就完成了对”发送”这个功能的测试。
+
+这里值得一提的是，有些时候我们并不希望立即进行断言（比如进入直播间后要等上几秒一些功能的网络请求才会返回），这时就会用到XCTestCase提供的`- (void)waitForExpectations:(NSArray<XCTestExpectation *> *)expectations timeout:(NSTimeInterval)seconds;`系列方法，在规定的时间范围内不断轮询检查。
+
+### 查看报告
+上文的配图中提到过的在每个测试方法的开头有个菱形标志，在UI Tests跑完后，不论通过与否，你都可以通过右击菱形标志看到”Jump to Report”选项，点击就可以看到本次测试这个方法的具体流程了，查看报告有益于我们了解测试流程以及迅速定位问题所在。
 
 ## 实践难点
 经过我初步的实践和判断，在目前的项目中集成UI Tests有以下几个难点：
@@ -108,11 +113,16 @@ app.sheets.buttons[@"踢出直播间24小时"];
 ```
 也就是说这两个方式都有用武之地，还是要看具体的场景和需求，有待挖掘。
 
-### 2、accessibilityIdentifier管理
-整个APP中的每个控件都需要一个唯一的accessibilityIdentifier（或者至少是同一个ElementType的accessibilityIdentifier不能相同），这个需要制定规范统一管理。比如用控件所在类的类名+控件变量名作为accessibilityIdentifier就是个不错的选择，可以提供宏定义方便开发人员调用。
+**还有一点值得一提，** 上面说的XCUIElementTypeQueryProvider协议会提供各种类型的XCUIElementQuery，但是使用后我们发现这些类型跟我们UIKit的控件类型并不是一一对应的，比如UIView或者UIImageView，并不能像UIButton那样默认可以在XCUIElementTypeQueryProvider 的`buttons`集合里找到。不用急，Accessibility API里还提供了一个属性`accessibilityTraits`来帮我们完成UIKit控件的归类，比如一个UIImageView，如果在某个场景下可以被点击，我们可以把它的`accessibilityTraits`设置为`UIAccessibilityTraitButton`，就可以在`buttons`里找到了。如果在某个场景下只是用来展示图片的，可以把它的`accessibilityTraits`设置为`UIAccessibilityTraitImage`，就可以在`images`里找到了。如果你不知道应该设置成什么，就用`UIAccessibilityTraitNone`，对应XCUIElementTypeQueryProvider中的`otherElements;`。
 
-### 3、多人协作
-一个大型APP一定是多团队多人协作，你可能只是想为直播间内一个新功能（比如小活动展示功能）添加UI Tests，但是需要涉及从打开应用到进入直播间的整段逻辑，这里就需要统一的封装，比如开直播这个功能可以统一封装，所有需要开直播的流程都可以调用。 
+### 2、accessibilityIdentifier管理
+整个APP中的每个控件都需要一个唯一的accessibilityIdentifier（或者至少是同一个ElementType的accessibilityIdentifier不能相同），这个需要制定规范统一管理。我们目前采取的方案是用控件所在类的类名+控件变量名作为accessibilityIdentifier。
+
+### 3、逻辑复用、多人协作
+一个大型APP一定是多团队多人协作，并且很多功能的测试都依赖一些公共的逻辑，你可能只是想为直播间内一个新功能（比如小活动展示功能）添加UI Tests，但是需要涉及从打开应用到进入直播间的整段逻辑，这里就需要统一的封装，比如开直播这个功能可以统一封装，所有需要开直播的流程都可以调用。 
+
+对于第2、3两点我在项目中的实践：
+![](/assets/images/2017-7-6/UITests_封装.png)
 
 ### 4、UI频繁变动
 几个星期一个版本迭代，意味着UI一定是在不断变化，想要完善的UI Tests，就需要开发人员养成在UI变动时及时调整UI Tests的习惯。
@@ -121,22 +131,22 @@ app.sheets.buttons[@"踢出直播间24小时"];
 上面说了这么多，总结下来，就诞生了这段优化之后的示例代码（用的还是accessibilityLabel请忽略）
 ```
 -(void)testSpeakInLiveRoom {
-    [XCUIDevice sharedDevice].orientation = UIDeviceOrientationPortrait;
-    XCUIApplication *app = [[XCUIApplication alloc] init];
-    [self _openLive:app];
-    [app.buttons[@"mg room btn liao h"] tap];
-    NSString *text = [NSString stringWithFormat:@"%f : 大家好！", [[NSDate date] timeIntervalSince1970]];
-    [app.textFields[@"和大家说点什么"] typeText:text];
-    [app.buttons[@"发送"] tap];
-    
-    NSString *showText = [NSString stringWithFormat:@"Hulk Rong:%@",text];
-    XCTAssertTrue(app.tables.staticTexts[showText].exists);
+[XCUIDevice sharedDevice].orientation = UIDeviceOrientationPortrait;
+XCUIApplication *app = [[XCUIApplication alloc] init];
+[self _openLive:app];
+[app.buttons[@"mg room btn liao h"] tap];
+NSString *text = [NSString stringWithFormat:@"%f : 大家好！", [[NSDate date] timeIntervalSince1970]];
+[app.textFields[@"和大家说点什么"] typeText:text];
+[app.buttons[@"发送"] tap];
+
+NSString *showText = [NSString stringWithFormat:@"Hulk Rong:%@",text];
+XCTAssertTrue(app.tables.staticTexts[showText].exists);
 }
 
 - (void)_openLive:(XCUIApplication*)app {
-    [app.buttons[@"tab launch"] tap];
-    [app.buttons[@"直播"] tap];
-    [app.buttons[@"开始直播"] tap];
+[app.buttons[@"tab launch"] tap];
+[app.buttons[@"直播"] tap];
+[app.buttons[@"开始直播"] tap];
 }
 ```
 **Tips**:来自apple Developer的UI Tests编写思路：
@@ -147,8 +157,9 @@ app.sheets.buttons[@"踢出直播间24小时"];
 ## 抛砖引玉
 说了这么多，基本把写一个简单的UI Tests需要知道的都说了。接下来我写几个自己想到的例子，代码在我们的工程中都有，算是抛砖引玉。
 1. 测试直播间发言是否成功，也就是本篇的示例代码。步骤是打开应用—>开直播—>发言—>判断公聊区是否有发言内容。
-2. 测试直播间是否有热门火箭。步骤是打开应用—>开直播—>判断直播间是否有小火箭的view。（这块完整的测试还应该包括火箭被点击前后的位置变化是否正确、使用火箭的流程中各个view的出现时机和位置是否正确、使用后的提示是否正确）
-3. 测试用户在直播间是否有踢人权限。步骤是打开应用—>开直播—>点击某个观众头像、点击管理按钮—>判断是否有”踢出直播间24小时”的按钮。（这块完整的测试还应该包括踢人的alertView展示是否正确、踢人成功后的提示以及公聊区的展示是否正确）
+2. 测试直播间商业红包步骤是否正确，这个我已经在项目中实现。步骤是打开应用—>开直播—>（手动触发直播间红包）—>判断红包是否展示—>判断跟红包位置冲突的活动轮播图是否已经隐藏—>点击红包判断是否弹出提示弹窗—>......—>红包倒计时结束后是否显示”发放中”—>........等
+3. 测试直播间是否有热门火箭。步骤是打开应用—>开直播—>判断直播间是否有小火箭的view。（这块完整的测试还应该包括火箭被点击前后的位置变化是否正确、使用火箭的流程中各个view的出现时机和位置是否正确、使用后的提示是否正确）
+4. 测试用户在直播间是否有踢人权限。步骤是打开应用—>开直播—>点击某个观众头像、点击管理按钮—>判断是否有”踢出直播间24小时”的按钮。（这块完整的测试还应该包括踢人的alertView展示是否正确、踢人成功后的提示以及公聊区的展示是否正确）
 
 ## 畅想
 如果一个功能有全面合理的UI Tests覆盖，那么假如基础架构进行了重构，假如某一块业务进行了重构，假如…，你所担心的，都只需跑一遍UI Tests心里就有个大概了，如果再辅以Unit Tests，再也不怕改变带来的未知恐惧了，还给测试大大减少了负担。惊喜不惊喜，意外不意外？
@@ -157,3 +168,5 @@ app.sheets.buttons[@"踢出直播间24小时"];
 [User Interface Testing](https://developer.apple.com/library/content/documentation/DeveloperTools/Conceptual/testing_with_xcode/chapters/09-ui_testing.html#//apple_ref/doc/uid/TP40014132-CH13-SW1)
 
 [WWDC15 Session笔记 - Xcode 7 UI 测试初窥](https://onevcat.com/2015/09/ui-testing/)
+
+[Adding UI Testing to an existing iOS App](https://medium.com/imgur-engineering/adding-ui-testing-to-an-existing-ios-app-e0e440ca213d)
