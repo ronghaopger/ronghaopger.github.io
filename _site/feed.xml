@@ -5,8 +5,8 @@
     <description>Be a good man.</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 24 Jul 2017 20:37:54 +0800</pubDate>
-    <lastBuildDate>Mon, 24 Jul 2017 20:37:54 +0800</lastBuildDate>
+    <pubDate>Tue, 25 Jul 2017 20:56:42 +0800</pubDate>
+    <lastBuildDate>Tue, 25 Jul 2017 20:56:42 +0800</lastBuildDate>
     <generator>Jekyll v3.4.0</generator>
     
       <item>
@@ -284,6 +284,169 @@ XCTAssertTrue(app.tables.staticTexts[showText].exists);
         <pubDate>Thu, 06 Jul 2017 23:30:00 +0800</pubDate>
         <link>http://localhost:4000/2017/07/iOS-UI-Tests-%E5%AE%9E%E7%8E%B0%E6%96%B9%E6%A1%88%E5%88%86%E6%9E%90/</link>
         <guid isPermaLink="true">http://localhost:4000/2017/07/iOS-UI-Tests-%E5%AE%9E%E7%8E%B0%E6%96%B9%E6%A1%88%E5%88%86%E6%9E%90/</guid>
+        
+        <category>iOS | Test</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>iOS Unit Tests 实现方案</title>
+        <description>&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;在计算机编程中，单元测试（英语：Unit Testing）又称为模块测试, 是针对程序模块（软件设计的最小单位）来进行正确性检验的测试工作。程序单元是应用的最小可测试部件。在过程化编程中，一个单元就是单个程序、函数、过程等；对于面向对象编程，最小单元就是方法，包括基类（超类）、抽象类、或者派生类（子类）中的方法。
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h2 id=&quot;solid&quot;&gt;S.O.L.I.D&lt;/h2&gt;
+&lt;p&gt;理解单元测试，首先要理解单元(Unit)：软件设计的最小单位，而在我们面向对象的世界里最小单位就是方法，所以好的单元测试一定很好的覆盖了方法。想覆盖就得有暴露，如果一个类包含了本应该设计成三个类的代码，首先它是不OOP的，其次它也是不可单元测试的（除非暴露私有方法）。所以好的代码结构和好的单元测试是相辅相成，互相依赖的。所以在文章的开始需要强调一下基础，面向对象的五大原则SOLID：&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;S - 单一职责原则，类的功能应该单一。&lt;/li&gt;
+  &lt;li&gt;O - 开放封闭原则，对扩展开放，对修改封闭。&lt;/li&gt;
+  &lt;li&gt;L - 里氏替换原则，子类可以完全代替父类在程序中运行。&lt;/li&gt;
+  &lt;li&gt;I - 接口隔离原则，客户端不应去实现它们不需要的接口。&lt;/li&gt;
+  &lt;li&gt;D - 依赖倒置原则，依赖于抽象而不是具体。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;tdd-or-bdd-&quot;&gt;TDD or BDD ?&lt;/h2&gt;
+&lt;h3 id=&quot;tdd&quot;&gt;TDD&lt;/h3&gt;
+&lt;p&gt;Test-driven development，测试驱动开发。
+在我们设计一个类时，首先需要考虑这个类能提供什么功能以及如何提供，也就是这个类公开的方法。TDD的做法是先为这些公开的方法写测试代码，肯定一开始测试是通不过的，接下来开发人员的目的就是写代码实现类功能来让测试通过，测试通过了，这个类也就实现好了。&lt;/p&gt;
+
+&lt;h3 id=&quot;bdd&quot;&gt;BDD&lt;/h3&gt;
+&lt;p&gt;Behavior-driven development，行为驱动开发。
+TDD的目的是测试每个公开方法的正确性，而BDD关注的是行为，BDD的测试过程是以陈述需求的方式进行的（Given..When..Then），所以更友好，也更接近实际需求。&lt;/p&gt;
+
+&lt;h3 id=&quot;举个栗子&quot;&gt;举个栗子&lt;/h3&gt;
+&lt;p&gt;在实现直播间内活动挂件按优先级显示的功能时，我们需要维护一个描述view具体信息的model的集合类来保存当前直播间所有view的情况以便调整，它需要满足以下四个功能：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;//添加
+-(void)addModel:(InkeShowPriorityModel*)model;
+//删除
+-(void)removeModel:(InkeShowPriorityModel*)model;
+//通过view索引model
+-(InkeShowPriorityModel*)modelForView:(UIView*)view;
+//通过position索引model
+-(NSArray&amp;lt;InkeShowPriorityModel*&amp;gt;*)modelsForPosition:(InkeShowPriorityPosition)position;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;以TDD的思想&lt;/strong&gt;编写测试的话，就是聚焦到每一个公开的方法，设法进行全面的测试，我们使用官方的XCTest框架进行演练，代码如下：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;- (void)setUp {
+    [super setUp];
+    
+    self.modelA = [[InkeShowPriorityModel alloc] init];
+    self.viewA = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
+    _modelA.view = _viewA;
+    _modelA.position = InkeShowPriorityPositionLeftUp;
+    
+    self.modelB = [[InkeShowPriorityModel alloc] init];
+    self.viewB = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 200, 200)];
+    _modelB.view = _viewB;
+    _modelB.position = InkeShowPriorityPositionLeftUp;
+    
+    self.collection = [[InkeShowPriorityCollection alloc] initWithModels:[NSArray arrayWithObjects:_modelA, _modelB, nil]];
+}
+
+- (void)tearDown {
+    [super tearDown];
+}
+
+
+-(void)testModelForView {
+    XCTAssertEqual([_collection modelForView:_viewA], _modelA);
+    XCTAssertEqual([_collection modelForView:_viewB], _modelB);
+}
+
+-(void)testModelsForPosition {
+    NSArray *array = [_collection modelsForPosition:InkeShowPriorityPositionLeftUp];
+    XCTAssertTrue([array isKindOfClass:[NSArray class]]);
+    XCTAssertEqual(array[0], _modelA);
+    XCTAssertEqual(array[1], _modelB);
+}
+
+-(void)testAddAndRemoveModel {
+    InkeShowPriorityModel *addModel = [[InkeShowPriorityModel alloc] init];
+    UIView *addView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 150, 150)];
+    addModel.view = addView;
+    XCTAssertNil([_collection modelForView:addView]);
+    
+    //test addModel
+    [_collection addModel:addModel];
+    XCTAssertEqual([_collection modelForView:addView], addModel);
+    
+    //test removeModel
+    [_collection removeModel:addModel];
+    XCTAssertNil([_collection modelForView:addView]);
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;以BDD的思想&lt;/strong&gt;进行测试的话，应该聚焦到需求，可以试着以Given..When..Then的方式陈述一下我们对于这个集合类的需求，比如&lt;code class=&quot;highlighter-rouge&quot;&gt;给你一个Coloection类，当它被初始化后，应该包含0个元素&lt;/code&gt;。我们使用比较热门的Kiwi框架&lt;a href=&quot;https://github.com/kiwi-bdd/Kiwi&quot;&gt;GitHub - kiwi-bdd/Kiwi: Simple BDD for iOS&lt;/a&gt; 进行演练，代码如下：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;describe(@&quot;InkeShowPriorityCollection&quot;, ^{
+    context(@&quot;当用初始数据modelA和modelB进行初始化后&quot;, ^{
+        __block InkeShowPriorityCollection *collection = nil;
+        InkeShowPriorityModel *modelA = [[InkeShowPriorityModel alloc] init];
+        UIView *viewA = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
+        modelA.view = viewA;
+        modelA.position = InkeShowPriorityPositionLeftUp;
+        
+        InkeShowPriorityModel *modelB = [[InkeShowPriorityModel alloc] init];
+        UIView *viewB = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 200, 200)];
+        modelB.view = viewB;
+        modelB.position = InkeShowPriorityPositionLeftUp;
+        
+        beforeEach(^{
+            collection = [[InkeShowPriorityCollection alloc] initWithModels:[NSArray arrayWithObjects:modelA, modelB, nil]];
+        });
+        
+        afterEach(^{
+            collection = nil;
+        });
+        
+        
+        it(@&quot;通过viewA可以得到modelA，通过viewB可以得到modelB。&quot;, ^{
+            [[[collection modelForView:viewA] should] equal:modelA];
+            [[[collection modelForView:viewB] should] equal:modelB];
+        });
+        
+        it(@&quot;通过一个位置可以得到一个数组，包含所有在这个位置的view的model。&quot;, ^{
+            NSArray *array = [collection modelsForPosition:InkeShowPriorityPositionLeftUp];
+            [[array should] beKindOfClass:[NSArray class]];
+            [[array[0] should] equal:modelA];
+            [[array[1] should] equal:modelB];
+        });
+        
+        it(@&quot;可以成功添加一个model。&quot;, ^{
+            InkeShowPriorityModel *addModel = [[InkeShowPriorityModel alloc] init];
+            UIView *addView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 150, 150)];
+            addModel.view = addView;
+            [[[collection modelForView:addView] should] beNil];
+            [collection addModel:addModel];
+            [[[collection modelForView:addView] should] equal:addModel];
+        });
+        
+        it(@&quot;也可以成功删除一个model。&quot;, ^{
+            [[[collection modelForView:viewB] shouldNot] beNil];
+            [collection removeModel:modelB];
+            [[[collection modelForView:viewB] should] beNil];
+        });
+        
+    });
+});
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;惊不惊喜？反正在写的过程中我的内心是很舒服的，这段代码可以说是一目了然，清晰的陈述了我们对于这个类的要求，如果一位新同学要接手这块也是轻而易举。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;最后&lt;/strong&gt;回到我们的项目我认为：&lt;/p&gt;
+
+&lt;p&gt;对于像业务层的网络请求方法，只牵扯到基本的请求返回逻辑，测试也就只需要关注返回数据的正确与否，可以选择使用TDD的思想来做，也就是用官方的XCTest框架。&lt;/p&gt;
+
+&lt;p&gt;对于像上文中描述的场景，承载一个功能的类，包含比较丰富的逻辑在里面，使用BDD的思想更合适，写起来舒服，读起来清晰。&lt;/p&gt;
+
+&lt;h2 id=&quot;stubmock&quot;&gt;Stub、Mock&lt;/h2&gt;
+&lt;p&gt;未完待续…&lt;/p&gt;
+</description>
+        <pubDate>Wed, 05 Jul 2017 23:30:00 +0800</pubDate>
+        <link>http://localhost:4000/2017/07/iOS-Unit-Tests-%E5%AE%9E%E7%8E%B0%E6%96%B9%E6%A1%88%E5%88%86%E6%9E%90/</link>
+        <guid isPermaLink="true">http://localhost:4000/2017/07/iOS-Unit-Tests-%E5%AE%9E%E7%8E%B0%E6%96%B9%E6%A1%88%E5%88%86%E6%9E%90/</guid>
         
         <category>iOS | Test</category>
         
@@ -1250,103 +1413,6 @@ XCTAssertTrue(app.tables.staticTexts[showText].exists);
         <pubDate>Thu, 12 Jun 2014 20:00:00 +0800</pubDate>
         <link>http://localhost:4000/2014/06/%E5%AF%B9-yield-%E7%9A%84%E6%B5%85%E7%A9%B6%E5%88%B0%E5%8F%91%E7%8E%B0-async-await/</link>
         <guid isPermaLink="true">http://localhost:4000/2014/06/%E5%AF%B9-yield-%E7%9A%84%E6%B5%85%E7%A9%B6%E5%88%B0%E5%8F%91%E7%8E%B0-async-await/</guid>
-        
-        <category>C# | .NET</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>对[foreach]的浅究到发现[yield]</title>
-        <description>&lt;p&gt;　　闲来无事，翻了翻以前的代码，做点总结，菜鸟从这里起航，呵呵。&lt;/p&gt;
-&lt;h3&gt;一、List的foreach遍历&lt;/h3&gt;
-&lt;p&gt;　　先上代码段[1]：&lt;/p&gt;
-
-&lt;div class=&quot;language-csharp highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Program&lt;/span&gt;
- &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
- 	&lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-   		&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-			&lt;span class=&quot;n&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dayList&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;Sun&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;Mon&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;Tue&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;Wed&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;Thr&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;Fri&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;Sat&quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-			&lt;span class=&quot;k&quot;&gt;foreach&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;day&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dayList&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-          	&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-              	&lt;span class=&quot;n&quot;&gt;Console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;WriteLine&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;day&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-            &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-            &lt;span class=&quot;n&quot;&gt;Console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;ReadKey&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
-         &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-     &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
- &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;　　这是我们经常用的，简单明了，这里就不赘述了。&lt;/p&gt;
-&lt;h3&gt;二、对List的浅究&lt;/h3&gt;
-&lt;p&gt;　　接着我就产生了疑问，List具有怎样的特性才使得foreach可以对它进行遍历呢？这个遍历是如何实现的？&lt;/p&gt;
-&lt;p&gt;　　下面就来浅究，再上代码段[2]：&lt;/p&gt;
-
-&lt;div class=&quot;language-csharp highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;DaysList&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Collections&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;IEnumerable&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-	&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;daysArry&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-	&lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;DaysList&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;days&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-	&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-		&lt;span class=&quot;n&quot;&gt;daysArry&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;days&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-	&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-	&lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Collections&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;IEnumerator&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;GetEnumerator&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-	&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-		&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;daysArry&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;++)&lt;/span&gt;
-		&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-			&lt;span class=&quot;k&quot;&gt;yield&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;daysArry&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
-		&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-	&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Program&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-	&lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-	&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-		&lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;days&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;Sun&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;Mon&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;Tue&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;Wed&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;Thr&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;Fri&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;Sat&quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-		&lt;span class=&quot;kt&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;daysList&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;DaysList&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;days&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-		&lt;span class=&quot;k&quot;&gt;foreach&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;day&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;daysList&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-		&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-			&lt;span class=&quot;n&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;WriteLine&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;day&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-		&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-		&lt;span class=&quot;n&quot;&gt;Console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;ReadKey&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
-	&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;　　通过查阅我们发现LIst是通过实现System.Collections.IEnumerable接口来达到可以被遍历的能力，而实现System.Collections.IEnumerable接口必须实现它里面的GetEnumerator()方法，用来&lt;span&gt;返回一个循环访问集合的枚举器&lt;/span&gt;，代码段[2]中就有我对GetEnumerator()方法的实现，其中有个关键字[yield]不知大家注意到没。&lt;/p&gt;
-&lt;p&gt;　　我的理解是：与其说是foreach遍历List，不如说是foreach遍历的是List中的GetEnumerator()方法返回的枚举器，注意这个枚举器实现了IEnumerator 接口，（插句话，IEnumerable接口标识某个类具备被遍历的能力，而IEnumerator 接口则使某个类真正具备这个能力！）。而当foreach对List进行循环遍历时，每个循环就是通过[yield]来分隔的。&lt;/p&gt;
-&lt;h3&gt;三、对foreach的浅究&lt;/h3&gt;
-&lt;p&gt;　　通过标题二，我们大概对List进行了了解，但不清楚，下面看看foreach。&lt;/p&gt;
-&lt;p&gt;　　依旧代码段[3]：&lt;/p&gt;
-
-&lt;div class=&quot;language-csharp highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;//注意：其中类DaysList&amp;lt;T&amp;gt;的实现同代码段[2]一样
-//这里只展示foreach的实现。    
-&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Program&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-	&lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-	&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-		&lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;days&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;Sun&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;Mon&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;Tue&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;Wed&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;Thr&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;Fri&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;Sat&quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-		&lt;span class=&quot;kt&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;daysList&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;DaysList&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;days&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
- 		&lt;span class=&quot;n&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Collections&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;IEnumerator&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;enumertor&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;daysList&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;GetEnumerator&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
-		&lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;enumertor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;MoveNext&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;())&lt;/span&gt;
-		&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;             
-			&lt;span class=&quot;n&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;WriteLine&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;enumertor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Current&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-		&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-		&lt;span class=&quot;n&quot;&gt;Console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;ReadLine&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
-	&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;　　就像上面说的，foreach其实遍历的是List中的GetEnumerator()方法返回的枚举器enumertor，而这个枚举器所实现的接口IEnumerator中定义了只读的Current属性（用来获取枚举器当前的所指的集合中的元素）、MoveNext方法（将枚举器推进到集合中的下一个元素，返回值代表是否到了集合末尾）、Reset方法（使枚举器指到集合第一个元素之前，也就是重置枚举器），明白了这些，我们就可以像代码段[3]中一样通过[while]语法来实现跟foreach一样的功能了，而上文中的[yield]关键字浅显的理解就是用来划分要遍历的集合中的每个元素的。&lt;/p&gt;
-&lt;p&gt;　　最后，本来还想分析分析这个实现了IEnumerator接口的枚举器是怎么生成的，想象一下它的内部实现，应该很有意思！&lt;/p&gt;
-&lt;p&gt;　　就这样吧，下班了，大家共勉！&lt;/p&gt;
-</description>
-        <pubDate>Wed, 11 Jun 2014 20:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2014/06/%E5%AF%B9-foreach-%E7%9A%84%E6%B5%85%E7%A9%B6%E5%88%B0%E5%8F%91%E7%8E%B0-yield/</link>
-        <guid isPermaLink="true">http://localhost:4000/2014/06/%E5%AF%B9-foreach-%E7%9A%84%E6%B5%85%E7%A9%B6%E5%88%B0%E5%8F%91%E7%8E%B0-yield/</guid>
         
         <category>C# | .NET</category>
         

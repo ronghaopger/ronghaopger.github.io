@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>iOS Unit Tests 实现方案</title>
+  <meta name="description" content="在计算机编程中，单元测试（英语：Unit Testing）又称为模块测试, 是针对程序模块（软件设计的最小单位）来进行正确性检验的测试工作。程序单元是应用的最小可测试部件。在过程化编程中，一个单元就是单个程序、函数、过程等；对于面向对象编程，最小单元就是方法，包括基类（超类）、抽象类、或者派生类（子类）中的方法。">
+  <meta name="author" content="Wei Wang">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="iOS Unit Tests 实现方案">
+  <meta name="twitter:description" content="在计算机编程中，单元测试（英语：Unit Testing）又称为模块测试, 是针对程序模块（软件设计的最小单位）来进行正确性检验的测试工作。程序单元是应用的最小可测试部件。在过程化编程中，一个单元就是单个程序、函数、过程等；对于面向对象编程，最小单元就是方法，包括基类（超类）、抽象类、或者派生类（子类）中的方法。">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="iOS Unit Tests 实现方案">
+  <meta property="og:description" content="在计算机编程中，单元测试（英语：Unit Testing）又称为模块测试, 是针对程序模块（软件设计的最小单位）来进行正确性检验的测试工作。程序单元是应用的最小可测试部件。在过程化编程中，一个单元就是单个程序、函数、过程等；对于面向对象编程，最小单元就是方法，包括基类（超类）、抽象类、或者派生类（子类）中的方法。">
+  
+  <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
+  <link href="/assets/images/favicon.png" rel="shortcut icon" type="image/png">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="canonical" href="http://localhost:4000/2017/07/iOS-Unit-Tests-%E5%AE%9E%E7%8E%B0%E6%96%B9%E6%A1%88%E5%88%86%E6%9E%90/">
+  <link rel="alternate" type="application/rss+xml" title="Hulk' Den" href="http://localhost:4000/feed.xml">
+  
+  <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
+  
+</head>
+
+
+  <body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="fa fa-list btn-mobile-menu__icon"></i>
+        <i class="fa fa-angle-up btn-mobile-close__icon hidden"></i>
+    </span>
+    
+    <header class="panel-cover panel-cover--collapsed" style="background-image: url('/assets/images/background-cover.jpg')">
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        <a href="/#blog" title="前往 Hulk' Den 的主页" class="blog-button"><img src="/assets/images/avatar.jpg" width="80" alt="Hulk' Den logo" class="panel-cover__logo logo" /></a>
+        <h1 class="panel-cover__title panel-title"><a href="/#blog" title="link to homepage for Hulk' Den" class="blog-button">Hulk' Den</a></h1>
+        
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">Be a good man.</p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+        
+        
+        
+        <div class="navigation-wrapper">
+          <div>
+            <nav class="cover-navigation cover-navigation--primary">
+              <ul class="navigation">
+                <li class="navigation__item"><a href="/#blog" title="Visit blog" class="blog-button">Blog</a></li>
+                
+                  <li class="navigation__item"><a href="https://github.com/ronghaopger" target="_blank" title="ronghaopger">GitHub</a></li>
+                
+              </ul>
+            </nav>
+          </div>
+          
+          <div><nav class="cover-navigation navigation--social">
+  <ul class="navigation">
+
+  
+  <!-- Weibo -->
+  <li class="navigation__item">
+    <a href="http://weibo.com/做梦家荣浩" title="@做梦家荣浩 的微博" target="_blank">
+      <i class='social fa fa-weibo'></i>
+      <span class="label">Weibo</span>
+    </a>
+  </li>
+  
+
+  
+  <!-- Github -->
+  <li class="navigation__item">
+    <a href="https://github.com/ronghaopger" title="@ronghaopger 的 Github" target="_blank">
+      <i class='social fa fa-github'></i>
+      <span class="label">Github</span>
+    </a>
+  </li>
+  
+  
+  
+
+  
+
+  <!-- RSS -->
+  <li class="navigation__item">
+    <a href="/feed.xml" rel="author" title="RSS" target="_blank">
+      <i class='social fa fa-rss'></i>
+      <span class="label">RSS</span>
+    </a>
+  </li>
+
+  
+  <!-- Email -->
+  <li class="navigation__item">
+    <a href="mailto:ronghao_1989@hotmail.com" title="Contact me">
+      <i class='social fa fa-envelope'></i>
+      <span class="label">Email</span>
+    </a>
+  </li>
+  
+
+  </ul>
+</nav>
+</div>
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="panel-cover--overlay cover-disabled"></div>
+    
+  </div>
+</header>
+
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner">
+            <article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
+  <header class="post-header">
+    <div class="post-meta">
+      <time datetime="2017-07-05 15:30:00 +0000" itemprop="datePublished" class="post-meta__date date">2017-07-05</time> &#8226; <span class="post-meta__tags tags">iOS | Test</span>
+    </div>
+    <h1 class="post-title">iOS Unit Tests 实现方案</h1>
+  </header>
+
+  <section class="post">
+    <div class="highlighter-rouge"><pre class="highlight"><code>在计算机编程中，单元测试（英语：Unit Testing）又称为模块测试, 是针对程序模块（软件设计的最小单位）来进行正确性检验的测试工作。程序单元是应用的最小可测试部件。在过程化编程中，一个单元就是单个程序、函数、过程等；对于面向对象编程，最小单元就是方法，包括基类（超类）、抽象类、或者派生类（子类）中的方法。
+</code></pre>
+</div>
+
+<h2 id="solid">S.O.L.I.D</h2>
+<p>理解单元测试，首先要理解单元(Unit)：软件设计的最小单位，而在我们面向对象的世界里最小单位就是方法，所以好的单元测试一定很好的覆盖了方法。想覆盖就得有暴露，如果一个类包含了本应该设计成三个类的代码，首先它是不OOP的，其次它也是不可单元测试的（除非暴露私有方法）。所以好的代码结构和好的单元测试是相辅相成，互相依赖的。所以在文章的开始需要强调一下基础，面向对象的五大原则SOLID：</p>
+<ul>
+  <li>S - 单一职责原则，类的功能应该单一。</li>
+  <li>O - 开放封闭原则，对扩展开放，对修改封闭。</li>
+  <li>L - 里氏替换原则，子类可以完全代替父类在程序中运行。</li>
+  <li>I - 接口隔离原则，客户端不应去实现它们不需要的接口。</li>
+  <li>D - 依赖倒置原则，依赖于抽象而不是具体。</li>
+</ul>
+
+<h2 id="tdd-or-bdd-">TDD or BDD ?</h2>
+<h3 id="tdd">TDD</h3>
+<p>Test-driven development，测试驱动开发。
+在我们设计一个类时，首先需要考虑这个类能提供什么功能以及如何提供，也就是这个类公开的方法。TDD的做法是先为这些公开的方法写测试代码，肯定一开始测试是通不过的，接下来开发人员的目的就是写代码实现类功能来让测试通过，测试通过了，这个类也就实现好了。</p>
+
+<h3 id="bdd">BDD</h3>
+<p>Behavior-driven development，行为驱动开发。
+TDD的目的是测试每个公开方法的正确性，而BDD关注的是行为，BDD的测试过程是以陈述需求的方式进行的（Given..When..Then），所以更友好，也更接近实际需求。</p>
+
+<h3 id="举个栗子">举个栗子</h3>
+<p>在实现直播间内活动挂件按优先级显示的功能时，我们需要维护一个描述view具体信息的model的集合类来保存当前直播间所有view的情况以便调整，它需要满足以下四个功能：</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>//添加
+-(void)addModel:(InkeShowPriorityModel*)model;
+//删除
+-(void)removeModel:(InkeShowPriorityModel*)model;
+//通过view索引model
+-(InkeShowPriorityModel*)modelForView:(UIView*)view;
+//通过position索引model
+-(NSArray&lt;InkeShowPriorityModel*&gt;*)modelsForPosition:(InkeShowPriorityPosition)position;
+</code></pre>
+</div>
+
+<p><strong>以TDD的思想</strong>编写测试的话，就是聚焦到每一个公开的方法，设法进行全面的测试，我们使用官方的XCTest框架进行演练，代码如下：</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>- (void)setUp {
+    [super setUp];
+    
+    self.modelA = [[InkeShowPriorityModel alloc] init];
+    self.viewA = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
+    _modelA.view = _viewA;
+    _modelA.position = InkeShowPriorityPositionLeftUp;
+    
+    self.modelB = [[InkeShowPriorityModel alloc] init];
+    self.viewB = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 200, 200)];
+    _modelB.view = _viewB;
+    _modelB.position = InkeShowPriorityPositionLeftUp;
+    
+    self.collection = [[InkeShowPriorityCollection alloc] initWithModels:[NSArray arrayWithObjects:_modelA, _modelB, nil]];
+}
+
+- (void)tearDown {
+    [super tearDown];
+}
+
+
+-(void)testModelForView {
+    XCTAssertEqual([_collection modelForView:_viewA], _modelA);
+    XCTAssertEqual([_collection modelForView:_viewB], _modelB);
+}
+
+-(void)testModelsForPosition {
+    NSArray *array = [_collection modelsForPosition:InkeShowPriorityPositionLeftUp];
+    XCTAssertTrue([array isKindOfClass:[NSArray class]]);
+    XCTAssertEqual(array[0], _modelA);
+    XCTAssertEqual(array[1], _modelB);
+}
+
+-(void)testAddAndRemoveModel {
+    InkeShowPriorityModel *addModel = [[InkeShowPriorityModel alloc] init];
+    UIView *addView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 150, 150)];
+    addModel.view = addView;
+    XCTAssertNil([_collection modelForView:addView]);
+    
+    //test addModel
+    [_collection addModel:addModel];
+    XCTAssertEqual([_collection modelForView:addView], addModel);
+    
+    //test removeModel
+    [_collection removeModel:addModel];
+    XCTAssertNil([_collection modelForView:addView]);
+}
+</code></pre>
+</div>
+
+<p><strong>以BDD的思想</strong>进行测试的话，应该聚焦到需求，可以试着以Given..When..Then的方式陈述一下我们对于这个集合类的需求，比如<code class="highlighter-rouge">给你一个Coloection类，当它被初始化后，应该包含0个元素</code>。我们使用比较热门的Kiwi框架<a href="https://github.com/kiwi-bdd/Kiwi">GitHub - kiwi-bdd/Kiwi: Simple BDD for iOS</a> 进行演练，代码如下：</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>describe(@"InkeShowPriorityCollection", ^{
+    context(@"当用初始数据modelA和modelB进行初始化后", ^{
+        __block InkeShowPriorityCollection *collection = nil;
+        InkeShowPriorityModel *modelA = [[InkeShowPriorityModel alloc] init];
+        UIView *viewA = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
+        modelA.view = viewA;
+        modelA.position = InkeShowPriorityPositionLeftUp;
+        
+        InkeShowPriorityModel *modelB = [[InkeShowPriorityModel alloc] init];
+        UIView *viewB = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 200, 200)];
+        modelB.view = viewB;
+        modelB.position = InkeShowPriorityPositionLeftUp;
+        
+        beforeEach(^{
+            collection = [[InkeShowPriorityCollection alloc] initWithModels:[NSArray arrayWithObjects:modelA, modelB, nil]];
+        });
+        
+        afterEach(^{
+            collection = nil;
+        });
+        
+        
+        it(@"通过viewA可以得到modelA，通过viewB可以得到modelB。", ^{
+            [[[collection modelForView:viewA] should] equal:modelA];
+            [[[collection modelForView:viewB] should] equal:modelB];
+        });
+        
+        it(@"通过一个位置可以得到一个数组，包含所有在这个位置的view的model。", ^{
+            NSArray *array = [collection modelsForPosition:InkeShowPriorityPositionLeftUp];
+            [[array should] beKindOfClass:[NSArray class]];
+            [[array[0] should] equal:modelA];
+            [[array[1] should] equal:modelB];
+        });
+        
+        it(@"可以成功添加一个model。", ^{
+            InkeShowPriorityModel *addModel = [[InkeShowPriorityModel alloc] init];
+            UIView *addView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 150, 150)];
+            addModel.view = addView;
+            [[[collection modelForView:addView] should] beNil];
+            [collection addModel:addModel];
+            [[[collection modelForView:addView] should] equal:addModel];
+        });
+        
+        it(@"也可以成功删除一个model。", ^{
+            [[[collection modelForView:viewB] shouldNot] beNil];
+            [collection removeModel:modelB];
+            [[[collection modelForView:viewB] should] beNil];
+        });
+        
+    });
+});
+</code></pre>
+</div>
+<p>惊不惊喜？反正在写的过程中我的内心是很舒服的，这段代码可以说是一目了然，清晰的陈述了我们对于这个类的要求，如果一位新同学要接手这块也是轻而易举。</p>
+
+<p><strong>最后</strong>回到我们的项目我认为：</p>
+
+<p>对于像业务层的网络请求方法，只牵扯到基本的请求返回逻辑，测试也就只需要关注返回数据的正确与否，可以选择使用TDD的思想来做，也就是用官方的XCTest框架。</p>
+
+<p>对于像上文中描述的场景，承载一个功能的类，包含比较丰富的逻辑在里面，使用BDD的思想更合适，写起来舒服，读起来清晰。</p>
+
+<h2 id="stubmock">Stub、Mock</h2>
+<p>未完待续…</p>
+
+  </section>
+</article>
+
+<section class="read-more">
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">最近的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/2017/07/iOS-UI-Tests-%E5%AE%9E%E7%8E%B0%E6%96%B9%E6%A1%88%E5%88%86%E6%9E%90/" title="link to iOS UI Tests 实现方案分析">iOS UI Tests 实现方案分析</a></h2>
+       <p class="excerpt">UI Tests是一个可以对UI进行测试的框架。为什么需要UI Tests呢？如果客户端分为基础层和业务层的话，业务层最终都是负责界面展示的，通常是MV(C/P/VM)，(C/P/VM)中的逻辑并不适合用Unit Tests来覆盖。对于具体的界面操作流程，UI Tests是合适的选择。集成UI Tests下图为在Xcode中为项目添加UI Tests的步骤：  新建Target  新建Case ClassWriting UI TestsRecordingXcode为我们提供了把整套操作转化...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2017-07-06 15:30:00 +0000" class="post-list__meta--date date">2017-07-06</time> &#8226; <span class="post-list__meta--tags tags">iOS | Test</span><a class="btn-border-small" href=/2017/07/iOS-UI-Tests-%E5%AE%9E%E7%8E%B0%E6%96%B9%E6%A1%88%E5%88%86%E6%9E%90/>继续阅读</a></div>
+   </div>
+   
+   
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">更早的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/2016/04/%E5%BD%93%E6%88%91%E8%B0%88%E6%97%85%E8%A1%8C%E6%97%B6-%E6%88%91%E8%B0%88%E4%BA%9B%E4%BB%80%E4%B9%88/" title="link to 当我谈旅行时，我谈些什么">当我谈旅行时，我谈些什么</a></h2>
+       <p class="excerpt">随心在昆明的第二天，还有没去的但不想去的景点，心里总觉得憋得慌缺点啥，在云南大学周边转了一上午，吃过午饭后就彻底无聊烦躁到极点了，这才是旅途的第二天就这状态了，不合适啊。安静下来想了想，是因为昨天在滇池旁没玩够就去了民族村，本打算逛完民族村再去滇池旁诗意一会坐坐船看看西山风景，结果民族村太好玩导致逛完后体力都消耗殆尽了，加上阴天的昆明湿冷湿冷的，出了民族村我们就直接打道回府了，仿佛在心里种下了不痛快的种子，所以今天内心一直在那闹情绪，无聊烦躁没目的，像极了平常生活中那种麻木消极的状态。缕清...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2016-04-05 22:10:00 +0000" class="post-list__meta--date date">2016-04-05</time> &#8226; <span class="post-list__meta--tags tags">旅行跑步</span><a class="btn-border-small" href=/2016/04/%E5%BD%93%E6%88%91%E8%B0%88%E6%97%85%E8%A1%8C%E6%97%B6-%E6%88%91%E8%B0%88%E4%BA%9B%E4%BB%80%E4%B9%88/>继续阅读</a></div>
+   </div>
+   
+</section>
+
+<section class="post-comments">
+  
+    <div id="disqus_thread"></div>
+    <script>
+    
+    var disqus_config = function () {
+        this.page.url = "http://localhost:4000/2017/07/iOS-Unit-Tests-%E5%AE%9E%E7%8E%B0%E6%96%B9%E6%A1%88%E5%88%86%E6%9E%90/";
+        this.page.identifier = "/2017/07/iOS-Unit-Tests-%E5%AE%9E%E7%8E%B0%E6%96%B9%E6%A1%88%E5%88%86%E6%9E%90/";
+    };
+
+    var disqus_shortname = 'vno-jekyll';
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>要查看<a href="http://disqus.com/?ref_noscript"> Disqus </a>评论，请启用 JavaScript</noscript>
+    
+  
+  
+  
+  
+</section>
+
+
+            <section class="footer">
+    <footer>
+    	<span class="footer__copyright">本站点采用<a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享 署名-非商业性使用-相同方式共享 4.0 国际 许可协议</a></span>
+        <span class="footer__copyright">由 <a href="https://jekyllrb.com">Jekyll</a> 于 2017-07-25 生成，感谢 <a href="https://www.digitalocean.com/?refcode=30ed2d146762">Digital Ocean</a> 为本站提供稳定的 VPS 服务</span>
+        <span class="footer__copyright">本站由 <a href="http://ronghaopger.github.io/about/">@RongHao</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2017</span>
+    </footer>
+</section>
+
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+
+<script type="text/javascript" src="/js/main.js"></script>
+
+
+
+    
+  </body>
+
+</html>
