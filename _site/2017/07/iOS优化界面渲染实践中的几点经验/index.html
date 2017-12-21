@@ -159,7 +159,7 @@
 
 <h2 id="二遮罩mask">二、遮罩mask</h2>
 <h3 id="场景-1">场景</h3>
-<p>同样老生常谈，发现问题的场景是我们直播间的看海大动画，播放期间满屏的离屏渲染，看了下代码发现用了好多的mask。捋了下动画中有关太阳的mask效果，是想用mask做一个太阳渐渐出现的效果，其实这个效果用一个不透明的图层盖在太阳上面也可以做到，不过没有mask使用起来方便，但是对于GPU来说合成图层比离屏渲染要轻松很多。</p>
+<p>同样老生常谈，发现问题的场景是我们直播间的某个大动画，播放期间满屏的离屏渲染，看了下代码发现用了好多的mask。捋了下动画中有关某个元素的mask效果，是想用mask做一个元素渐渐出现的效果，其实这个效果用一个不透明的图层盖在元素上面也可以做到，不过没有mask使用起来方便，但是对于GPU来说合成图层比离屏渲染要轻松很多。</p>
 <h3 id="结论-1">结论</h3>
 <p>所以得出结论，遮罩mask尽量避免使用，用图层合成的方式来代替，但必须承认有些效果是图层合成代替不了的。</p>
 
@@ -241,7 +241,7 @@
    <div class="read-more-item">
        <span class="read-more-item-dim">最近的文章</span>
        <h2 class="post-list__post-title post-title"><a href="/2017/09/%E7%B1%BB%E4%BC%BC%E9%80%90%E5%B8%A7%E5%8A%A8%E7%94%BB%E6%88%96%E8%80%85tableView%E5%88%97%E8%A1%A8%E4%B8%AD%E6%9C%89%E5%A4%A7%E9%87%8F%E5%9B%BE%E7%89%87%E5%B1%95%E7%A4%BA%E9%9C%80%E6%B1%82%E7%9A%84%E5%9C%BA%E6%99%AF%E6%88%91%E4%BB%AC%E5%8F%AF%E4%BB%A5%E5%81%9A%E5%93%AA%E4%BA%9B%E4%BC%98%E5%8C%96/" title="link to 类似逐帧动画或者tableView列表中有大量图片展示需求的场景我们可以做哪些优化？">类似逐帧动画或者tableView列表中有大量图片展示需求的场景我们可以做哪些优化？</a></h2>
-       <p class="excerpt">背景最近公司在调研后打算用SenseTime的产品代替之前的FaceMagic，据说在识别率和性能上做的更好一些。但是在集成后实际压测发现并没有什么提升，为了继续优化性能SenseTime还临时加入了隔帧检测技术，理论上隔一帧相当于少检测了一半的帧，性能是不是应该翻倍，然而实际压测的结果却还是没有什么提升。所以我们不得不从全局重新思考，因为面部/手势识别礼物是由识别+播放环节组成，那如果识别做的很好了，是不是问题出在之前忽略的播放环节呢？果然在测试后发现是因为礼物资源太重导致的，不同于Fa...&hellip;</p>
+       <p class="excerpt">背景最近公司在调研后打算替换掉老的识别库，据说新库在识别率上做的更好一些。但是在集成后实际压测发现并没有什么提升。（由于分析过程可能牵扯到公司业务，所以此处省略分析发现问题的过程，见谅）……….那么思路捋到这里我们可以总结出来两个至关重要的优化点：  避免频繁的解压资源包操作，每次解压绝对是件耗费的操作。这个是比较低级但在俯瞰全局时容易忽略的点，本篇不做讨论。  逐帧动画的图片数量比较大质量比较高，能否把PNG/JPEG图片解码成位图后保存到本地，避免CPU进行重复频繁的解码图片操作？基于...&hellip;</p>
        <div class="post-list__meta"><time datetime="2017-09-25 15:30:00 +0000" class="post-list__meta--date date">2017-09-25</time> &#8226; <span class="post-list__meta--tags tags">iOS | 优化</span><a class="btn-border-small" href=/2017/09/%E7%B1%BB%E4%BC%BC%E9%80%90%E5%B8%A7%E5%8A%A8%E7%94%BB%E6%88%96%E8%80%85tableView%E5%88%97%E8%A1%A8%E4%B8%AD%E6%9C%89%E5%A4%A7%E9%87%8F%E5%9B%BE%E7%89%87%E5%B1%95%E7%A4%BA%E9%9C%80%E6%B1%82%E7%9A%84%E5%9C%BA%E6%99%AF%E6%88%91%E4%BB%AC%E5%8F%AF%E4%BB%A5%E5%81%9A%E5%93%AA%E4%BA%9B%E4%BC%98%E5%8C%96/>继续阅读</a></div>
    </div>
    
@@ -288,7 +288,7 @@
             <section class="footer">
     <footer>
     	<span class="footer__copyright">本站点采用<a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享 署名-非商业性使用-相同方式共享 4.0 国际 许可协议</a></span>
-        <span class="footer__copyright">由 <a href="https://jekyllrb.com">Jekyll</a> 于 2017-12-13 生成，感谢 <a href="https://www.digitalocean.com/?refcode=30ed2d146762">Digital Ocean</a> 为本站提供稳定的 VPS 服务</span>
+        <span class="footer__copyright">由 <a href="https://jekyllrb.com">Jekyll</a> 于 2017-12-21 生成，感谢 <a href="https://www.digitalocean.com/?refcode=30ed2d146762">Digital Ocean</a> 为本站提供稳定的 VPS 服务</span>
         <span class="footer__copyright">本站由 <a href="http://ronghaopger.github.io/about/">@RongHao</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2017</span>
     </footer>
 </section>

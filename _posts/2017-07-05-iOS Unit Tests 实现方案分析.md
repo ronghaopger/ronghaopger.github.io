@@ -34,13 +34,13 @@ TDD的目的是测试每个公开方法的正确性，而BDD关注的是行为�
 在实现直播间内活动挂件按优先级显示的功能时，我们需要维护一个描述view具体信息的model的集合类来保存当前直播间所有view的情况以便调整，它需要满足以下四个功能：
 ```
 //添加
--(void)addModel:(InkeShowPriorityModel*)model;
+-(void)addModel:(RHShowPriorityModel*)model;
 //删除
--(void)removeModel:(InkeShowPriorityModel*)model;
+-(void)removeModel:(RHShowPriorityModel*)model;
 //通过view索引model
--(InkeShowPriorityModel*)modelForView:(UIView*)view;
+-(RHShowPriorityModel*)modelForView:(UIView*)view;
 //通过position索引model
--(NSArray<InkeShowPriorityModel*>*)modelsForPosition:(InkeShowPriorityPosition)position;
+-(NSArray<RHShowPriorityModel*>*)modelsForPosition:(RHShowPriorityPosition)position;
 ```
 
 
@@ -49,17 +49,17 @@ TDD的目的是测试每个公开方法的正确性，而BDD关注的是行为�
 - (void)setUp {
     [super setUp];
     
-    self.modelA = [[InkeShowPriorityModel alloc] init];
+    self.modelA = [[RHShowPriorityModel alloc] init];
     self.viewA = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
     _modelA.view = _viewA;
-    _modelA.position = InkeShowPriorityPositionLeftUp;
+    _modelA.position = RHShowPriorityPositionLeftUp;
     
-    self.modelB = [[InkeShowPriorityModel alloc] init];
+    self.modelB = [[RHShowPriorityModel alloc] init];
     self.viewB = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 200, 200)];
     _modelB.view = _viewB;
-    _modelB.position = InkeShowPriorityPositionLeftUp;
+    _modelB.position = RHShowPriorityPositionLeftUp;
     
-    self.collection = [[InkeShowPriorityCollection alloc] initWithModels:[NSArray arrayWithObjects:_modelA, _modelB, nil]];
+    self.collection = [[RHShowPriorityCollection alloc] initWithModels:[NSArray arrayWithObjects:_modelA, _modelB, nil]];
 }
 
 - (void)tearDown {
@@ -73,14 +73,14 @@ TDD的目的是测试每个公开方法的正确性，而BDD关注的是行为�
 }
 
 -(void)testModelsForPosition {
-    NSArray *array = [_collection modelsForPosition:InkeShowPriorityPositionLeftUp];
+    NSArray *array = [_collection modelsForPosition:RHShowPriorityPositionLeftUp];
     XCTAssertTrue([array isKindOfClass:[NSArray class]]);
     XCTAssertEqual(array[0], _modelA);
     XCTAssertEqual(array[1], _modelB);
 }
 
 -(void)testAddAndRemoveModel {
-    InkeShowPriorityModel *addModel = [[InkeShowPriorityModel alloc] init];
+    RHShowPriorityModel *addModel = [[RHShowPriorityModel alloc] init];
     UIView *addView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 150, 150)];
     addModel.view = addView;
     XCTAssertNil([_collection modelForView:addView]);
@@ -98,21 +98,21 @@ TDD的目的是测试每个公开方法的正确性，而BDD关注的是行为�
 
 **以BDD的思想**进行测试的话，应该聚焦到需求，可以试着以Given..When..Then的方式陈述一下我们对于这个集合类的需求，比如`给你一个Coloection类，当它被初始化后，应该包含0个元素`。我们使用比较热门的Kiwi框架[GitHub - kiwi-bdd/Kiwi: Simple BDD for iOS](https://github.com/kiwi-bdd/Kiwi) 进行演练，代码如下：
 ```
-describe(@"InkeShowPriorityCollection", ^{
+describe(@"RHShowPriorityCollection", ^{
     context(@"当用初始数据modelA和modelB进行初始化后", ^{
-        __block InkeShowPriorityCollection *collection = nil;
-        InkeShowPriorityModel *modelA = [[InkeShowPriorityModel alloc] init];
+        __block RHShowPriorityCollection *collection = nil;
+        RHShowPriorityModel *modelA = [[RHShowPriorityModel alloc] init];
         UIView *viewA = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
         modelA.view = viewA;
-        modelA.position = InkeShowPriorityPositionLeftUp;
+        modelA.position = RHShowPriorityPositionLeftUp;
         
-        InkeShowPriorityModel *modelB = [[InkeShowPriorityModel alloc] init];
+        RHShowPriorityModel *modelB = [[RHShowPriorityModel alloc] init];
         UIView *viewB = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 200, 200)];
         modelB.view = viewB;
-        modelB.position = InkeShowPriorityPositionLeftUp;
+        modelB.position = RHShowPriorityPositionLeftUp;
         
         beforeEach(^{
-            collection = [[InkeShowPriorityCollection alloc] initWithModels:[NSArray arrayWithObjects:modelA, modelB, nil]];
+            collection = [[RHShowPriorityCollection alloc] initWithModels:[NSArray arrayWithObjects:modelA, modelB, nil]];
         });
         
         afterEach(^{
@@ -126,14 +126,14 @@ describe(@"InkeShowPriorityCollection", ^{
         });
         
         it(@"通过一个位置可以得到一个数组，包含所有在这个位置的view的model。", ^{
-            NSArray *array = [collection modelsForPosition:InkeShowPriorityPositionLeftUp];
+            NSArray *array = [collection modelsForPosition:RHShowPriorityPositionLeftUp];
             [[array should] beKindOfClass:[NSArray class]];
             [[array[0] should] equal:modelA];
             [[array[1] should] equal:modelB];
         });
         
         it(@"可以成功添加一个model。", ^{
-            InkeShowPriorityModel *addModel = [[InkeShowPriorityModel alloc] init];
+            RHShowPriorityModel *addModel = [[RHShowPriorityModel alloc] init];
             UIView *addView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 150, 150)];
             addModel.view = addView;
             [[[collection modelForView:addView] should] beNil];

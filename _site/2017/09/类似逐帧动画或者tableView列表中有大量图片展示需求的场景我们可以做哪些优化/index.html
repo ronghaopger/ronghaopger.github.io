@@ -7,16 +7,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
   <title>类似逐帧动画或者tableView列表中有大量图片展示需求的场景我们可以做哪些优化？</title>
-  <meta name="description" content="背景最近公司在调研后打算用SenseTime的产品代替之前的FaceMagic，据说在识别率和性能上做的更好一些。但是在集成后实际压测发现并没有什么提升，为了继续优化性能SenseTime还临时加入了隔帧检测技术，理论上隔一帧相当于少检测了一半的帧，性能是不是应该翻倍，然而实际压测的结果却还是没有什么提升。">
+  <meta name="description" content="背景最近公司在调研后打算替换掉老的识别库，据说新库在识别率上做的更好一些。但是在集成后实际压测发现并没有什么提升。（由于分析过程可能牵扯到公司业务，所以此处省略分析发现问题的过程，见谅）">
   <meta name="author" content="Wei Wang">
 
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="类似逐帧动画或者tableView列表中有大量图片展示需求的场景我们可以做哪些优化？">
-  <meta name="twitter:description" content="背景最近公司在调研后打算用SenseTime的产品代替之前的FaceMagic，据说在识别率和性能上做的更好一些。但是在集成后实际压测发现并没有什么提升，为了继续优化性能SenseTime还临时加入了隔帧检测技术，理论上隔一帧相当于少检测了一半的帧，性能是不是应该翻倍，然而实际压测的结果却还是没有什么提升。">
+  <meta name="twitter:description" content="背景最近公司在调研后打算替换掉老的识别库，据说新库在识别率上做的更好一些。但是在集成后实际压测发现并没有什么提升。（由于分析过程可能牵扯到公司业务，所以此处省略分析发现问题的过程，见谅）">
   
   <meta property="og:type" content="article">
   <meta property="og:title" content="类似逐帧动画或者tableView列表中有大量图片展示需求的场景我们可以做哪些优化？">
-  <meta property="og:description" content="背景最近公司在调研后打算用SenseTime的产品代替之前的FaceMagic，据说在识别率和性能上做的更好一些。但是在集成后实际压测发现并没有什么提升，为了继续优化性能SenseTime还临时加入了隔帧检测技术，理论上隔一帧相当于少检测了一半的帧，性能是不是应该翻倍，然而实际压测的结果却还是没有什么提升。">
+  <meta property="og:description" content="背景最近公司在调研后打算替换掉老的识别库，据说新库在识别率上做的更好一些。但是在集成后实际压测发现并没有什么提升。（由于分析过程可能牵扯到公司业务，所以此处省略分析发现问题的过程，见谅）">
   
   <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
   <link href="/assets/images/favicon.png" rel="shortcut icon" type="image/png">
@@ -147,11 +147,9 @@
 
   <section class="post">
     <h2 id="背景">背景</h2>
-<p>最近公司在调研后打算用SenseTime的产品代替之前的FaceMagic，据说在识别率和性能上做的更好一些。但是在集成后实际压测发现并没有什么提升，为了继续优化性能SenseTime还临时加入了隔帧检测技术，理论上隔一帧相当于少检测了一半的帧，性能是不是应该翻倍，然而实际压测的结果却还是没有什么提升。</p>
+<p>最近公司在调研后打算替换掉老的识别库，据说新库在识别率上做的更好一些。但是在集成后实际压测发现并没有什么提升。（由于分析过程可能牵扯到公司业务，所以此处省略分析发现问题的过程，见谅）</p>
 
-<p>所以我们不得不从全局重新思考，因为面部/手势识别礼物是由识别+播放环节组成，那如果识别做的很好了，是不是问题出在之前忽略的播放环节呢？果然在测试后发现是因为礼物资源太重导致的，不同于FaceMagic采用的骨骼动画，SenseTime采用传统的逐帧动画，那么一小段动画可能都需要上百张图片来顺序播放。想到这里我们开始尝试删减不必要的帧并尽量减小每帧图片的大小来优化，优化完资源包后由SDK的同事先行压测发现CPU占比大幅下降，大家喜上眉梢赶紧集成进项目，在直播间中开始实际压测，发现有提升但是并不明显啊！没有SDK同事用demo压测的效果那么大啊。</p>
-
-<p>一头雾水时，在我跟SDK同事的交流中发现了问题，他们的压测demo就只是在开始时set一次资源（SenseTime的API要求set一个压缩资源包），然后开始循环识别+播放动画进行压测。但是我们直播间是每次礼物消息来的时候set一次资源（意味着要进行一次解压缩操作），然后开始进入识别+播放动画状态（我推测：而且由于直播时APP的内存吃紧，图片在内存中的缓存很容易被干掉，从而造成重复的文件IO和图片解码）。</p>
+<p>……….</p>
 
 <p>那么思路捋到这里我们可以总结出来两个至关重要的优化点：</p>
 <ol>
@@ -302,7 +300,7 @@ iOS渲染图像是通过OpenGL驱动GPU来做的，OpenGL有它所支持的颜�
    <div class="read-more-item">
        <span class="read-more-item-dim">最近的文章</span>
        <h2 class="post-list__post-title post-title"><a href="/2017/12/%E5%AF%B9%E5%90%84%E6%A8%A1%E5%9D%97%E9%97%B4%E7%9A%84%E4%BA%92%E6%96%A5%E5%85%B3%E7%B3%BB%E7%AE%A1%E7%90%86%E7%9A%84%E5%B0%8F%E6%80%9D%E8%80%83/" title="link to 对各模块间的互斥关系管理的小思考">对各模块间的互斥关系管理的小思考</a></h2>
-       <p class="excerpt">背景最近在项目中遇到这样一个场景，在直播间的主播端有个功能区，里面是一些插件，包含比如两人PK、大转盘、投票、抓娃娃等入口，它们之间在业务上存在互斥关系，也就是A处于开启状态时，B、C、D、E甚至是甲乙丙丁都不能打开。随着这块业务的增多，由于没有及时重构，导致互斥逻辑写的很是让人抓狂。假设有A、B、C、D四个互斥模块，当A要启动时，需要if (B is running) {    Log("B is running");    return;}if (C is running) {    ...&hellip;</p>
+       <p class="excerpt">背景最近在项目中遇到这样一个场景，在直播间的主播端有个功能区，里面是一些插件，这些插件之间在业务上存在互斥关系，也就是A处于开启状态时，B、C、D、E甚至是甲乙丙丁都不能打开。随着这块业务的增多，由于没有及时重构，导致互斥逻辑写的很是让人抓狂。假设有A、B、C、D四个互斥模块，当A要启动时，需要if (B is running) {    Log("B is running");    return;}if (C is running) {    Log("C is running"); ...&hellip;</p>
        <div class="post-list__meta"><time datetime="2017-12-12 15:30:00 +0000" class="post-list__meta--date date">2017-12-12</time> &#8226; <span class="post-list__meta--tags tags">重构 | iOS</span><a class="btn-border-small" href=/2017/12/%E5%AF%B9%E5%90%84%E6%A8%A1%E5%9D%97%E9%97%B4%E7%9A%84%E4%BA%92%E6%96%A5%E5%85%B3%E7%B3%BB%E7%AE%A1%E7%90%86%E7%9A%84%E5%B0%8F%E6%80%9D%E8%80%83/>继续阅读</a></div>
    </div>
    
@@ -349,7 +347,7 @@ iOS渲染图像是通过OpenGL驱动GPU来做的，OpenGL有它所支持的颜�
             <section class="footer">
     <footer>
     	<span class="footer__copyright">本站点采用<a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享 署名-非商业性使用-相同方式共享 4.0 国际 许可协议</a></span>
-        <span class="footer__copyright">由 <a href="https://jekyllrb.com">Jekyll</a> 于 2017-12-13 生成，感谢 <a href="https://www.digitalocean.com/?refcode=30ed2d146762">Digital Ocean</a> 为本站提供稳定的 VPS 服务</span>
+        <span class="footer__copyright">由 <a href="https://jekyllrb.com">Jekyll</a> 于 2017-12-21 生成，感谢 <a href="https://www.digitalocean.com/?refcode=30ed2d146762">Digital Ocean</a> 为本站提供稳定的 VPS 服务</span>
         <span class="footer__copyright">本站由 <a href="http://ronghaopger.github.io/about/">@RongHao</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2017</span>
     </footer>
 </section>

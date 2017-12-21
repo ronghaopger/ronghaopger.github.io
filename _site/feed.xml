@@ -5,14 +5,14 @@
     <description>格物致知 意诚 心正 身修</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Wed, 13 Dec 2017 14:28:22 +0800</pubDate>
-    <lastBuildDate>Wed, 13 Dec 2017 14:28:22 +0800</lastBuildDate>
+    <pubDate>Thu, 21 Dec 2017 17:16:08 +0800</pubDate>
+    <lastBuildDate>Thu, 21 Dec 2017 17:16:08 +0800</lastBuildDate>
     <generator>Jekyll v3.4.0</generator>
     
       <item>
         <title>对各模块间的互斥关系管理的小思考</title>
         <description>&lt;h2 id=&quot;背景&quot;&gt;背景&lt;/h2&gt;
-&lt;p&gt;最近在项目中遇到这样一个场景，在直播间的主播端有个功能区，里面是一些插件，包含比如两人PK、大转盘、投票、抓娃娃等入口，它们之间在业务上存在互斥关系，也就是A处于开启状态时，B、C、D、E甚至是甲乙丙丁都不能打开。随着这块业务的增多，由于没有及时重构，导致互斥逻辑写的很是让人抓狂。&lt;/p&gt;
+&lt;p&gt;最近在项目中遇到这样一个场景，在直播间的主播端有个功能区，里面是一些插件，这些插件之间在业务上存在互斥关系，也就是A处于开启状态时，B、C、D、E甚至是甲乙丙丁都不能打开。随着这块业务的增多，由于没有及时重构，导致互斥逻辑写的很是让人抓狂。&lt;/p&gt;
 
 &lt;p&gt;假设有A、B、C、D四个互斥模块，当A要启动时，需要&lt;/p&gt;
 &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;if (B is running) {
@@ -164,11 +164,9 @@ class moduleA : IExclusive {
       <item>
         <title>类似逐帧动画或者tableView列表中有大量图片展示需求的场景我们可以做哪些优化？</title>
         <description>&lt;h2 id=&quot;背景&quot;&gt;背景&lt;/h2&gt;
-&lt;p&gt;最近公司在调研后打算用SenseTime的产品代替之前的FaceMagic，据说在识别率和性能上做的更好一些。但是在集成后实际压测发现并没有什么提升，为了继续优化性能SenseTime还临时加入了隔帧检测技术，理论上隔一帧相当于少检测了一半的帧，性能是不是应该翻倍，然而实际压测的结果却还是没有什么提升。&lt;/p&gt;
+&lt;p&gt;最近公司在调研后打算替换掉老的识别库，据说新库在识别率上做的更好一些。但是在集成后实际压测发现并没有什么提升。（由于分析过程可能牵扯到公司业务，所以此处省略分析发现问题的过程，见谅）&lt;/p&gt;
 
-&lt;p&gt;所以我们不得不从全局重新思考，因为面部/手势识别礼物是由识别+播放环节组成，那如果识别做的很好了，是不是问题出在之前忽略的播放环节呢？果然在测试后发现是因为礼物资源太重导致的，不同于FaceMagic采用的骨骼动画，SenseTime采用传统的逐帧动画，那么一小段动画可能都需要上百张图片来顺序播放。想到这里我们开始尝试删减不必要的帧并尽量减小每帧图片的大小来优化，优化完资源包后由SDK的同事先行压测发现CPU占比大幅下降，大家喜上眉梢赶紧集成进项目，在直播间中开始实际压测，发现有提升但是并不明显啊！没有SDK同事用demo压测的效果那么大啊。&lt;/p&gt;
-
-&lt;p&gt;一头雾水时，在我跟SDK同事的交流中发现了问题，他们的压测demo就只是在开始时set一次资源（SenseTime的API要求set一个压缩资源包），然后开始循环识别+播放动画进行压测。但是我们直播间是每次礼物消息来的时候set一次资源（意味着要进行一次解压缩操作），然后开始进入识别+播放动画状态（我推测：而且由于直播时APP的内存吃紧，图片在内存中的缓存很容易被干掉，从而造成重复的文件IO和图片解码）。&lt;/p&gt;
+&lt;p&gt;……….&lt;/p&gt;
 
 &lt;p&gt;那么思路捋到这里我们可以总结出来两个至关重要的优化点：&lt;/p&gt;
 &lt;ol&gt;
@@ -334,7 +332,7 @@ iOS渲染图像是通过OpenGL驱动GPU来做的，OpenGL有它所支持的颜�
 
 &lt;h2 id=&quot;二遮罩mask&quot;&gt;二、遮罩mask&lt;/h2&gt;
 &lt;h3 id=&quot;场景-1&quot;&gt;场景&lt;/h3&gt;
-&lt;p&gt;同样老生常谈，发现问题的场景是我们直播间的看海大动画，播放期间满屏的离屏渲染，看了下代码发现用了好多的mask。捋了下动画中有关太阳的mask效果，是想用mask做一个太阳渐渐出现的效果，其实这个效果用一个不透明的图层盖在太阳上面也可以做到，不过没有mask使用起来方便，但是对于GPU来说合成图层比离屏渲染要轻松很多。&lt;/p&gt;
+&lt;p&gt;同样老生常谈，发现问题的场景是我们直播间的某个大动画，播放期间满屏的离屏渲染，看了下代码发现用了好多的mask。捋了下动画中有关某个元素的mask效果，是想用mask做一个元素渐渐出现的效果，其实这个效果用一个不透明的图层盖在元素上面也可以做到，不过没有mask使用起来方便，但是对于GPU来说合成图层比离屏渲染要轻松很多。&lt;/p&gt;
 &lt;h3 id=&quot;结论-1&quot;&gt;结论&lt;/h3&gt;
 &lt;p&gt;所以得出结论，遮罩mask尽量避免使用，用图层合成的方式来代替，但必须承认有些效果是图层合成代替不了的。&lt;/p&gt;
 
@@ -578,7 +576,6 @@ XCTAssertTrue(app.tables.staticTexts[showText].exists);
   &lt;li&gt;测试直播间发言是否成功，也就是本篇的示例代码。步骤是打开应用—&amp;gt;开直播—&amp;gt;发言—&amp;gt;判断公聊区是否有发言内容。&lt;/li&gt;
   &lt;li&gt;测试直播间商业红包步骤是否正确，这个我已经在项目中实现。步骤是打开应用—&amp;gt;开直播—&amp;gt;（手动触发直播间红包）—&amp;gt;判断红包是否展示—&amp;gt;判断跟红包位置冲突的活动轮播图是否已经隐藏—&amp;gt;点击红包判断是否弹出提示弹窗—&amp;gt;……—&amp;gt;红包倒计时结束后是否显示”发放中”—&amp;gt;……..等&lt;/li&gt;
   &lt;li&gt;测试直播间是否有热门火箭。步骤是打开应用—&amp;gt;开直播—&amp;gt;判断直播间是否有小火箭的view。（这块完整的测试还应该包括火箭被点击前后的位置变化是否正确、使用火箭的流程中各个view的出现时机和位置是否正确、使用后的提示是否正确）&lt;/li&gt;
-  &lt;li&gt;测试用户在直播间是否有踢人权限。步骤是打开应用—&amp;gt;开直播—&amp;gt;点击某个观众头像、点击管理按钮—&amp;gt;判断是否有”踢出直播间24小时”的按钮。（这块完整的测试还应该包括踢人的alertView展示是否正确、踢人成功后的提示以及公聊区的展示是否正确）&lt;/li&gt;
 &lt;/ol&gt;
 
 &lt;h2 id=&quot;畅想&quot;&gt;畅想&lt;/h2&gt;
@@ -628,13 +625,13 @@ TDD的目的是测试每个公开方法的正确性，而BDD关注的是行为�
 &lt;h3 id=&quot;举个栗子&quot;&gt;举个栗子&lt;/h3&gt;
 &lt;p&gt;在实现直播间内活动挂件按优先级显示的功能时，我们需要维护一个描述view具体信息的model的集合类来保存当前直播间所有view的情况以便调整，它需要满足以下四个功能：&lt;/p&gt;
 &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;//添加
--(void)addModel:(InkeShowPriorityModel*)model;
+-(void)addModel:(RHShowPriorityModel*)model;
 //删除
--(void)removeModel:(InkeShowPriorityModel*)model;
+-(void)removeModel:(RHShowPriorityModel*)model;
 //通过view索引model
--(InkeShowPriorityModel*)modelForView:(UIView*)view;
+-(RHShowPriorityModel*)modelForView:(UIView*)view;
 //通过position索引model
--(NSArray&amp;lt;InkeShowPriorityModel*&amp;gt;*)modelsForPosition:(InkeShowPriorityPosition)position;
+-(NSArray&amp;lt;RHShowPriorityModel*&amp;gt;*)modelsForPosition:(RHShowPriorityPosition)position;
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 
@@ -642,17 +639,17 @@ TDD的目的是测试每个公开方法的正确性，而BDD关注的是行为�
 &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;- (void)setUp {
     [super setUp];
     
-    self.modelA = [[InkeShowPriorityModel alloc] init];
+    self.modelA = [[RHShowPriorityModel alloc] init];
     self.viewA = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
     _modelA.view = _viewA;
-    _modelA.position = InkeShowPriorityPositionLeftUp;
+    _modelA.position = RHShowPriorityPositionLeftUp;
     
-    self.modelB = [[InkeShowPriorityModel alloc] init];
+    self.modelB = [[RHShowPriorityModel alloc] init];
     self.viewB = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 200, 200)];
     _modelB.view = _viewB;
-    _modelB.position = InkeShowPriorityPositionLeftUp;
+    _modelB.position = RHShowPriorityPositionLeftUp;
     
-    self.collection = [[InkeShowPriorityCollection alloc] initWithModels:[NSArray arrayWithObjects:_modelA, _modelB, nil]];
+    self.collection = [[RHShowPriorityCollection alloc] initWithModels:[NSArray arrayWithObjects:_modelA, _modelB, nil]];
 }
 
 - (void)tearDown {
@@ -666,14 +663,14 @@ TDD的目的是测试每个公开方法的正确性，而BDD关注的是行为�
 }
 
 -(void)testModelsForPosition {
-    NSArray *array = [_collection modelsForPosition:InkeShowPriorityPositionLeftUp];
+    NSArray *array = [_collection modelsForPosition:RHShowPriorityPositionLeftUp];
     XCTAssertTrue([array isKindOfClass:[NSArray class]]);
     XCTAssertEqual(array[0], _modelA);
     XCTAssertEqual(array[1], _modelB);
 }
 
 -(void)testAddAndRemoveModel {
-    InkeShowPriorityModel *addModel = [[InkeShowPriorityModel alloc] init];
+    RHShowPriorityModel *addModel = [[RHShowPriorityModel alloc] init];
     UIView *addView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 150, 150)];
     addModel.view = addView;
     XCTAssertNil([_collection modelForView:addView]);
@@ -690,21 +687,21 @@ TDD的目的是测试每个公开方法的正确性，而BDD关注的是行为�
 &lt;/div&gt;
 
 &lt;p&gt;&lt;strong&gt;以BDD的思想&lt;/strong&gt;进行测试的话，应该聚焦到需求，可以试着以Given..When..Then的方式陈述一下我们对于这个集合类的需求，比如&lt;code class=&quot;highlighter-rouge&quot;&gt;给你一个Coloection类，当它被初始化后，应该包含0个元素&lt;/code&gt;。我们使用比较热门的Kiwi框架&lt;a href=&quot;https://github.com/kiwi-bdd/Kiwi&quot;&gt;GitHub - kiwi-bdd/Kiwi: Simple BDD for iOS&lt;/a&gt; 进行演练，代码如下：&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;describe(@&quot;InkeShowPriorityCollection&quot;, ^{
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;describe(@&quot;RHShowPriorityCollection&quot;, ^{
     context(@&quot;当用初始数据modelA和modelB进行初始化后&quot;, ^{
-        __block InkeShowPriorityCollection *collection = nil;
-        InkeShowPriorityModel *modelA = [[InkeShowPriorityModel alloc] init];
+        __block RHShowPriorityCollection *collection = nil;
+        RHShowPriorityModel *modelA = [[RHShowPriorityModel alloc] init];
         UIView *viewA = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
         modelA.view = viewA;
-        modelA.position = InkeShowPriorityPositionLeftUp;
+        modelA.position = RHShowPriorityPositionLeftUp;
         
-        InkeShowPriorityModel *modelB = [[InkeShowPriorityModel alloc] init];
+        RHShowPriorityModel *modelB = [[RHShowPriorityModel alloc] init];
         UIView *viewB = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 200, 200)];
         modelB.view = viewB;
-        modelB.position = InkeShowPriorityPositionLeftUp;
+        modelB.position = RHShowPriorityPositionLeftUp;
         
         beforeEach(^{
-            collection = [[InkeShowPriorityCollection alloc] initWithModels:[NSArray arrayWithObjects:modelA, modelB, nil]];
+            collection = [[RHShowPriorityCollection alloc] initWithModels:[NSArray arrayWithObjects:modelA, modelB, nil]];
         });
         
         afterEach(^{
@@ -718,14 +715,14 @@ TDD的目的是测试每个公开方法的正确性，而BDD关注的是行为�
         });
         
         it(@&quot;通过一个位置可以得到一个数组，包含所有在这个位置的view的model。&quot;, ^{
-            NSArray *array = [collection modelsForPosition:InkeShowPriorityPositionLeftUp];
+            NSArray *array = [collection modelsForPosition:RHShowPriorityPositionLeftUp];
             [[array should] beKindOfClass:[NSArray class]];
             [[array[0] should] equal:modelA];
             [[array[1] should] equal:modelB];
         });
         
         it(@&quot;可以成功添加一个model。&quot;, ^{
-            InkeShowPriorityModel *addModel = [[InkeShowPriorityModel alloc] init];
+            RHShowPriorityModel *addModel = [[RHShowPriorityModel alloc] init];
             UIView *addView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 150, 150)];
             addModel.view = addView;
             [[[collection modelForView:addView] should] beNil];
