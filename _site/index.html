@@ -142,72 +142,72 @@
   <ol class="post-list">
     
     <li>
+      <h2 class="post-list__post-title post-title"><a href="/2017/12/iOS%E8%A7%A6%E6%8E%A7%E5%93%8D%E5%BA%94%E4%B8%AD%E9%82%A3%E4%BA%9B%E6%B2%A1%E6%9C%89%E7%BB%86%E6%83%B3%E8%BF%87%E7%9A%84%E9%97%AE%E9%A2%98/" title="访问 iOS触控响应中那些没有细想过的问题">iOS触控响应中那些没有细想过的问题</a></h2>
+      <p class="excerpt">  写在前面：这篇文章的重点在于讨论我想到的一些关于iOS触控响应这块容易忽略的问题，限于篇幅就不对基本的iOS触控响应知识做说明了。一、iOS给我们提供的响应触控的方式1、The touch-delivery methods定义在UIResponder中的以下方法，通过重写可以实现自定义的触控响应逻辑。- (void)touchesBegan:(NSSet&lt;UITouch *&gt; *)touches withEvent:(nullable UIEvent *)event;- (...&hellip;</p>
+      <div class="post-list__meta"><time datetime="2017-12-30 23:30:00 +0800" class="post-list__meta--date date">2017-12-30</time> &#8226; <span class="post-list__meta--tags tags">iOS</span><a class="btn-border-small" href=/2017/12/iOS%E8%A7%A6%E6%8E%A7%E5%93%8D%E5%BA%94%E4%B8%AD%E9%82%A3%E4%BA%9B%E6%B2%A1%E6%9C%89%E7%BB%86%E6%83%B3%E8%BF%87%E7%9A%84%E9%97%AE%E9%A2%98/>继续阅读</a></div>
+      <hr class="post-list__divider" />
+    </li>
+    
+    <li>
       <h2 class="post-list__post-title post-title"><a href="/2017/12/%E5%AF%B9%E5%90%84%E6%A8%A1%E5%9D%97%E9%97%B4%E7%9A%84%E4%BA%92%E6%96%A5%E5%85%B3%E7%B3%BB%E7%AE%A1%E7%90%86%E7%9A%84%E5%B0%8F%E6%80%9D%E8%80%83/" title="访问 对各模块间的互斥关系管理的小思考">对各模块间的互斥关系管理的小思考</a></h2>
       <p class="excerpt">背景最近在项目中遇到这样一个场景，在直播间的主播端有个功能区，里面是一些插件，这些插件之间在业务上存在互斥关系，也就是A处于开启状态时，B、C、D、E甚至是甲乙丙丁都不能打开。随着这块业务的增多，由于没有及时重构，导致互斥逻辑写的很是让人抓狂。假设有A、B、C、D四个互斥模块，当A要启动时，需要if (B is running) {    Log("B is running");    return;}if (C is running) {    Log("C is running"); ...&hellip;</p>
-      <div class="post-list__meta"><time datetime="2017-12-12 15:30:00 +0000" class="post-list__meta--date date">2017-12-12</time> &#8226; <span class="post-list__meta--tags tags">重构 | iOS</span><a class="btn-border-small" href=/2017/12/%E5%AF%B9%E5%90%84%E6%A8%A1%E5%9D%97%E9%97%B4%E7%9A%84%E4%BA%92%E6%96%A5%E5%85%B3%E7%B3%BB%E7%AE%A1%E7%90%86%E7%9A%84%E5%B0%8F%E6%80%9D%E8%80%83/>继续阅读</a></div>
+      <div class="post-list__meta"><time datetime="2017-12-12 23:30:00 +0800" class="post-list__meta--date date">2017-12-12</time> &#8226; <span class="post-list__meta--tags tags">重构 | iOS</span><a class="btn-border-small" href=/2017/12/%E5%AF%B9%E5%90%84%E6%A8%A1%E5%9D%97%E9%97%B4%E7%9A%84%E4%BA%92%E6%96%A5%E5%85%B3%E7%B3%BB%E7%AE%A1%E7%90%86%E7%9A%84%E5%B0%8F%E6%80%9D%E8%80%83/>继续阅读</a></div>
       <hr class="post-list__divider" />
     </li>
     
     <li>
       <h2 class="post-list__post-title post-title"><a href="/2017/09/%E7%B1%BB%E4%BC%BC%E9%80%90%E5%B8%A7%E5%8A%A8%E7%94%BB%E6%88%96%E8%80%85tableView%E5%88%97%E8%A1%A8%E4%B8%AD%E6%9C%89%E5%A4%A7%E9%87%8F%E5%9B%BE%E7%89%87%E5%B1%95%E7%A4%BA%E9%9C%80%E6%B1%82%E7%9A%84%E5%9C%BA%E6%99%AF%E6%88%91%E4%BB%AC%E5%8F%AF%E4%BB%A5%E5%81%9A%E5%93%AA%E4%BA%9B%E4%BC%98%E5%8C%96/" title="访问 类似逐帧动画或者tableView列表中有大量图片展示需求的场景我们可以做哪些优化？">类似逐帧动画或者tableView列表中有大量图片展示需求的场景我们可以做哪些优化？</a></h2>
       <p class="excerpt">背景最近公司在调研后打算替换掉老的识别库，据说新库在识别率上做的更好一些。但是在集成后实际压测发现并没有什么提升。（由于分析过程可能牵扯到公司业务，所以此处省略分析发现问题的过程，见谅）……….那么思路捋到这里我们可以总结出来两个至关重要的优化点：  避免频繁的解压资源包操作，每次解压绝对是件耗费的操作。这个是比较低级但在俯瞰全局时容易忽略的点，本篇不做讨论。  逐帧动画的图片数量比较大质量比较高，能否把PNG/JPEG图片解码成位图后保存到本地，避免CPU进行重复频繁的解码图片操作？基于...&hellip;</p>
-      <div class="post-list__meta"><time datetime="2017-09-25 15:30:00 +0000" class="post-list__meta--date date">2017-09-25</time> &#8226; <span class="post-list__meta--tags tags">iOS | 优化</span><a class="btn-border-small" href=/2017/09/%E7%B1%BB%E4%BC%BC%E9%80%90%E5%B8%A7%E5%8A%A8%E7%94%BB%E6%88%96%E8%80%85tableView%E5%88%97%E8%A1%A8%E4%B8%AD%E6%9C%89%E5%A4%A7%E9%87%8F%E5%9B%BE%E7%89%87%E5%B1%95%E7%A4%BA%E9%9C%80%E6%B1%82%E7%9A%84%E5%9C%BA%E6%99%AF%E6%88%91%E4%BB%AC%E5%8F%AF%E4%BB%A5%E5%81%9A%E5%93%AA%E4%BA%9B%E4%BC%98%E5%8C%96/>继续阅读</a></div>
+      <div class="post-list__meta"><time datetime="2017-09-25 23:30:00 +0800" class="post-list__meta--date date">2017-09-25</time> &#8226; <span class="post-list__meta--tags tags">iOS | 优化</span><a class="btn-border-small" href=/2017/09/%E7%B1%BB%E4%BC%BC%E9%80%90%E5%B8%A7%E5%8A%A8%E7%94%BB%E6%88%96%E8%80%85tableView%E5%88%97%E8%A1%A8%E4%B8%AD%E6%9C%89%E5%A4%A7%E9%87%8F%E5%9B%BE%E7%89%87%E5%B1%95%E7%A4%BA%E9%9C%80%E6%B1%82%E7%9A%84%E5%9C%BA%E6%99%AF%E6%88%91%E4%BB%AC%E5%8F%AF%E4%BB%A5%E5%81%9A%E5%93%AA%E4%BA%9B%E4%BC%98%E5%8C%96/>继续阅读</a></div>
       <hr class="post-list__divider" />
     </li>
     
     <li>
       <h2 class="post-list__post-title post-title"><a href="/2017/07/iOS%E4%BC%98%E5%8C%96%E7%95%8C%E9%9D%A2%E6%B8%B2%E6%9F%93%E5%AE%9E%E8%B7%B5%E4%B8%AD%E7%9A%84%E5%87%A0%E7%82%B9%E7%BB%8F%E9%AA%8C/" title="访问 iOS优化界面渲染实践中的几点经验">iOS优化界面渲染实践中的几点经验</a></h2>
       <p class="excerpt">一、圆角切割离屏渲染这个词已经老生常谈了，常说的圆角（切割）、遮罩mask、阴影shadow都会导致GPU离屏渲染，好在apple在iOS9以后优化了圆角切割，不再会导致离屏渲染了，但事实并不是这样的。场景比如我们直播间上方的观众列表中的圆形头像，在iOS10.3.2系统上用Instruments查看，还是有用黄色阴影标记的离屏渲染，而且由于直播间这种特殊场景，背景视频始终在渲染，这些圆角也就始终在离屏渲染，让人捉急。我各种猜想及google均无果（有人说设置imageView的backg...&hellip;</p>
-      <div class="post-list__meta"><time datetime="2017-07-15 15:30:00 +0000" class="post-list__meta--date date">2017-07-15</time> &#8226; <span class="post-list__meta--tags tags">iOS</span><a class="btn-border-small" href=/2017/07/iOS%E4%BC%98%E5%8C%96%E7%95%8C%E9%9D%A2%E6%B8%B2%E6%9F%93%E5%AE%9E%E8%B7%B5%E4%B8%AD%E7%9A%84%E5%87%A0%E7%82%B9%E7%BB%8F%E9%AA%8C/>继续阅读</a></div>
+      <div class="post-list__meta"><time datetime="2017-07-15 23:30:00 +0800" class="post-list__meta--date date">2017-07-15</time> &#8226; <span class="post-list__meta--tags tags">iOS</span><a class="btn-border-small" href=/2017/07/iOS%E4%BC%98%E5%8C%96%E7%95%8C%E9%9D%A2%E6%B8%B2%E6%9F%93%E5%AE%9E%E8%B7%B5%E4%B8%AD%E7%9A%84%E5%87%A0%E7%82%B9%E7%BB%8F%E9%AA%8C/>继续阅读</a></div>
       <hr class="post-list__divider" />
     </li>
     
     <li>
       <h2 class="post-list__post-title post-title"><a href="/2017/07/iOS-UI-Tests-%E5%AE%9E%E7%8E%B0%E6%96%B9%E6%A1%88%E5%88%86%E6%9E%90/" title="访问 iOS UI Tests 实现方案分析">iOS UI Tests 实现方案分析</a></h2>
       <p class="excerpt">UI Tests是一个可以对UI进行测试的框架。为什么需要UI Tests呢？如果客户端分为基础层和业务层的话，业务层最终都是负责界面展示的，通常是MV(C/P/VM)，(C/P/VM)中的逻辑并不适合用Unit Tests来覆盖。对于具体的界面操作流程，UI Tests是合适的选择。集成UI Tests下图为在Xcode中为项目添加UI Tests的步骤：  新建Target  新建Case ClassWriting UI TestsRecordingXcode为我们提供了把整套操作转化...&hellip;</p>
-      <div class="post-list__meta"><time datetime="2017-07-06 15:30:00 +0000" class="post-list__meta--date date">2017-07-06</time> &#8226; <span class="post-list__meta--tags tags">iOS | Test</span><a class="btn-border-small" href=/2017/07/iOS-UI-Tests-%E5%AE%9E%E7%8E%B0%E6%96%B9%E6%A1%88%E5%88%86%E6%9E%90/>继续阅读</a></div>
+      <div class="post-list__meta"><time datetime="2017-07-06 23:30:00 +0800" class="post-list__meta--date date">2017-07-06</time> &#8226; <span class="post-list__meta--tags tags">iOS | Test</span><a class="btn-border-small" href=/2017/07/iOS-UI-Tests-%E5%AE%9E%E7%8E%B0%E6%96%B9%E6%A1%88%E5%88%86%E6%9E%90/>继续阅读</a></div>
       <hr class="post-list__divider" />
     </li>
     
     <li>
       <h2 class="post-list__post-title post-title"><a href="/2017/07/iOS-Unit-Tests-%E5%AE%9E%E7%8E%B0%E6%96%B9%E6%A1%88%E5%88%86%E6%9E%90/" title="访问 iOS Unit Tests 实现方案分析">iOS Unit Tests 实现方案分析</a></h2>
       <p class="excerpt">在计算机编程中，单元测试（英语：Unit Testing）又称为模块测试, 是针对程序模块（软件设计的最小单位）来进行正确性检验的测试工作。程序单元是应用的最小可测试部件。在过程化编程中，一个单元就是单个程序、函数、过程等；对于面向对象编程，最小单元就是方法，包括基类（超类）、抽象类、或者派生类（子类）中的方法。S.O.L.I.D理解单元测试，首先要理解单元(Unit)：软件设计的最小单位，而在我们面向对象的世界里最小单位就是方法，所以好的单元测试一定很好的覆盖了方法。想覆盖就得有暴露，如...&hellip;</p>
-      <div class="post-list__meta"><time datetime="2017-07-05 15:30:00 +0000" class="post-list__meta--date date">2017-07-05</time> &#8226; <span class="post-list__meta--tags tags">iOS | Test</span><a class="btn-border-small" href=/2017/07/iOS-Unit-Tests-%E5%AE%9E%E7%8E%B0%E6%96%B9%E6%A1%88%E5%88%86%E6%9E%90/>继续阅读</a></div>
+      <div class="post-list__meta"><time datetime="2017-07-05 23:30:00 +0800" class="post-list__meta--date date">2017-07-05</time> &#8226; <span class="post-list__meta--tags tags">iOS | Test</span><a class="btn-border-small" href=/2017/07/iOS-Unit-Tests-%E5%AE%9E%E7%8E%B0%E6%96%B9%E6%A1%88%E5%88%86%E6%9E%90/>继续阅读</a></div>
       <hr class="post-list__divider" />
     </li>
     
     <li>
       <h2 class="post-list__post-title post-title"><a href="/2016/04/%E5%BD%93%E6%88%91%E8%B0%88%E6%97%85%E8%A1%8C%E6%97%B6-%E6%88%91%E8%B0%88%E4%BA%9B%E4%BB%80%E4%B9%88/" title="访问 当我谈旅行时，我谈些什么">当我谈旅行时，我谈些什么</a></h2>
       <p class="excerpt">随心在昆明的第二天，还有没去的但不想去的景点，心里总觉得憋得慌缺点啥，在云南大学周边转了一上午，吃过午饭后就彻底无聊烦躁到极点了，这才是旅途的第二天就这状态了，不合适啊。安静下来想了想，是因为昨天在滇池旁没玩够就去了民族村，本打算逛完民族村再去滇池旁诗意一会坐坐船看看西山风景，结果民族村太好玩导致逛完后体力都消耗殆尽了，加上阴天的昆明湿冷湿冷的，出了民族村我们就直接打道回府了，仿佛在心里种下了不痛快的种子，所以今天内心一直在那闹情绪，无聊烦躁没目的，像极了平常生活中那种麻木消极的状态。缕清...&hellip;</p>
-      <div class="post-list__meta"><time datetime="2016-04-05 22:10:00 +0000" class="post-list__meta--date date">2016-04-05</time> &#8226; <span class="post-list__meta--tags tags">旅行跑步</span><a class="btn-border-small" href=/2016/04/%E5%BD%93%E6%88%91%E8%B0%88%E6%97%85%E8%A1%8C%E6%97%B6-%E6%88%91%E8%B0%88%E4%BA%9B%E4%BB%80%E4%B9%88/>继续阅读</a></div>
+      <div class="post-list__meta"><time datetime="2016-04-06 06:10:00 +0800" class="post-list__meta--date date">2016-04-06</time> &#8226; <span class="post-list__meta--tags tags">旅行跑步</span><a class="btn-border-small" href=/2016/04/%E5%BD%93%E6%88%91%E8%B0%88%E6%97%85%E8%A1%8C%E6%97%B6-%E6%88%91%E8%B0%88%E4%BA%9B%E4%BB%80%E4%B9%88/>继续阅读</a></div>
       <hr class="post-list__divider" />
     </li>
     
     <li>
       <h2 class="post-list__post-title post-title"><a href="/2016/03/UIScrollView%E4%B8%ADdraggin%E5%B1%9E%E6%80%A7%E7%9A%84%E5%BB%B6%E8%BF%9F%E5%8F%98%E5%8C%96%E5%AF%BC%E8%87%B4bug%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/" title="访问 UIScrollView中draggin属性的延迟变化导致bug的解决方法">UIScrollView中draggin属性的延迟变化导致bug的解决方法</a></h2>
       <p class="excerpt">最近开始用Swift写项目，就先自己封装了下拉上拉的库EasyPull上传到GitHub，期间跟网友交流解决了一些没考虑到的bug，现在库已经基本稳定了，我已经应用到生产中了。但是，在我不断的测试中，发现一个很隐晦的bug：在拉动到临界位置左右释放后，有时不能触发刷新。随即我看了看手机上的常用应用，发现天猫、美团、今日头条等都存在这个问题，好奇之心涌上心头，一番debug后，发现罪魁祸首是UIScrollView的draggin属性，官方的API有介绍：public var draggin...&hellip;</p>
-      <div class="post-list__meta"><time datetime="2016-03-15 15:30:00 +0000" class="post-list__meta--date date">2016-03-15</time> &#8226; <span class="post-list__meta--tags tags">Swift | iOS</span><a class="btn-border-small" href=/2016/03/UIScrollView%E4%B8%ADdraggin%E5%B1%9E%E6%80%A7%E7%9A%84%E5%BB%B6%E8%BF%9F%E5%8F%98%E5%8C%96%E5%AF%BC%E8%87%B4bug%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/>继续阅读</a></div>
+      <div class="post-list__meta"><time datetime="2016-03-15 23:30:00 +0800" class="post-list__meta--date date">2016-03-15</time> &#8226; <span class="post-list__meta--tags tags">Swift | iOS</span><a class="btn-border-small" href=/2016/03/UIScrollView%E4%B8%ADdraggin%E5%B1%9E%E6%80%A7%E7%9A%84%E5%BB%B6%E8%BF%9F%E5%8F%98%E5%8C%96%E5%AF%BC%E8%87%B4bug%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/>继续阅读</a></div>
       <hr class="post-list__divider" />
     </li>
     
     <li>
       <h2 class="post-list__post-title post-title"><a href="/2015/04/%E7%BC%96%E7%A0%81%E7%9F%A5%E8%AF%86%E5%A4%A7%E6%9D%82%E7%83%A9/" title="访问 编码知识大杂烩">编码知识大杂烩</a></h2>
       <p class="excerpt">零、万物归宗ASCII码（American Standard Code for Information Interchange，美国标准信息交换代码），最原始最直观的表示方式，一个字节表示一个字符，一个字节=8位，那么一个字节就有256(2的8次方)种状态。这又分为标准ASCII和扩展ASCII，其中：标准ASCII(十进制0~127) 使用一个字节中除去最高位以外的7 位来表示所有的大写和小写字母，数字0 到9、标点符号，以及在美式英语中使用的特殊控制字符。  Tips：标准ASCII中...&hellip;</p>
-      <div class="post-list__meta"><time datetime="2015-04-02 12:00:00 +0000" class="post-list__meta--date date">2015-04-02</time> &#8226; <span class="post-list__meta--tags tags">编码</span><a class="btn-border-small" href=/2015/04/%E7%BC%96%E7%A0%81%E7%9F%A5%E8%AF%86%E5%A4%A7%E6%9D%82%E7%83%A9/>继续阅读</a></div>
+      <div class="post-list__meta"><time datetime="2015-04-02 20:00:00 +0800" class="post-list__meta--date date">2015-04-02</time> &#8226; <span class="post-list__meta--tags tags">编码</span><a class="btn-border-small" href=/2015/04/%E7%BC%96%E7%A0%81%E7%9F%A5%E8%AF%86%E5%A4%A7%E6%9D%82%E7%83%A9/>继续阅读</a></div>
       <hr class="post-list__divider" />
     </li>
     
     <li>
       <h2 class="post-list__post-title post-title"><a href="/2014/07/%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0%E5%BC%B9%E5%87%BA%E9%A1%B5%E6%9B%B4%E6%8D%A2%E5%A4%B4%E5%83%8F%E7%9A%84%E5%8A%9F%E8%83%BD/" title="访问 简单实现弹出页更换头像的功能">简单实现弹出页更换头像的功能</a></h2>
       <p class="excerpt">　　在Win 8应用里，对弹出页(Popup)的灵活操作必不可少，下面我们就来简单实现一个。一、先让Popup弹出到指定位置　　先来看看效果图，如图[1]：&nbsp; &nbsp; &nbsp; 　　下面是前端代码，代码段[1]：&lt;Grid Background="#0054a2"&gt;    &lt;Border Background="AliceBlue" Margin="40,40,1126,528" Width="150" Height="150"&gt;        ...&hellip;</p>
-      <div class="post-list__meta"><time datetime="2014-07-07 12:00:00 +0000" class="post-list__meta--date date">2014-07-07</time> &#8226; <span class="post-list__meta--tags tags">C# | .NETWin8 | WP8</span><a class="btn-border-small" href=/2014/07/%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0%E5%BC%B9%E5%87%BA%E9%A1%B5%E6%9B%B4%E6%8D%A2%E5%A4%B4%E5%83%8F%E7%9A%84%E5%8A%9F%E8%83%BD/>继续阅读</a></div>
-      <hr class="post-list__divider" />
-    </li>
-    
-    <li>
-      <h2 class="post-list__post-title post-title"><a href="/2014/06/%E5%B0%86%E8%87%AA%E5%AE%9A%E4%B9%89%E7%9A%84%E5%80%BC%E7%B1%BB%E5%9E%8B%E7%94%A8%E4%BD%9C%E5%AD%97%E5%85%B8%E7%9A%84%E9%94%AE-%E8%A6%81%E7%89%B9%E5%88%AB%E6%B3%A8%E6%84%8F%E4%BB%80%E4%B9%88/" title="访问 将自定义的值类型用作字典的键，要特别注意什么？">将自定义的值类型用作字典的键，要特别注意什么？</a></h2>
-      <p class="excerpt">　　前天关注了老赵的微信公众号：赵人希。昨天就推送了一个快速问答，下面把我的答题经历跟大家分享，希望对于菜鸟同胞们有所帮助启发。　　其实这个问题在他的博客里有专门的篇幅讲解，我猜到了，哈哈。但是大牛讲问题都是在一个高度上，水平差点的需要费点力气才能理解，而这个过程就是拉进我们与大牛距离的过程，用心总结下，才能不断强化自己靠近他们。一、通常的字典用法（熟练可直接略过）　　在我平时的编码中，用的最频繁的就是代码段[1]：public class Example{    public stati...&hellip;</p>
-      <div class="post-list__meta"><time datetime="2014-06-18 12:00:00 +0000" class="post-list__meta--date date">2014-06-18</time> &#8226; <span class="post-list__meta--tags tags">C# | .NET</span><a class="btn-border-small" href=/2014/06/%E5%B0%86%E8%87%AA%E5%AE%9A%E4%B9%89%E7%9A%84%E5%80%BC%E7%B1%BB%E5%9E%8B%E7%94%A8%E4%BD%9C%E5%AD%97%E5%85%B8%E7%9A%84%E9%94%AE-%E8%A6%81%E7%89%B9%E5%88%AB%E6%B3%A8%E6%84%8F%E4%BB%80%E4%B9%88/>继续阅读</a></div>
+      <div class="post-list__meta"><time datetime="2014-07-07 20:00:00 +0800" class="post-list__meta--date date">2014-07-07</time> &#8226; <span class="post-list__meta--tags tags">C# | .NETWin8 | WP8</span><a class="btn-border-small" href=/2014/07/%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0%E5%BC%B9%E5%87%BA%E9%A1%B5%E6%9B%B4%E6%8D%A2%E5%A4%B4%E5%83%8F%E7%9A%84%E5%8A%9F%E8%83%BD/>继续阅读</a></div>
       <hr class="post-list__divider" />
     </li>
     
@@ -229,8 +229,8 @@
             <section class="footer">
     <footer>
     	<span class="footer__copyright">本站点采用<a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享 署名-非商业性使用-相同方式共享 4.0 国际 许可协议</a></span>
-        <span class="footer__copyright">由 <a href="https://jekyllrb.com">Jekyll</a> 于 2017-12-21 生成，感谢 <a href="https://www.digitalocean.com/?refcode=30ed2d146762">Digital Ocean</a> 为本站提供稳定的 VPS 服务</span>
-        <span class="footer__copyright">本站由 <a href="http://ronghaopger.github.io/about/">@RongHao</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2017</span>
+        <span class="footer__copyright">由 <a href="https://jekyllrb.com">Jekyll</a> 于 2018-03-01 生成，感谢 <a href="https://www.digitalocean.com/?refcode=30ed2d146762">Digital Ocean</a> 为本站提供稳定的 VPS 服务</span>
+        <span class="footer__copyright">本站由 <a href="http://ronghaopger.github.io/about/">@RongHao</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2018</span>
     </footer>
 </section>
 

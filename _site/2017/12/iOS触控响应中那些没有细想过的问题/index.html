@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>iOS触控响应中那些没有细想过的问题</title>
+  <meta name="description" content="  写在前面：这篇文章的重点在于讨论我想到的一些关于iOS触控响应这块容易忽略的问题，限于篇幅就不对基本的iOS触控响应知识做说明了。">
+  <meta name="author" content="Wei Wang">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="iOS触控响应中那些没有细想过的问题">
+  <meta name="twitter:description" content="  写在前面：这篇文章的重点在于讨论我想到的一些关于iOS触控响应这块容易忽略的问题，限于篇幅就不对基本的iOS触控响应知识做说明了。">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="iOS触控响应中那些没有细想过的问题">
+  <meta property="og:description" content="  写在前面：这篇文章的重点在于讨论我想到的一些关于iOS触控响应这块容易忽略的问题，限于篇幅就不对基本的iOS触控响应知识做说明了。">
+  
+  <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
+  <link href="/assets/images/favicon.png" rel="shortcut icon" type="image/png">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="canonical" href="http://localhost:4000/2017/12/iOS%E8%A7%A6%E6%8E%A7%E5%93%8D%E5%BA%94%E4%B8%AD%E9%82%A3%E4%BA%9B%E6%B2%A1%E6%9C%89%E7%BB%86%E6%83%B3%E8%BF%87%E7%9A%84%E9%97%AE%E9%A2%98/">
+  <link rel="alternate" type="application/rss+xml" title="Hulk' Den" href="http://localhost:4000/feed.xml">
+  
+  <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
+  
+  <script>
+	var _hmt = _hmt || [];
+	(function() {
+  		var hm = document.createElement("script");
+  		hm.src = "https://hm.baidu.com/hm.js?30e3928ea4b052828e74eb233dfa4825";
+  		var s = document.getElementsByTagName("script")[0]; 
+  		s.parentNode.insertBefore(hm, s);
+	})();
+  </script>
+
+</head>
+
+
+  <body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="fa fa-list btn-mobile-menu__icon"></i>
+        <i class="fa fa-angle-up btn-mobile-close__icon hidden"></i>
+    </span>
+    
+    <header class="panel-cover panel-cover--collapsed" style="background-image: url('/assets/images/background-cover.jpg')">
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        <a href="/#blog" title="前往 Hulk' Den 的主页" class="blog-button"><img src="/assets/images/avatar.jpg" width="80" alt="Hulk' Den logo" class="panel-cover__logo logo" /></a>
+        <h1 class="panel-cover__title panel-title"><a href="/#blog" title="link to homepage for Hulk' Den" class="blog-button">Hulk' Den</a></h1>
+        
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">格物致知 意诚 心正 身修</p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+        
+        
+        
+        <div class="navigation-wrapper">
+          <div>
+            <nav class="cover-navigation cover-navigation--primary">
+              <ul class="navigation">
+                <li class="navigation__item"><a href="/#blog" title="Visit blog" class="blog-button">Blog</a></li>
+                
+                  <li class="navigation__item"><a href="https://github.com/ronghaopger" target="_blank" title="ronghaopger">GitHub</a></li>
+                
+              </ul>
+            </nav>
+          </div>
+          
+          <div><nav class="cover-navigation navigation--social">
+  <ul class="navigation">
+
+  
+  <!-- Weibo -->
+  <li class="navigation__item">
+    <a href="http://weibo.com/做梦家荣浩" title="@做梦家荣浩 的微博" target="_blank">
+      <i class='social fa fa-weibo'></i>
+      <span class="label">Weibo</span>
+    </a>
+  </li>
+  
+
+  
+  <!-- Github -->
+  <li class="navigation__item">
+    <a href="https://github.com/ronghaopger" title="@ronghaopger 的 Github" target="_blank">
+      <i class='social fa fa-github'></i>
+      <span class="label">Github</span>
+    </a>
+  </li>
+  
+  
+  
+
+  
+
+  <!-- RSS -->
+  <li class="navigation__item">
+    <a href="/feed.xml" rel="author" title="RSS" target="_blank">
+      <i class='social fa fa-rss'></i>
+      <span class="label">RSS</span>
+    </a>
+  </li>
+
+  
+  <!-- Email -->
+  <li class="navigation__item">
+    <a href="mailto:ronghao_1989@hotmail.com" title="Contact me">
+      <i class='social fa fa-envelope'></i>
+      <span class="label">Email</span>
+    </a>
+  </li>
+  
+
+  </ul>
+</nav>
+</div>
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="panel-cover--overlay cover-disabled"></div>
+    
+  </div>
+</header>
+
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner">
+            <article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
+  <header class="post-header">
+    <div class="post-meta">
+      <time datetime="2017-12-30 23:30:00 +0800" itemprop="datePublished" class="post-meta__date date">2017-12-30</time> &#8226; <span class="post-meta__tags tags">iOS</span>
+    </div>
+    <h1 class="post-title">iOS触控响应中那些没有细想过的问题</h1>
+  </header>
+
+  <section class="post">
+    <blockquote>
+  <p>写在前面：这篇文章的重点在于讨论我想到的一些关于iOS触控响应这块容易忽略的问题，限于篇幅就不对基本的iOS触控响应知识做说明了。</p>
+</blockquote>
+
+<h2 id="一ios给我们提供的响应触控的方式">一、iOS给我们提供的响应触控的方式</h2>
+<h3 id="1the-touch-delivery-methods">1、The touch-delivery methods</h3>
+<p>定义在UIResponder中的以下方法，通过重写可以实现自定义的触控响应逻辑。</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>- (void)touchesBegan:(NSSet&lt;UITouch *&gt; *)touches withEvent:(nullable UIEvent *)event;
+- (void)touchesMoved:(NSSet&lt;UITouch *&gt; *)touches withEvent:(nullable UIEvent *)event;
+- (void)touchesEnded:(NSSet&lt;UITouch *&gt; *)touches withEvent:(nullable UIEvent *)event;
+- (void)touchesCancelled:(NSSet&lt;UITouch *&gt; *)touches withEvent:(nullable UIEvent *)event;
+</code></pre>
+</div>
+
+<h3 id="2uicontrol">2、UIControl</h3>
+<p>即<a href="https://developer.apple.com/library/content/documentation/General/Conceptual/Devpedia-CocoaApp/TargetAction.html">Target-Action</a>模式，具体支持的事件在<code class="highlighter-rouge">UIControlEvents</code>枚举中有定义。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>- (BOOL)beginTrackingWithTouch:(UITouch *)touch withEvent:(nullable UIEvent *)event;
+- (BOOL)continueTrackingWithTouch:(UITouch *)touch withEvent:(nullable UIEvent *)event;
+- (void)endTrackingWithTouch:(nullable UITouch *)touch withEvent:(nullable UIEvent *)event;
+- (void)cancelTrackingWithEvent:(nullable UIEvent *)event;
+
+- (void)sendActionsForControlEvents:(UIControlEvents)controlEvents;
+</code></pre>
+</div>
+<p>可以通过重写这四个tracking方法结合sendActionsForControlEvents:方法实现事件的自定义逻辑。</p>
+
+<p><strong>Note</strong>: 
+或许有人会有疑问说这四个tracking方法跟UIResponder中的四个touch-delivery methods方法很像，有什么区别呢？下文中的<strong>结论三</strong>会讲到。</p>
+
+<h3 id="3uigesturerecognizer">3、UIGestureRecognizer</h3>
+<ul>
+  <li>UILongPressGestureRecognizer  长按</li>
+  <li>UIPanGestureRecognizer  拖动</li>
+  <li>UIPinchGestureRecognizer  缩放</li>
+  <li>UIRotationGestureRecognizer  旋转</li>
+  <li>UISwipeGestureRecognizer  轻扫</li>
+  <li>UITapGestureRecognizer  点击</li>
+</ul>
+
+<p>我们也可以继承UIGestureRecognizer，通过重写touch-delivery methods来自定义一个新手势。</p>
+
+<h2 id="二为什么是多种方式">二、为什么是多种方式</h2>
+<p>那么让我好奇的是为什么要提供三种方式呢？比如最常见的点击操作，通过上述三种方式都可以响应，那到底用哪种呢？为何不统一成一种方式呢？</p>
+
+<p>我的理解，UIControl的出现是为了更好的封装性，把具有一些特定行为的UIView封装成控件，方便复用。而且通过demo实验可知，UIControl中对于UIControlEvents中定义的事件的支持，其实就是通过重写UIResponder中的touch-delivery methods实现的，不过加了一些<strong>特殊的逻辑</strong>（下文会提到）。</p>
+
+<p>而UIGestureRecognizer是<code class="highlighter-rouge">NS_CLASS_AVAILABLE_IOS(3_2)</code>加入的机制，我认为这是Apple对UIView的触控响应部分的解耦。同时，还有很重要的一点是UIGestureRecognizer的<strong>优先级是最高的</strong>，这个在网上很多关于触控响应的资料都有说明，下文中有我对于这块代码的实现猜想。</p>
+
+<h2 id="三多种方式带来的混乱">三、多种方式带来的混乱</h2>
+<blockquote>
+  <p>为了便于对下文场景的描述我们约定一下简称：<br />
+UIView统一用view<br />
+UIScrollView统一用scrollView<br />
+UIButton统一用button<br />
+UITextField统一用textField<br />
+UIGestureRecognizer统一用gesture</p>
+</blockquote>
+
+<p><strong>声明</strong>：下文中描述的存在上下层级关系的view，都存在包含关系（即上层view都是addSubView到下层view上的）。显然，如果不存在包含关系，就不在一个响应链上，也就不需要讨论了。</p>
+
+<ol>
+  <li>scrollViewA 上方有一个viewA，滑动viewA，scrollViewA会不会被滑动呢？它们的touch-delivery methods会触发吗？</li>
+  <li>scrollViewA上方有一个scrollViewB，滑动scrollViewB，scrollViewA会不会被滑动呢？它们的touch-delivery methods会触发吗？</li>
+  <li>buttonA上方有一个viewA，点击viewA，buttonA会响应吗？它们的touch-delivery methods会触发吗？</li>
+  <li>buttonA上方有一个buttonB，点击buttonB，buttonA会响应吗？它们的touch-delivery methods会触发吗？</li>
+  <li>viewA viewB viewC依次从下到上， viewA和viewB都addGestureRecognizer:tapGesture，那么点击viewC，viewA和viewB上的手势(都)会被触发吗？它们的touch-delivery methods会触发吗？</li>
+  <li>还是(5)这种场景，如果viewC是一个button，会怎样呢？</li>
+  <li>buttonA上addGestureRecognizer:tapGesture，同时还addTarget:action:forControlEvents:UIControlEventTouchDown，在用户点击的时候它们都会被识别并触发吗？如果是UIControlEventTouchUpInside事件又会这样呢？</li>
+</ol>
+
+<p><strong>相信这些情况在一些复杂的业务场景中是可能碰到的，也会带来困惑。从下文中就可以找到答案了，我是通过最初的猜想，到自己写demo实验，得出的以下结论。</strong></p>
+
+<h2 id="四从猜想到实验得出的结论">四、从猜想到实验得出的结论</h2>
+<h3 id="结论一uiresponder实现了uitouch的传递">结论一：UIResponder实现了UITouch的传递</h3>
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">@implementation</span> <span class="nc">UIResponder</span>
+<span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">touchesBegan</span><span class="p">:(</span><span class="n">NSSet</span><span class="o">&lt;</span><span class="n">UITouch</span> <span class="o">*&gt;</span> <span class="o">*</span><span class="p">)</span><span class="nv">touches</span> <span class="nf">withEvent</span><span class="p">:(</span><span class="n">UIEvent</span> <span class="o">*</span><span class="p">)</span><span class="nv">event</span> <span class="p">{</span>
+    <span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">nextResponder</span> <span class="nf">touchesBegan</span><span class="p">:</span><span class="n">touches</span> <span class="nf">withEvent</span><span class="p">:</span><span class="n">event</span><span class="p">];</span>
+<span class="p">}</span>
+<span class="p">...</span>
+<span class="n">etc</span><span class="p">.</span>
+<span class="k">@end</span>
+</code></pre>
+</div>
+<p>也就是我们重写touch-delivery methods时，如果不调用父类的实现，就会阻断UITouch的传递。</p>
+
+<h3 id="结论二uicontrol阻断了uitouch的传递">结论二：UIControl阻断了UITouch的传递</h3>
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">@implementation</span> <span class="nc">UIControl</span>
+<span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">touchesBegan</span><span class="p">:(</span><span class="n">NSSet</span><span class="o">&lt;</span><span class="n">UITouch</span> <span class="o">*&gt;</span> <span class="o">*</span><span class="p">)</span><span class="nv">touches</span> <span class="nf">withEvent</span><span class="p">:(</span><span class="n">UIEvent</span> <span class="o">*</span><span class="p">)</span><span class="nv">event</span> <span class="p">{</span>
+    <span class="c1">//没有调用下面这句
+</span>    <span class="c1">//[super touchesBegan:touches withEvent:event];
+</span><span class="p">}</span>
+<span class="p">...</span>
+<span class="n">etc</span><span class="p">.</span>
+<span class="k">@end</span>
+</code></pre>
+</div>
+<p>基于结论一，再加以实验发现，UIControl在实现touch-delivery methods时就没有调用父类的实现，因此<strong>UIControl以及它的子类</strong>都会阻断UITouch的传递。</p>
+
+<h3 id="结论三uicontrolevents只会在此uicontrol是用户触摸的view时才会被触发">结论三：UIControlEvents只会在此UIControl是用户触摸的view时才会被触发</h3>
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">@implementation</span> <span class="nc">UIControl</span>
+<span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">touchesBegan</span><span class="p">:(</span><span class="n">NSSet</span><span class="o">&lt;</span><span class="n">UITouch</span> <span class="o">*&gt;</span> <span class="o">*</span><span class="p">)</span><span class="nv">touches</span> <span class="nf">withEvent</span><span class="p">:(</span><span class="n">UIEvent</span> <span class="o">*</span><span class="p">)</span><span class="nv">event</span> <span class="p">{</span>
+    <span class="n">UITouch</span> <span class="o">*</span><span class="n">touch</span> <span class="o">=</span> <span class="p">[</span><span class="n">touches</span> <span class="nf">anyObject</span><span class="p">];</span>
+    <span class="k">if</span> <span class="p">([</span><span class="n">touch</span> <span class="nf">view</span><span class="p">]</span> <span class="o">==</span> <span class="n">self</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">//TODO: UIControlEvents中定义的事件的识别逻辑
+</span>        <span class="p">[</span><span class="n">self</span> <span class="nf">beginTrackingWithTouch</span><span class="p">:</span><span class="n">touch</span> <span class="nf">withEvent</span><span class="p">:</span><span class="n">event</span><span class="p">];</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="c1">//其它几个方法逻辑类似
+</span><span class="p">...</span>
+<span class="n">etc</span><span class="p">.</span>
+<span class="k">@end</span>
+</code></pre>
+</div>
+<p>UIControl只有在hitTest:withEvent:方法最终返回的view是自己的时候，即用户真正触摸的view是自己的时候，才会触发响应。这样描述是为了说明，虽然UIControl也是继承了UIResponder并重写touch-delivery methods来实现触控响应逻辑，但是如果它不是在响应链的最外端，那么UIControlEvents事件并不会被触发。</p>
+
+<p><strong>Note</strong>:
+可能有人会有疑问，代码中的<code class="highlighter-rouge">//TODO: UIControlEvents中定义的事件的识别逻辑</code>为什么是在touchesBegan:withEvent:方法中实现？而不是封装到beginTrackingWithTouch:withEvent:中去？我也是经过实验得出的这个结论，我的理解是如果按后者来，那么我们在重写beginTrackingWithTouch:withEvent:方法时如果没有调用父类的实现，就使它失去了在父类里已经明确声明的对于UIControlEvents的支持，是不合理的，Apple如此设计做到了功能的一致性。（其实本该如此，只是我在猜想代码实现的的小想法而已）</p>
+
+<h3 id="结论四uibutton会阻断superviews上的手势识别">结论四：UIButton会阻断superViews上的手势识别</h3>
+<p>我们知道手势响应的优先级是最高的，默认情况下，在UITouch的目标view及其superView上的gestureRecognizers被识别时，会调用目标view及其superView的touchesCancelled:withEvent:方法来取消响应链对于此UITouch的响应。除非把UIGestureRecognizer的cancelsTouchesInView属性设为NO。</p>
+
+<p>但是有没有想过同样依赖touch-delivery methods来实现响应的UIButton跟比如UITapGestureRecognizer同时存在时，是怎样的响应逻辑呢？</p>
+
+<p>直接上我通过实验后的猜想代码：</p>
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">@implementation</span> <span class="nc">UIWindow</span>
+
+<span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">sendEvent</span><span class="p">:(</span><span class="n">UIEvent</span> <span class="o">*</span><span class="p">)</span><span class="nv">event</span> <span class="p">{</span>
+    <span class="n">UIView</span> <span class="o">*</span><span class="n">resultView</span> <span class="o">=</span> <span class="nb">nil</span><span class="p">;</span>
+    <span class="n">NSSet</span> <span class="o">&lt;</span><span class="n">UITouch</span> <span class="o">*&gt;</span> <span class="o">*</span><span class="n">allTouches</span> <span class="o">=</span> <span class="p">[</span><span class="n">event</span> <span class="nf">allTouches</span><span class="p">];</span>
+    <span class="n">UITouch</span> <span class="o">*</span><span class="n">touch</span> <span class="o">=</span> <span class="p">[</span><span class="n">allTouches</span> <span class="nf">anyObject</span><span class="p">];</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">UIView</span> <span class="o">*</span><span class="n">view</span> <span class="k">in</span> <span class="n">self</span><span class="p">.</span><span class="n">subviews</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">CGPoint</span> <span class="n">point</span> <span class="o">=</span> <span class="p">[</span><span class="n">touch</span> <span class="nf">locationInView</span><span class="p">:</span><span class="n">view</span><span class="p">];</span>
+        <span class="n">resultView</span> <span class="o">=</span> <span class="p">[</span><span class="n">view</span> <span class="nf">hitTest</span><span class="p">:</span><span class="n">point</span> <span class="nf">withEvent</span><span class="p">:</span><span class="n">event</span><span class="p">];</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">resultView</span><span class="p">)</span> <span class="p">{</span>
+            <span class="c1">//收集目标view及其superView的所有手势
+</span>            <span class="n">NSArray</span> <span class="o">*</span><span class="n">gestureRecognizers</span> <span class="o">=</span> <span class="p">[</span><span class="n">self</span> <span class="nf">collectGestureRecognizersWithLeafView</span><span class="p">:</span><span class="n">resultView</span><span class="p">];</span>
+            <span class="c1">//触发响应
+</span>            <span class="k">switch</span> <span class="p">(</span><span class="n">touch</span><span class="p">.</span><span class="n">phase</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">case</span> <span class="n">UITouchPhaseBegan</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="p">(</span><span class="n">UIGestureRecognizer</span> <span class="o">*</span><span class="n">gestureReconizer</span> <span class="k">in</span> <span class="n">gestureRecognizers</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="p">[</span><span class="n">gestureReconizer</span> <span class="nf">touchesBegan</span><span class="p">:</span><span class="n">allTouches</span> <span class="nf">withEvent</span><span class="p">:</span><span class="n">event</span><span class="p">];</span>
+                    <span class="p">}</span>
+                    <span class="p">[</span><span class="n">resultView</span> <span class="nf">touchesBegan</span><span class="p">:</span><span class="n">allTouches</span> <span class="nf">withEvent</span><span class="p">:</span><span class="n">event</span><span class="p">];</span>
+                    <span class="k">break</span><span class="p">;</span>
+                <span class="k">case</span> <span class="n">UITouchPhaseMoved</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="p">(</span><span class="n">UIGestureRecognizer</span> <span class="o">*</span><span class="n">gestureReconizer</span> <span class="k">in</span> <span class="n">gestureRecognizers</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="p">[</span><span class="n">gestureReconizer</span> <span class="nf">touchesMoved</span><span class="p">:</span><span class="n">allTouches</span> <span class="nf">withEvent</span><span class="p">:</span><span class="n">event</span><span class="p">];</span>
+                    <span class="p">}</span>
+                    <span class="p">[</span><span class="n">resultView</span> <span class="nf">touchesMoved</span><span class="p">:</span><span class="n">allTouches</span> <span class="nf">withEvent</span><span class="p">:</span><span class="n">event</span><span class="p">];</span>
+                    <span class="k">break</span><span class="p">;</span>
+                <span class="k">case</span> <span class="n">UITouchPhaseCancelled</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="p">(</span><span class="n">UIGestureRecognizer</span> <span class="o">*</span><span class="n">gestureReconizer</span> <span class="k">in</span> <span class="n">gestureRecognizers</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="p">[</span><span class="n">gestureReconizer</span> <span class="nf">touchesCancelled</span><span class="p">:</span><span class="n">allTouches</span> <span class="nf">withEvent</span><span class="p">:</span><span class="n">event</span><span class="p">];</span>
+                    <span class="p">}</span>
+                    <span class="p">[</span><span class="n">resultView</span> <span class="nf">touchesCancelled</span><span class="p">:</span><span class="n">allTouches</span> <span class="nf">withEvent</span><span class="p">:</span><span class="n">event</span><span class="p">];</span>
+                    <span class="k">break</span><span class="p">;</span>
+                <span class="k">case</span> <span class="n">UITouchPhaseEnded</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="p">(</span><span class="n">UIGestureRecognizer</span> <span class="o">*</span><span class="n">gestureReconizer</span> <span class="k">in</span> <span class="n">gestureRecognizers</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="p">[</span><span class="n">gestureReconizer</span> <span class="nf">touchesEnded</span><span class="p">:</span><span class="n">allTouches</span> <span class="nf">withEvent</span><span class="p">:</span><span class="n">event</span><span class="p">];</span>
+                    <span class="p">}</span>
+                    <span class="p">[</span><span class="n">resultView</span> <span class="nf">touchesEnded</span><span class="p">:</span><span class="n">allTouches</span> <span class="nf">withEvent</span><span class="p">:</span><span class="n">event</span><span class="p">];</span>
+                    <span class="k">break</span><span class="p">;</span>
+                <span class="nl">default:</span>
+                    <span class="k">break</span><span class="p">;</span>
+            <span class="p">}</span>
+            
+            <span class="k">break</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">-</span> <span class="p">(</span><span class="n">NSArray</span><span class="o">&lt;</span><span class="n">UIGestureRecognizer</span><span class="o">*&gt;*</span><span class="p">)</span><span class="nf">collectGestureRecognizersWithLeafView</span><span class="p">:(</span><span class="n">UIView</span><span class="o">*</span><span class="p">)</span><span class="nv">leafView</span> <span class="p">{</span>
+    <span class="n">NSMutableArray</span> <span class="o">*</span><span class="n">gestureRecognizers</span> <span class="o">=</span> <span class="p">[</span><span class="n">NSMutableArray</span> <span class="nf">array</span><span class="p">];</span>
+    <span class="k">if</span> <span class="p">([</span><span class="n">leafView</span> <span class="nf">isKindOfClass</span><span class="p">:[</span><span class="n">UIButton</span> <span class="nf">class</span><span class="p">]])</span> <span class="p">{</span>
+        <span class="p">[</span><span class="n">gestureRecognizers</span> <span class="nf">addObjectsFromArray</span><span class="p">:</span><span class="n">leafView</span><span class="p">.</span><span class="n">gestureRecognizers</span><span class="p">];</span>
+    <span class="p">}</span>
+    <span class="k">else</span> <span class="p">{</span>
+        <span class="n">UIView</span> <span class="o">*</span><span class="n">superView</span> <span class="o">=</span> <span class="n">leafView</span><span class="p">;</span>
+        <span class="k">while</span> <span class="p">(</span><span class="n">superView</span><span class="p">)</span> <span class="p">{</span>
+            <span class="p">[</span><span class="n">gestureRecognizers</span> <span class="nf">addObjectsFromArray</span><span class="p">:</span><span class="n">superView</span><span class="p">.</span><span class="n">gestureRecognizers</span><span class="p">];</span>
+            <span class="n">superView</span> <span class="o">=</span> <span class="n">superView</span><span class="p">.</span><span class="n">superview</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">gestureRecognizers</span> <span class="nf">copy</span><span class="p">];</span>
+<span class="p">}</span>
+
+<span class="k">@end</span>
+</code></pre>
+</div>
+
+<p>也就是如果UITouch的目标view是UIButton（也就是UIButton处在响应链的最外端），那么只有添加到这个UIButton上的手势会被识别，其余superViews上的手势都不会被识别。</p>
+
+<h3 id="结论五默认情况下比如uilongpressgesturerecognizer这种不能在uitouchphasebegan阶段就识别的手势并不会影响uitouch的目标view以及其superview的touchesbeganwithevent方法的调用除非把uigesturerecognizer的delaystouchesbegan属性设为yes">结论五：默认情况下，比如UILongPressGestureRecognizer这种不能在UITouchPhaseBegan阶段就识别的手势，并不会影响UITouch的目标view以及其superView的touchesBegan:withEvent:方法的调用。除非把UIGestureRecognizer的delaysTouchesBegan属性设为YES。</h3>
+<p>我们在<strong>结论四</strong>里面对于UIWindow部分实现代码的猜想其实也能说明这一点，欠缺的是没有涉及对delaysTouchesBegan逻辑的猜想。</p>
+
+<h3 id="结论六这一点算是基础知识关于响应链上有多个手势存在的场景其实就是对于uigesturerecognizerdelegate的应用">结论六：这一点算是基础知识，关于响应链上有多个手势存在的场景，其实就是对于UIGestureRecognizerDelegate的应用。</h3>
+<p>UIGestureRecognizerDelegate里有详细的注释说明，熟练掌握就可以灵活应对响应链上有多种手势存在的场景。</p>
+
+<h3 id="结论七这一点也不是本文关注的重点是我先前猜想的uiview的hittestwithevent方法的实现逻辑顺带贴出来便于理解这部分">结论七：这一点也不是本文关注的重点，是我先前猜想的UIView的hitTest:withEvent:方法的实现逻辑，顺带贴出来便于理解这部分。</h3>
+<div class="highlighter-rouge"><pre class="highlight"><code>- (UIView*)hitTest:(CGPoint)point withEvent:(nullable UIEvent *)event {
+    //1、
+    if (self.userInteractionEnabled == NO
+        || self.alpha == 0.0
+        || self.hidden == YES) {
+        return nil;
+    }
+
+
+    //2、
+    if ([self pointInside:point withEvent:event] == NO) {
+        return nil;
+    }
+
+    //3、
+    UIView *result = nil;
+    for (UIView *view in self.subviews) {
+        result = [view hitTest:point withEvent:event];
+    }
+
+    //4、
+    return result ? result : self;
+}
+</code></pre>
+</div>
+
+<h2 id="最后">最后</h2>
+<p>写到这里必须声明，以上我说的都是错的。贴出来是希望跟大家交流学习，共同思考进步，阅读愉快！</p>
+
+<p><strong>参考</strong>：
+<a href="https://xidazheng.com/2016/10/21/how-ios-handles-touches-responder-chain-touch-event-handling-gesture-recognizers-scrollviews/">How iOS handles touches. Responder chain, touch event handling, gesture recognizers, scrollviews – Xida Zheng</a></p>
+
+  </section>
+</article>
+
+<section class="read-more">
+   
+   
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">更早的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/2017/12/%E5%AF%B9%E5%90%84%E6%A8%A1%E5%9D%97%E9%97%B4%E7%9A%84%E4%BA%92%E6%96%A5%E5%85%B3%E7%B3%BB%E7%AE%A1%E7%90%86%E7%9A%84%E5%B0%8F%E6%80%9D%E8%80%83/" title="link to 对各模块间的互斥关系管理的小思考">对各模块间的互斥关系管理的小思考</a></h2>
+       <p class="excerpt">背景最近在项目中遇到这样一个场景，在直播间的主播端有个功能区，里面是一些插件，这些插件之间在业务上存在互斥关系，也就是A处于开启状态时，B、C、D、E甚至是甲乙丙丁都不能打开。随着这块业务的增多，由于没有及时重构，导致互斥逻辑写的很是让人抓狂。假设有A、B、C、D四个互斥模块，当A要启动时，需要if (B is running) {    Log("B is running");    return;}if (C is running) {    Log("C is running"); ...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2017-12-12 23:30:00 +0800" class="post-list__meta--date date">2017-12-12</time> &#8226; <span class="post-list__meta--tags tags">重构 | iOS</span><a class="btn-border-small" href=/2017/12/%E5%AF%B9%E5%90%84%E6%A8%A1%E5%9D%97%E9%97%B4%E7%9A%84%E4%BA%92%E6%96%A5%E5%85%B3%E7%B3%BB%E7%AE%A1%E7%90%86%E7%9A%84%E5%B0%8F%E6%80%9D%E8%80%83/>继续阅读</a></div>
+   </div>
+   
+</section>
+
+<section class="post-comments">
+  
+    <div id="disqus_thread"></div>
+    <script>
+    
+    var disqus_config = function () {
+        this.page.url = "http://localhost:4000/2017/12/iOS%E8%A7%A6%E6%8E%A7%E5%93%8D%E5%BA%94%E4%B8%AD%E9%82%A3%E4%BA%9B%E6%B2%A1%E6%9C%89%E7%BB%86%E6%83%B3%E8%BF%87%E7%9A%84%E9%97%AE%E9%A2%98/";
+        this.page.identifier = "/2017/12/iOS%E8%A7%A6%E6%8E%A7%E5%93%8D%E5%BA%94%E4%B8%AD%E9%82%A3%E4%BA%9B%E6%B2%A1%E6%9C%89%E7%BB%86%E6%83%B3%E8%BF%87%E7%9A%84%E9%97%AE%E9%A2%98/";
+    };
+
+    var disqus_shortname = 'vno-jekyll';
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>要查看<a href="http://disqus.com/?ref_noscript"> Disqus </a>评论，请启用 JavaScript</noscript>
+    
+  
+  
+  
+  
+</section>
+
+
+            <section class="footer">
+    <footer>
+    	<span class="footer__copyright">本站点采用<a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享 署名-非商业性使用-相同方式共享 4.0 国际 许可协议</a></span>
+        <span class="footer__copyright">由 <a href="https://jekyllrb.com">Jekyll</a> 于 2018-03-01 生成，感谢 <a href="https://www.digitalocean.com/?refcode=30ed2d146762">Digital Ocean</a> 为本站提供稳定的 VPS 服务</span>
+        <span class="footer__copyright">本站由 <a href="http://ronghaopger.github.io/about/">@RongHao</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2018</span>
+    </footer>
+</section>
+
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+
+<script type="text/javascript" src="/js/main.js"></script>
+
+
+
+    
+  </body>
+
+</html>

@@ -140,7 +140,7 @@
             <article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
   <header class="post-header">
     <div class="post-meta">
-      <time datetime="2017-07-15 15:30:00 +0000" itemprop="datePublished" class="post-meta__date date">2017-07-15</time> &#8226; <span class="post-meta__tags tags">iOS</span>
+      <time datetime="2017-07-15 23:30:00 +0800" itemprop="datePublished" class="post-meta__date date">2017-07-15</time> &#8226; <span class="post-meta__tags tags">iOS</span>
     </div>
     <h1 class="post-title">iOS优化界面渲染实践中的几点经验</h1>
   </header>
@@ -242,7 +242,7 @@
        <span class="read-more-item-dim">最近的文章</span>
        <h2 class="post-list__post-title post-title"><a href="/2017/09/%E7%B1%BB%E4%BC%BC%E9%80%90%E5%B8%A7%E5%8A%A8%E7%94%BB%E6%88%96%E8%80%85tableView%E5%88%97%E8%A1%A8%E4%B8%AD%E6%9C%89%E5%A4%A7%E9%87%8F%E5%9B%BE%E7%89%87%E5%B1%95%E7%A4%BA%E9%9C%80%E6%B1%82%E7%9A%84%E5%9C%BA%E6%99%AF%E6%88%91%E4%BB%AC%E5%8F%AF%E4%BB%A5%E5%81%9A%E5%93%AA%E4%BA%9B%E4%BC%98%E5%8C%96/" title="link to 类似逐帧动画或者tableView列表中有大量图片展示需求的场景我们可以做哪些优化？">类似逐帧动画或者tableView列表中有大量图片展示需求的场景我们可以做哪些优化？</a></h2>
        <p class="excerpt">背景最近公司在调研后打算替换掉老的识别库，据说新库在识别率上做的更好一些。但是在集成后实际压测发现并没有什么提升。（由于分析过程可能牵扯到公司业务，所以此处省略分析发现问题的过程，见谅）……….那么思路捋到这里我们可以总结出来两个至关重要的优化点：  避免频繁的解压资源包操作，每次解压绝对是件耗费的操作。这个是比较低级但在俯瞰全局时容易忽略的点，本篇不做讨论。  逐帧动画的图片数量比较大质量比较高，能否把PNG/JPEG图片解码成位图后保存到本地，避免CPU进行重复频繁的解码图片操作？基于...&hellip;</p>
-       <div class="post-list__meta"><time datetime="2017-09-25 15:30:00 +0000" class="post-list__meta--date date">2017-09-25</time> &#8226; <span class="post-list__meta--tags tags">iOS | 优化</span><a class="btn-border-small" href=/2017/09/%E7%B1%BB%E4%BC%BC%E9%80%90%E5%B8%A7%E5%8A%A8%E7%94%BB%E6%88%96%E8%80%85tableView%E5%88%97%E8%A1%A8%E4%B8%AD%E6%9C%89%E5%A4%A7%E9%87%8F%E5%9B%BE%E7%89%87%E5%B1%95%E7%A4%BA%E9%9C%80%E6%B1%82%E7%9A%84%E5%9C%BA%E6%99%AF%E6%88%91%E4%BB%AC%E5%8F%AF%E4%BB%A5%E5%81%9A%E5%93%AA%E4%BA%9B%E4%BC%98%E5%8C%96/>继续阅读</a></div>
+       <div class="post-list__meta"><time datetime="2017-09-25 23:30:00 +0800" class="post-list__meta--date date">2017-09-25</time> &#8226; <span class="post-list__meta--tags tags">iOS | 优化</span><a class="btn-border-small" href=/2017/09/%E7%B1%BB%E4%BC%BC%E9%80%90%E5%B8%A7%E5%8A%A8%E7%94%BB%E6%88%96%E8%80%85tableView%E5%88%97%E8%A1%A8%E4%B8%AD%E6%9C%89%E5%A4%A7%E9%87%8F%E5%9B%BE%E7%89%87%E5%B1%95%E7%A4%BA%E9%9C%80%E6%B1%82%E7%9A%84%E5%9C%BA%E6%99%AF%E6%88%91%E4%BB%AC%E5%8F%AF%E4%BB%A5%E5%81%9A%E5%93%AA%E4%BA%9B%E4%BC%98%E5%8C%96/>继续阅读</a></div>
    </div>
    
    
@@ -252,7 +252,7 @@
        <span class="read-more-item-dim">更早的文章</span>
        <h2 class="post-list__post-title post-title"><a href="/2017/07/iOS-UI-Tests-%E5%AE%9E%E7%8E%B0%E6%96%B9%E6%A1%88%E5%88%86%E6%9E%90/" title="link to iOS UI Tests 实现方案分析">iOS UI Tests 实现方案分析</a></h2>
        <p class="excerpt">UI Tests是一个可以对UI进行测试的框架。为什么需要UI Tests呢？如果客户端分为基础层和业务层的话，业务层最终都是负责界面展示的，通常是MV(C/P/VM)，(C/P/VM)中的逻辑并不适合用Unit Tests来覆盖。对于具体的界面操作流程，UI Tests是合适的选择。集成UI Tests下图为在Xcode中为项目添加UI Tests的步骤：  新建Target  新建Case ClassWriting UI TestsRecordingXcode为我们提供了把整套操作转化...&hellip;</p>
-       <div class="post-list__meta"><time datetime="2017-07-06 15:30:00 +0000" class="post-list__meta--date date">2017-07-06</time> &#8226; <span class="post-list__meta--tags tags">iOS | Test</span><a class="btn-border-small" href=/2017/07/iOS-UI-Tests-%E5%AE%9E%E7%8E%B0%E6%96%B9%E6%A1%88%E5%88%86%E6%9E%90/>继续阅读</a></div>
+       <div class="post-list__meta"><time datetime="2017-07-06 23:30:00 +0800" class="post-list__meta--date date">2017-07-06</time> &#8226; <span class="post-list__meta--tags tags">iOS | Test</span><a class="btn-border-small" href=/2017/07/iOS-UI-Tests-%E5%AE%9E%E7%8E%B0%E6%96%B9%E6%A1%88%E5%88%86%E6%9E%90/>继续阅读</a></div>
    </div>
    
 </section>
@@ -288,8 +288,8 @@
             <section class="footer">
     <footer>
     	<span class="footer__copyright">本站点采用<a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享 署名-非商业性使用-相同方式共享 4.0 国际 许可协议</a></span>
-        <span class="footer__copyright">由 <a href="https://jekyllrb.com">Jekyll</a> 于 2017-12-21 生成，感谢 <a href="https://www.digitalocean.com/?refcode=30ed2d146762">Digital Ocean</a> 为本站提供稳定的 VPS 服务</span>
-        <span class="footer__copyright">本站由 <a href="http://ronghaopger.github.io/about/">@RongHao</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2017</span>
+        <span class="footer__copyright">由 <a href="https://jekyllrb.com">Jekyll</a> 于 2018-03-01 生成，感谢 <a href="https://www.digitalocean.com/?refcode=30ed2d146762">Digital Ocean</a> 为本站提供稳定的 VPS 服务</span>
+        <span class="footer__copyright">本站由 <a href="http://ronghaopger.github.io/about/">@RongHao</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2018</span>
     </footer>
 </section>
 
