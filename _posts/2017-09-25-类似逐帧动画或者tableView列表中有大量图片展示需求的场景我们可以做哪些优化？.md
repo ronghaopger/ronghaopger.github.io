@@ -106,29 +106,45 @@ iOS渲染图像是通过OpenGL驱动GPU来做的，OpenGL有它所支持的颜�
 ### 附录1
 为了膜拜这些领路人，我先贴一段从他们那里学来的iOS强制解码图片的思路，就是利用Core Graphics把图片绘制到一块开辟好的context上并保存成位图：
 ```
-- (void)createBitmap {
-    UIImage *pngImage = [UIImage imageNamed:@"xiongbao_7.png"];
-    CGFloat width = pngImage.size.width;
-    CGFloat height = pngImage.size.height;
-    CGImageRef pngImageRef = pngImage.CGImage;
-    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
-    //解码
-    CGContextRef context = CGBitmapContextCreate(NULL, width, height, 8, width * 4, colorSpace, kCGImageAlphaNoneSkipLast);
-    CGContextDrawImage(context, CGRectMake(0, 0, width, height), pngImageRef); // decode
-    CGImageRef bitmapImageRef = CGBitmapContextCreateImage(context);
-    //保存到本地
-    NSString *path = [NSString stringWithFormat:@"%@/xiongbao_7.bitmap", [[NSBundle mainBundle] bundlePath]];
-    CFURLRef url = CFURLCreateWithFileSystemPath(kCFAllocatorDefault,  (__bridge CFStringRef)path, kCFURLPOSIXPathStyle, false);
-    CFStringRef type = kUTTypeBMP;
-    CGImageDestinationRef dest = CGImageDestinationCreateWithURL(url, type, 1, 0);
-    CGImageDestinationAddImage(dest, bitmapImageRef, 0);
-    //释放资源
-    CGContextRelease(context);
-    CGColorSpaceRelease(colorSpace);
-    CGImageDestinationFinalize(dest);
+- (void)createBitmapWithImage:(UIImage*)image {
+    CGFloat scaleWidth = image.size.width * image.scale;
+    CGFloat scaleHeight = image.size.height * image.scale;
+    CGColorSpaceRef colorSpace = CGImageGetColorSpace(image.CGImage);
+    CGImageAlphaInfo alphaInfo = CGImageGetAlphaInfo(image.CGImage);
+    //decode
+    CGContextRef context = CGBitmapContextCreate(NULL, scaleWidth, scaleHeight, 8, scaleWidth * 4, colorSpace, alphaInfo);
+    CGContextDrawImage(context, CGRectMake(0, 0, scaleWidth, scaleHeight), image.CGImage);
+    CGImageRef bitmapImageRef = CGBitmapContextCreateImage(context);
+    //release
+    CGColorSpaceRelease(colorSpace);
+    CGContextRelease(context);
+    CGImageRelease(bitmapImageRef);
 }
 ```
 
+- - - -
+`2018.6.12更新：在最近的一次项目实践中，对附录1这块内容有了新的理解，因此补充一下。`
+
+### Update附录1
+除了附录1中的方法，还有一种方式可以对图片进行（提前）解码，即通过CGImageSourceCreateImageAtIndex(...)方法生成图片，此方法的参数可以设置立即缓存图片解码后的数据，如下：
+```
+- (void)createBitmapWithImage:(UIImage*)image {
+    NSData *data = UIImagePNGRepresentation(image);
+    CGImageSourceRef source = CGImageSourceCreateWithData((__bridge CFDataRef)data, NULL);
+    CGImageRef bitmapImageRef = CGImageSourceCreateImageAtIndex(source, 0, (__bridge CFDictionaryRef)@{(id)kCGImageSourceShouldCacheImmediately: (id)kCFBooleanTrue});
+    }
+```
+
+上述两种方式都是直接在内存中对图片进行解码，还有第三种方式，它是在把图片保存到本地时，以位（kUTTypeBMP）的形式保存，看代码：
+```
+- (void)saveBitmapWithImage:(UIImage*)image {
+    NSString *localPath = [NSString stringWithFormat:@"%@testimage.bitmap", NSTemporaryDirectory()];
+    CFURLRef url = CFURLCreateWithFileSystemPath(kCFAllocatorDefault,  (__bridge CFStringRef)localPath, kCFURLPOSIXPathStyle, false);
+    CGImageDestinationRef destination = CGImageDestinationCreateWithURL(url, kUTTypeBMP, 1, 0);
+    CGImageDestinationAddImage(destination, image.CGImage, 0);
+```
+
+以上。
 
 - - - -
 ### 参考
