@@ -5,9 +5,205 @@
     <description>enjoy yourself.</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 12 Jun 2018 15:16:41 +0800</pubDate>
-    <lastBuildDate>Tue, 12 Jun 2018 15:16:41 +0800</lastBuildDate>
+    <pubDate>Tue, 19 Jun 2018 17:36:43 +0800</pubDate>
+    <lastBuildDate>Tue, 19 Jun 2018 17:36:43 +0800</lastBuildDate>
     <generator>Jekyll v3.4.0</generator>
+    
+      <item>
+        <title>UIButton设置不同状态下的纯色背景图片的最优方案探讨</title>
+        <description>&lt;h2 id=&quot;背景&quot;&gt;背景&lt;/h2&gt;
+&lt;p&gt;小组同学最近在封装一组自定义的UIKit控件，目的是做到比UIKit更易用高性能，今天初步读了部分实现代码，发现以下细节：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;//基于CoreGraphics根据传入的UIColor绘制并生成UIImage。
++ (UIImage *)imageWithColor:(UIColor *)color {
+    CGRect rect = CGRectMake(0.0f, 0.0f, 1.0f, 1.0f);
+    UIGraphicsBeginImageContext(rect.size);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextSetFillColorWithColor(context, [color CGColor]);
+    CGContextFillRect(context, rect);
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return image;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;达到的目的就是用户只需要关注&lt;code class=&quot;highlighter-rouge&quot;&gt;UIControlStateNormal&lt;/code&gt;和&lt;code class=&quot;highlighter-rouge&quot;&gt;UIControlStateHighlighted&lt;/code&gt;状态下期望的background color，我们在内部来生成UIImage并通过&lt;code class=&quot;highlighter-rouge&quot;&gt;setBackgroundImage:forState:&lt;/code&gt;来设置。（只适用于用户期望设置纯色背景的场景）&lt;/p&gt;
+
+&lt;p&gt;易用性做到了，性能方面却损失了。（我所遇到的）大多数卡顿场景的瓶颈往往在CPU，（在我之前的几篇关于优化性能的文章里有过讨论），而这段代码中的开辟内存空间，绘制内容再生成图片都是在CPU上进行，无疑是不理想的。那有没有更好的方案呢？&lt;/p&gt;
+
+&lt;h2 id=&quot;思路一借助touch-delivery-methods&quot;&gt;思路一：借助touch-delivery methods&lt;/h2&gt;
+&lt;p&gt;牵扯到触控状态的改变时，我们通常选择重写&lt;code class=&quot;highlighter-rouge&quot;&gt;UIResponder&lt;/code&gt;的&lt;code class=&quot;highlighter-rouge&quot;&gt;touchesBegan:withEvent:&lt;/code&gt;等方法，几行代码的事儿，但是run起来以后发现跟系统的&lt;code class=&quot;highlighter-rouge&quot;&gt;UIControlStateHighlighted&lt;/code&gt;效果还是有不同的，这个在我之前探索iOS触控响应部分的时候就发现了，如下：&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;&lt;img src=&quot;/assets/images/2018-06-15/normal.gif&quot; alt=&quot;&quot; /&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;img src=&quot;/assets/images/2018-06-15/no.gif&quot; alt=&quot;&quot; /&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;系统默认效果&lt;/td&gt;
+      &lt;td&gt;我们实现的效果（注意Title因为是使用setTitle:forState:因此效果正常）&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;也就是&lt;code class=&quot;highlighter-rouge&quot;&gt;UIControlStateHighlighted&lt;/code&gt;效果是有个范围的，但是这个范围apple并没有告诉我们，那这个方案就不完美了。更进一步我想测测这个范围到底是多少，是不是有一定规律呢？三下五除二，发现不论UIButton的size是多大，这个范围大概是(70, 70.5, 70, 70)，把这个范围控制逻辑写进&lt;code class=&quot;highlighter-rouge&quot;&gt;touchesMoved:withEvent:&lt;/code&gt;，效果跟系统的就一致了！代码如下：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;-(void)touchesBegan:(NSSet&amp;lt;UITouch *&amp;gt; *)touches withEvent:(UIEvent *)event {
+    [super touchesBegan:touches withEvent:event];
+    [self setBackgroundColor:self.backHighlightColor];
+}
+
+-(void)touchesMoved:(NSSet&amp;lt;UITouch *&amp;gt; *)touches withEvent:(UIEvent *)event {
+    [super touchesMoved:touches withEvent:event];
+    
+    UITouch *touch = touches.anyObject;
+    CGPoint location = [touch locationInView:[UIApplication sharedApplication].keyWindow];
+    CGFloat locationX = location.x;
+    CGFloat locationY = location.y;
+    //这里默认UIButton的superView是撑满屏幕的，还需完善。
+    CGFloat originX = self.frame.origin.x;
+    CGFloat originY = self.frame.origin.y;
+    CGFloat width = self.frame.size.width;
+    CGFloat height = self.frame.size.height;
+    BOOL xInScope = (locationX &amp;lt;= originX &amp;amp;&amp;amp; originX - locationX &amp;lt; 70.5) || (locationX &amp;gt; originX &amp;amp;&amp;amp; locationX - originX - width &amp;lt; 70);
+    BOOL yInScope = (locationY &amp;lt;= originY &amp;amp;&amp;amp; originY - locationY &amp;lt; 70) || (locationY &amp;gt; originY &amp;amp;&amp;amp; locationY - originY - height &amp;lt; 70);
+    if (xInScope &amp;amp;&amp;amp; yInScope) {
+        [self setBackgroundColor:self.backHighlightColor];
+    }
+    else {
+        [self setBackgroundColor:self.backNormalColor];
+    }
+}
+
+-(void)touchesEnded:(NSSet&amp;lt;UITouch *&amp;gt; *)touches withEvent:(UIEvent *)event {
+    [super touchesEnded:touches withEvent:event];
+    [self setBackgroundColor:self.backNormalColor];
+}
+
+-(void)touchesCancelled:(NSSet&amp;lt;UITouch *&amp;gt; *)touches withEvent:(UIEvent *)event {
+    [super touchesCancelled:touches withEvent:event];
+    [self setBackgroundColor:self.backNormalColor];
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;虽然效果一致了，但是显然并不能用于生产环境，因为(70, 70.5, 70, 70)这组边界值完全是我自己测量的，一是可能有些场景我没有覆盖到，二是指不定哪天apple就把这个值改变了，总之这个思路是不可靠的。&lt;/p&gt;
+
+&lt;h2 id=&quot;思路二借助kvo观察uibutton的highlighted变化&quot;&gt;思路二：借助KVO观察UIButton的highlighted变化&lt;/h2&gt;
+&lt;p&gt;经过思路一，我发现一定要寻找一个可靠的参考量。自然而然KVO涌上心头，代码如下：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;[self addObserver:self forKeyPath:@&quot;highlighted&quot; options:NSKeyValueObservingOptionNew context:nil];
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary&amp;lt;NSKeyValueChangeKey,id&amp;gt; *)change context:(void *)context {
+    if ([keyPath isEqualToString:@&quot;highlighted&quot;]) {
+        BOOL highlighted = change[NSKeyValueChangeNewKey];
+        UIColor *backgroundColor = highlighted ? self.backHighlightColor : self.backNormalColor;
+        [self setBackgroundColor:backgroundColor];
+        }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;经过测试，跟&lt;code class=&quot;highlighter-rouge&quot;&gt;思路一&lt;/code&gt;有同样的问题，highlighted属性在touchDown之后touchEnd之前一直都是YES，也忽略了范围条件。&lt;/p&gt;
+
+&lt;h2 id=&quot;思路三借助kvo观察uibutton上的backgroundimageview的image变化&quot;&gt;思路三：借助KVO观察UIButton上的backgroundImageView的image变化&lt;/h2&gt;
+&lt;p&gt;还是没有找到可靠而又准确的参考量，再想想，其实我们直观看到的就是最准确的，UIButton是随着&lt;code class=&quot;highlighter-rouge&quot;&gt;UIControlStateNormal&lt;/code&gt;和&lt;code class=&quot;highlighter-rouge&quot;&gt;UIControlStateHighlighted&lt;/code&gt;的变化来切换UIImageView的image（经验证这部分逻辑在UIButton的&lt;code class=&quot;highlighter-rouge&quot;&gt;touchesMoved:withEvent:&lt;/code&gt;中），通过观察视图层级我们得知UIButton上有两个UIImageView和一个UILabel，分别来承载UIButton的title、image和backgroundImage，那么承载backgroundImage的那个UIImageView的image属性就是我们要找的那个可靠而又准确的参考量。&lt;/p&gt;
+
+&lt;p&gt;突破点有了，整理思路如下：&lt;/p&gt;
+
+&lt;h3 id=&quot;1触发uibutton添加所需的background--uiimageview&quot;&gt;1、触发UIButton添加所需的background  UIImageView&lt;/h3&gt;
+&lt;p&gt;当我们调用UIButton的&lt;code class=&quot;highlighter-rouge&quot;&gt;setBackgroundImage:forState:&lt;/code&gt;时，UIButton就会&lt;code class=&quot;highlighter-rouge&quot;&gt;addSubview:&lt;/code&gt;所需的UIImageView（如需），同理&lt;code class=&quot;highlighter-rouge&quot;&gt;setImage:forState:&lt;/code&gt;以及&lt;code class=&quot;highlighter-rouge&quot;&gt;setTitle:forState&lt;/code&gt;都有类似的逻辑，当UIButton上有多个UIImageView时我们就不容易区分它们了，因此我们的思路就是&lt;strong&gt;尽早的&lt;/strong&gt;触发&lt;code class=&quot;highlighter-rouge&quot;&gt;setBackgroundImage:forState:&lt;/code&gt;便于锁定我们的目标UIImageView，代码如下：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;- (instancetype)initWithFrame:(CGRect)frame
+{
+    self = [super initWithFrame:frame];
+    if (self) {
+        //保证最先执行
+        //zombie_normal(1px x 1px)和zombie_highlighted(1px x 2px)为两张透明的占位图。
+        self.buttonBackgroundNormalImage = [UIImage imageNamed:@&quot;zombie_normal&quot;];
+        self.buttonBackgroundHighlightedImage = [UIImage imageNamed:@&quot;zombie_highlighted&quot;];
+        [self setBackgroundImage:self.buttonBackgroundNormalImage forState:UIControlStateNormal];
+        [self setBackgroundImage:self.buttonBackgroundHighlightedImage forState:UIControlStateHighlighted];
+        [self setNeedsLayout];
+        [self layoutIfNeeded];
+    }
+    return self;
+}
+
+/*
+ * 重写以达到记录用户设置的background image
+ */
+- (void)setBackgroundImage:(UIImage *)image forState:(UIControlState)state {
+    [super setBackgroundImage:image forState:state];
+    if (state == UIControlStateNormal) {
+        _buttonBackgroundNormalImage = image;
+    }
+    else if (state == UIControlStateHighlighted) {
+        _buttonBackgroundHighlightedImage = image;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h3 id=&quot;2锁定background-uiimageview&quot;&gt;2、锁定background UIImageView&lt;/h3&gt;
+&lt;p&gt;触发&lt;code class=&quot;highlighter-rouge&quot;&gt;addSubview:&lt;/code&gt;之后，紧接着就是锁定这个被添加的UIImageView。&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;-(void)layoutSubviews {
+    [super layoutSubviews];
+    [self findBackgroundImageView];
+}
+
+- (void)findBackgroundImageView {
+    //不考虑用户去主动移除UIButton上的UIImageView，那么这个UIImageView一经确定就不会改变了。
+    if (self.buttonBackgroundImageView) {
+        return;
+    }
+    for (UIView *subview in self.subviews) {
+        if ([subview isMemberOfClass:[UIImageView class]]) {
+            self.buttonBackgroundImageView = (UIImageView*)subview;
+            break;
+        }
+    }
+
+    、、、
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h3 id=&quot;3添加kvo跟踪变化&quot;&gt;3、添加KVO跟踪变化&lt;/h3&gt;
+&lt;p&gt;锁定之后，添加KVO观察其image属性的变化，根据不同的image设置不同的background color。&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;static void * BackgroundImageViewContext = &amp;amp;BackgroundImageViewContext;
+
+- (void)findBackgroundImageView {
+    、、、
+
+    @try {
+        [self.buttonBackgroundImageView removeObserver:self forKeyPath:@&quot;image&quot; context:BackgroundImageViewContext];
+    } @catch (NSException *exception) {
+    }
+    [self.buttonBackgroundImageView addObserver:self forKeyPath:@&quot;image&quot; options:NSKeyValueObservingOptionNew context:BackgroundImageViewContext];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary&amp;lt;NSKeyValueChangeKey,id&amp;gt; *)change context:(void *)context {
+    if (context == BackgroundImageViewContext &amp;amp;&amp;amp; [keyPath isEqualToString:@&quot;image&quot;]) {
+        UIImage *newImage = change[NSKeyValueChangeNewKey];
+        if ([newImage isEqual:self.buttonBackgroundNormalImage]) {
+            [self setBackgroundColor:self.backNormalColor];
+        }
+        else if ([newImage isEqual:self.buttonBackgroundHighlightedImage]) {
+            [self setBackgroundColor:self.backHighlightColor];
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;这样就达到了我们的目的，满足易用性并兼顾性能。&lt;/p&gt;
+
+&lt;p&gt;一次有趣的探索，感谢阅读~&lt;/p&gt;
+</description>
+        <pubDate>Fri, 15 Jun 2018 23:30:00 +0800</pubDate>
+        <link>http://localhost:4000/2018/06/UIButton%E8%AE%BE%E7%BD%AE%E4%B8%8D%E5%90%8C%E7%8A%B6%E6%80%81%E4%B8%8B%E7%9A%84%E7%BA%AF%E8%89%B2%E8%83%8C%E6%99%AF%E5%9B%BE%E7%89%87%E7%9A%84%E6%9C%80%E4%BC%98%E6%96%B9%E6%A1%88%E6%8E%A2%E8%AE%A8/</link>
+        <guid isPermaLink="true">http://localhost:4000/2018/06/UIButton%E8%AE%BE%E7%BD%AE%E4%B8%8D%E5%90%8C%E7%8A%B6%E6%80%81%E4%B8%8B%E7%9A%84%E7%BA%AF%E8%89%B2%E8%83%8C%E6%99%AF%E5%9B%BE%E7%89%87%E7%9A%84%E6%9C%80%E4%BC%98%E6%96%B9%E6%A1%88%E6%8E%A2%E8%AE%A8/</guid>
+        
+        <category>iOS</category>
+        
+        
+      </item>
     
       <item>
         <title>iOS触控响应中那些没有细想过的问题</title>
@@ -1262,170 +1458,6 @@ TDD的目的是测试每个公开方法的正确性，而BDD关注的是行为�
         <guid isPermaLink="true">http://localhost:4000/2015/04/%E7%BC%96%E7%A0%81%E7%9F%A5%E8%AF%86%E5%A4%A7%E6%9D%82%E7%83%A9/</guid>
         
         <category>编码</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>简单实现弹出页更换头像的功能</title>
-        <description>&lt;p&gt;&lt;span style=&quot;font-size: 15px;&quot;&gt;　　在Win 8应用里，对弹出页(Popup)的灵活操作必不可少，下面我们就来简单实现一个。&lt;/span&gt;&lt;/p&gt;
-&lt;h3&gt;&lt;span style=&quot;font-size: 15px; line-height: 22.5px;&quot;&gt;一、先让Popup弹出到指定位置&lt;/span&gt;&lt;/h3&gt;
-&lt;p&gt;&lt;span style=&quot;font-size: 15px; line-height: 22.5px;&quot;&gt;　　先来看看效果图，如图[1]：&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;&lt;span style=&quot;font-size: 15px; line-height: 22.5px;&quot;&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &lt;img style=&quot;vertical-align: middle;&quot; src=&quot;http://images.cnitblog.com/i/300379/201407/041627380596169.png&quot; alt=&quot;&quot; width=&quot;488&quot; height=&quot;400&quot; /&gt;&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;&lt;span style=&quot;font-size: 15px; line-height: 22.5px;&quot;&gt;　　下面是前端代码，代码段[1]：&lt;/span&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-xml highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nt&quot;&gt;&amp;lt;Grid&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;Background=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;#0054a2&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;Border&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;Background=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;AliceBlue&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;Margin=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;40,40,1126,528&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;Width=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;150&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;Height=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;150&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
-        &lt;span class=&quot;nt&quot;&gt;&amp;lt;Image&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;x:Name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Img&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;Width=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;150&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;Height=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;150&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/Border&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;Button&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;Margin=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;90,241,0,477&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;Content=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;更换头像&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;Width=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;100&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;Height=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;50&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;Click=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Button_Click&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&amp;lt;/Button&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;nt&quot;&gt;&amp;lt;/Grid&amp;gt;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;&lt;span style=&quot;font-size: 15px;&quot;&gt;　　接着是后台代码，代码段[2]：&lt;/span&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-csharp highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Popup&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;headPopup&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Button_Click&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;object&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sender&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;RoutedEventArgs&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;headPopup&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;headPopup&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;IsOpen&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;headPopup&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;IsOpen&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;headPopup&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Popup&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
-        &lt;span class=&quot;c1&quot;&gt;//给headPopup添加内容
-&lt;/span&gt;        &lt;span class=&quot;n&quot;&gt;HeadControl&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;headControl&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;HeadControl&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;headPopup&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Child&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;headControl&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-        &lt;span class=&quot;c1&quot;&gt;//确定headPopup的弹出位置
-&lt;/span&gt;        &lt;span class=&quot;n&quot;&gt;Rect&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;imgRect&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Rect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Point&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;GeneralTransform&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;transform&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Img&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;TransformToVisual&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;imgRect&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;transform&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;TransformBounds&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;imgRect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;headPopup&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;HorizontalOffset&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;imgRect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Left&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;150&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;headPopup&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;VerticalOffset&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;imgRect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Bottom&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;130&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-        &lt;span class=&quot;c1&quot;&gt;//弹出Popup
-&lt;/span&gt;        &lt;span class=&quot;n&quot;&gt;headPopup&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;IsOpen&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;&amp;nbsp;&lt;span style=&quot;font-size: 15px;&quot;&gt;　　这里比较有趣的是确定Popup的弹出位置，我们是想在头像框的右下角弹出它。代码的具体实现方式是：通过控件Img的TransformToVisual方法获得一个&lt;span style=&quot;color: #ff0000;&quot;&gt;通用的变换对象&lt;/span&gt;，这个变换对象可以把控件(也就是Img)变换成控件所对应的可视化图形，比如这里的Img就可以变换成一个矩形，通过这个矩形的属性我们就可以获得页面中控件Img各个边框的水平或者垂直位移，进而可以帮助我们确定Popup的位置。&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;&amp;nbsp;&lt;/p&gt;
-&lt;h3&gt;&lt;span style=&quot;font-size: 15px; line-height: 22.5px;&quot;&gt;二、弹出框中显示和选定头像&lt;/span&gt;&lt;/h3&gt;
-&lt;p&gt;&lt;span style=&quot;font-size: 15px;&quot;&gt;　　上文中已经给Popup设定了子控件HeadControl，我们将在HeadControl里填充要显示的内容。这里有两个选择：&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;&lt;span style=&quot;font-size: 15px;&quot;&gt;　　1、在HeadControl中添加WebView控件，通过内嵌html页面来实现。&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;&lt;span style=&quot;font-size: 15px;&quot;&gt;　　2、在HeadControl中添加普通的Gridiew控件，用传统的方式绑定图片来显示。&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;&lt;span style=&quot;font-size: 15px;&quot;&gt;　　这里我们选择第一种方式，很显然，html页面可以更灵活的控制页面的样式，有助于我们做出更cool的应用！&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;&lt;span style=&quot;font-size: 15px;&quot;&gt;　　下面为HeadControl控件的前端代码，代码段[3]：&lt;/span&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-xml highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nt&quot;&gt;&amp;lt;Grid&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;HorizontalAlignment=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Left&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;VerticalAlignment=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Top&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;Background=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;#FFFFFFFF&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;WebView&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;x:Name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;wvHead&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;HorizontalAlignment=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Left&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;VerticalAlignment=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Top&quot;&lt;/span&gt;  &lt;span class=&quot;na&quot;&gt;Margin=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;0,0,0,-250&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;Height=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;420&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;Width=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;409&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;LoadCompleted=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;wvHead_LoadCompleted&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;ScriptNotify=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;wvHead_ScriptNotify&quot;&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;nt&quot;&gt;&amp;lt;/Grid&amp;gt;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;&amp;nbsp;　&lt;span style=&quot;font-size: 15px;&quot;&gt;　代码中我们为WebView控件添加了LoadCompleted事件和ScriptNotify事件。还有个未列出的HeadControl的Loaded事件。其中：&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;&lt;span style=&quot;font-size: 15px;&quot;&gt;　　 Loaded事件(HeadControl)：当加载HeadControl控件时发生。如代码段[4]：&lt;/span&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-csharp highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;UserControl_Loaded&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;object&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sender&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;RoutedEventArgs&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;//WebView加载指定的head.html页面
-&lt;/span&gt;    &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;wvHead&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Navigate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Uri&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;ms-appx-web:///Assets/head.html&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;&lt;span style=&quot;font-size: 15px;&quot;&gt;　　&amp;nbsp;LoadCompleted事件(WebView)：在WebView加载完成时发生。这里用来调用head.html中的js代码来给head.html页面写入内容，如代码段[5]：&lt;/span&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-csharp highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;wvHead_LoadCompleted&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;object&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sender&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;NavigationEventArgs&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;//构造html，用来显示头像。
-&lt;/span&gt;    &lt;span class=&quot;n&quot;&gt;StringBuilder&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sbSystem&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;StringBuilder&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
-    &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;systemImg&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;&amp;lt;li&amp;gt;&amp;lt;img style=\&quot;width:60px;height:60px;\&quot; src=\&quot;{0}\&quot; onclick='FaceImageClick(\&quot;{0}\&quot;)' alt=\&quot;\&quot; title=\&quot;\&quot;/&amp;gt;&amp;lt;/li&amp;gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;systemImg6&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;&amp;lt;li style=\&quot;margin-right:0;\&quot;&amp;gt;&amp;lt;img style=\&quot;width:60px;height:60px;\&quot; src=\&quot;{0}\&quot; onclick='FaceImageClick(\&quot;{0}\&quot;)' alt=\&quot;\&quot; title=\&quot;\&quot;/&amp;gt;&amp;lt;/li&amp;gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;//加载记录有头像信息的xml
-&lt;/span&gt;    &lt;span class=&quot;kt&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;xml&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;XDocument&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Load&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Assets/Portraits/Portraits.xml&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;syscount&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;foreach&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ele&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;xml&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Root&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Elements&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Portraits&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Elements&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;file&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;syscount&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;++;&lt;/span&gt;
-        &lt;span class=&quot;c1&quot;&gt;//每行放6个，第一个跟其他几个样式不太一样，单独处理。
-&lt;/span&gt;        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;syscount&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;%&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;6&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-        &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-            &lt;span class=&quot;n&quot;&gt;sbSystem&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Append&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Format&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;systemImg6&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;/Assets/Portraits/&quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ele&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Attribute&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;name&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
-        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;
-        &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-            &lt;span class=&quot;n&quot;&gt;sbSystem&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Append&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Format&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;systemImg&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;/Assets/Portraits/&quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ele&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Attribute&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;name&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
-        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;//调用head.html中的js方法将构造好的字符串写入。
-&lt;/span&gt;    &lt;span class=&quot;n&quot;&gt;wvHead&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;InvokeScript&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;WriteSystemHtml&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sbSystem&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;ToString&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;&lt;span style=&quot;font-size: 15px;&quot;&gt;　　 ScriptNotify事件(WebView)：当包含在WebView中的内容使用JavaScript给应用程序传递字符串时发生。这里用来当head.html中图片的onclick被触发时通知后台代码哪个图片被点击了，以便于后台代码响应相应的事件。如代码段[6]：&lt;/span&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-csharp highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;event&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EventHandler&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;SelectEvent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;wvHead_ScriptNotify&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;object&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sender&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;NotifyEventArgs&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(!&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;IsNullOrEmpty&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;SelectEvent&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-            &lt;span class=&quot;nf&quot;&gt;SelectEvent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;&lt;span style=&quot;font-size: 15px;&quot;&gt;　　有人会有疑问，上面的SelectEvent在什么时候绑定方法呢？当然是在初始化HeadControl控件时，也就是在代码段[2]中加上：&lt;/span&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-csharp highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;headControl&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;SelectEvent&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;inputInfo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;async&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;inputInfo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;object&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sender&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EventArgs&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;//设置Image控件图像的源
-&lt;/span&gt;    &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Img&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Source&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;BitmapImage&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Uri&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;ms-appx://&quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sender&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;UriKind&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;RelativeOrAbsolute&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;　　&lt;span style=&quot;font-size: 15px;&quot;&gt;&lt;span style=&quot;color: #ff0000;&quot;&gt;注意：&lt;/span&gt;其实上面几个事件的&lt;span style=&quot;color: #ff0000;&quot;&gt;关键点&lt;/span&gt;在于后台c#与html中的JavaScript的交互，掌握了这点，其他的就不是问题了！&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;&lt;span style=&quot;font-size: 15px;&quot;&gt;　　下面就来看看head.html里的具体实现吧，代码段[7]：&lt;/span&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-js highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;script&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;text/javascript&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; 
-        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;typeof&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;id&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'string'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;?&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;document&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;getElementById&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; 
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;//设置id为systempic的div的显示内容。&lt;/span&gt;
-    &lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;WriteSystemHtml&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;str&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;nx&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;systempic&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;focus&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
-        &lt;span class=&quot;nx&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;systempic&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;innerHTML&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;str&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;FaceImageClick&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;facePath&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;c1&quot;&gt;//通知应用程序，向应用程序传递字符串。&lt;/span&gt;
-        &lt;span class=&quot;nb&quot;&gt;window&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;external&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;notify&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;facePath&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;sr&quot;&gt;/script&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;&amp;gt;
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;&amp;nbsp;&lt;/p&gt;
-&lt;p&gt;&lt;span style=&quot;font-size: 15px;&quot;&gt;　　来看看最后的效果图吧！ 图[2]：&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;&lt;span style=&quot;font-size: 15px;&quot;&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp;&amp;nbsp;&lt;img src=&quot;http://images.cnitblog.com/i/300379/201407/071042016293349.png&quot; alt=&quot;&quot; /&gt;&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;&amp;nbsp;　　&lt;span style=&quot;font-size: 15px;&quot;&gt;没错，我是一名德国球迷！哈哈。&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;font-size: 15px; line-height: 1.5;&quot;&gt;html页面可以更生动的展现，就看你自己的需求了。&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;&amp;nbsp;&lt;/p&gt;
-</description>
-        <pubDate>Mon, 07 Jul 2014 20:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2014/07/%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0%E5%BC%B9%E5%87%BA%E9%A1%B5%E6%9B%B4%E6%8D%A2%E5%A4%B4%E5%83%8F%E7%9A%84%E5%8A%9F%E8%83%BD/</link>
-        <guid isPermaLink="true">http://localhost:4000/2014/07/%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0%E5%BC%B9%E5%87%BA%E9%A1%B5%E6%9B%B4%E6%8D%A2%E5%A4%B4%E5%83%8F%E7%9A%84%E5%8A%9F%E8%83%BD/</guid>
-        
-        <category>C# | .NET</category>
-        
-        <category>Win8 | WP8</category>
         
         
       </item>

@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>UIButton设置不同状态下的纯色背景图片的最优方案探讨</title>
+  <meta name="description" content="背景小组同学最近在封装一组自定义的UIKit控件，目的是做到比UIKit更易用高性能，今天初步读了部分实现代码，发现以下细节：//基于CoreGraphics根据传入的UIColor绘制并生成UIImage。+ (UIImage *)imageWithColor:(UIColor *)color {    CGR...">
+  <meta name="author" content="Wei Wang">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="UIButton设置不同状态下的纯色背景图片的最优方案探讨">
+  <meta name="twitter:description" content="背景小组同学最近在封装一组自定义的UIKit控件，目的是做到比UIKit更易用高性能，今天初步读了部分实现代码，发现以下细节：//基于CoreGraphics根据传入的UIColor绘制并生成UIImage。+ (UIImage *)imageWithColor:(UIColor *)color {    CGR...">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="UIButton设置不同状态下的纯色背景图片的最优方案探讨">
+  <meta property="og:description" content="背景小组同学最近在封装一组自定义的UIKit控件，目的是做到比UIKit更易用高性能，今天初步读了部分实现代码，发现以下细节：//基于CoreGraphics根据传入的UIColor绘制并生成UIImage。+ (UIImage *)imageWithColor:(UIColor *)color {    CGR...">
+  
+  <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
+  <link href="/assets/images/favicon.png" rel="shortcut icon" type="image/png">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="canonical" href="http://localhost:4000/2018/06/UIButton%E8%AE%BE%E7%BD%AE%E4%B8%8D%E5%90%8C%E7%8A%B6%E6%80%81%E4%B8%8B%E7%9A%84%E7%BA%AF%E8%89%B2%E8%83%8C%E6%99%AF%E5%9B%BE%E7%89%87%E7%9A%84%E6%9C%80%E4%BC%98%E6%96%B9%E6%A1%88%E6%8E%A2%E8%AE%A8/">
+  <link rel="alternate" type="application/rss+xml" title="Hulk' Den" href="http://localhost:4000/feed.xml">
+  
+  <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
+  
+  <script>
+	var _hmt = _hmt || [];
+	(function() {
+  		var hm = document.createElement("script");
+  		hm.src = "https://hm.baidu.com/hm.js?30e3928ea4b052828e74eb233dfa4825";
+  		var s = document.getElementsByTagName("script")[0]; 
+  		s.parentNode.insertBefore(hm, s);
+	})();
+  </script>
+
+</head>
+
+
+  <body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="fa fa-list btn-mobile-menu__icon"></i>
+        <i class="fa fa-angle-up btn-mobile-close__icon hidden"></i>
+    </span>
+    
+    <header class="panel-cover panel-cover--collapsed" style="background-image: url('/assets/images/background-cover.jpg')">
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        <a href="/#blog" title="前往 Hulk' Den 的主页" class="blog-button"><img src="/assets/images/avatar.jpg" width="80" alt="Hulk' Den logo" class="panel-cover__logo logo" /></a>
+        <h1 class="panel-cover__title panel-title"><a href="/#blog" title="link to homepage for Hulk' Den" class="blog-button">Hulk' Den</a></h1>
+        
+        <span class="panel-cover__subtitle panel-subtitle">in-depth thinking and keep moving.</span>
+        
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">enjoy yourself.</p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+        
+        
+        
+        <div class="navigation-wrapper">
+          <div>
+            <nav class="cover-navigation cover-navigation--primary">
+              <ul class="navigation">
+                <li class="navigation__item"><a href="/#blog" title="Visit blog" class="blog-button">Blog</a></li>
+                
+                  <li class="navigation__item"><a href="https://github.com/ronghaopger" target="_blank" title="ronghaopger">GitHub</a></li>
+                
+              </ul>
+            </nav>
+          </div>
+          
+          <div><nav class="cover-navigation navigation--social">
+  <ul class="navigation">
+
+  
+  <!-- Weibo -->
+  <li class="navigation__item">
+    <a href="http://weibo.com/做梦家荣浩" title="@做梦家荣浩 的微博" target="_blank">
+      <i class='social fa fa-weibo'></i>
+      <span class="label">Weibo</span>
+    </a>
+  </li>
+  
+
+  
+  <!-- Github -->
+  <li class="navigation__item">
+    <a href="https://github.com/ronghaopger" title="@ronghaopger 的 Github" target="_blank">
+      <i class='social fa fa-github'></i>
+      <span class="label">Github</span>
+    </a>
+  </li>
+  
+  
+  
+
+  
+
+  <!-- RSS -->
+  <li class="navigation__item">
+    <a href="/feed.xml" rel="author" title="RSS" target="_blank">
+      <i class='social fa fa-rss'></i>
+      <span class="label">RSS</span>
+    </a>
+  </li>
+
+  
+  <!-- Email -->
+  <li class="navigation__item">
+    <a href="mailto:ronghao_1989@hotmail.com" title="Contact me">
+      <i class='social fa fa-envelope'></i>
+      <span class="label">Email</span>
+    </a>
+  </li>
+  
+
+  </ul>
+</nav>
+</div>
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="panel-cover--overlay cover-disabled"></div>
+    
+  </div>
+</header>
+
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner">
+            <article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
+  <header class="post-header">
+    <div class="post-meta">
+      <time datetime="2018-06-15 23:30:00 +0800" itemprop="datePublished" class="post-meta__date date">2018-06-15</time> &#8226; <span class="post-meta__tags tags">iOS</span>
+    </div>
+    <h1 class="post-title">UIButton设置不同状态下的纯色背景图片的最优方案探讨</h1>
+  </header>
+
+  <section class="post">
+    <h2 id="背景">背景</h2>
+<p>小组同学最近在封装一组自定义的UIKit控件，目的是做到比UIKit更易用高性能，今天初步读了部分实现代码，发现以下细节：</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>//基于CoreGraphics根据传入的UIColor绘制并生成UIImage。
++ (UIImage *)imageWithColor:(UIColor *)color {
+    CGRect rect = CGRectMake(0.0f, 0.0f, 1.0f, 1.0f);
+    UIGraphicsBeginImageContext(rect.size);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextSetFillColorWithColor(context, [color CGColor]);
+    CGContextFillRect(context, rect);
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return image;
+}
+</code></pre>
+</div>
+<p>达到的目的就是用户只需要关注<code class="highlighter-rouge">UIControlStateNormal</code>和<code class="highlighter-rouge">UIControlStateHighlighted</code>状态下期望的background color，我们在内部来生成UIImage并通过<code class="highlighter-rouge">setBackgroundImage:forState:</code>来设置。（只适用于用户期望设置纯色背景的场景）</p>
+
+<p>易用性做到了，性能方面却损失了。（我所遇到的）大多数卡顿场景的瓶颈往往在CPU，（在我之前的几篇关于优化性能的文章里有过讨论），而这段代码中的开辟内存空间，绘制内容再生成图片都是在CPU上进行，无疑是不理想的。那有没有更好的方案呢？</p>
+
+<h2 id="思路一借助touch-delivery-methods">思路一：借助touch-delivery methods</h2>
+<p>牵扯到触控状态的改变时，我们通常选择重写<code class="highlighter-rouge">UIResponder</code>的<code class="highlighter-rouge">touchesBegan:withEvent:</code>等方法，几行代码的事儿，但是run起来以后发现跟系统的<code class="highlighter-rouge">UIControlStateHighlighted</code>效果还是有不同的，这个在我之前探索iOS触控响应部分的时候就发现了，如下：</p>
+
+<table>
+  <tbody>
+    <tr>
+      <td><img src="/assets/images/2018-06-15/normal.gif" alt="" /></td>
+      <td><img src="/assets/images/2018-06-15/no.gif" alt="" /></td>
+    </tr>
+    <tr>
+      <td>系统默认效果</td>
+      <td>我们实现的效果（注意Title因为是使用setTitle:forState:因此效果正常）</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>也就是<code class="highlighter-rouge">UIControlStateHighlighted</code>效果是有个范围的，但是这个范围apple并没有告诉我们，那这个方案就不完美了。更进一步我想测测这个范围到底是多少，是不是有一定规律呢？三下五除二，发现不论UIButton的size是多大，这个范围大概是(70, 70.5, 70, 70)，把这个范围控制逻辑写进<code class="highlighter-rouge">touchesMoved:withEvent:</code>，效果跟系统的就一致了！代码如下：</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>-(void)touchesBegan:(NSSet&lt;UITouch *&gt; *)touches withEvent:(UIEvent *)event {
+    [super touchesBegan:touches withEvent:event];
+    [self setBackgroundColor:self.backHighlightColor];
+}
+
+-(void)touchesMoved:(NSSet&lt;UITouch *&gt; *)touches withEvent:(UIEvent *)event {
+    [super touchesMoved:touches withEvent:event];
+    
+    UITouch *touch = touches.anyObject;
+    CGPoint location = [touch locationInView:[UIApplication sharedApplication].keyWindow];
+    CGFloat locationX = location.x;
+    CGFloat locationY = location.y;
+    //这里默认UIButton的superView是撑满屏幕的，还需完善。
+    CGFloat originX = self.frame.origin.x;
+    CGFloat originY = self.frame.origin.y;
+    CGFloat width = self.frame.size.width;
+    CGFloat height = self.frame.size.height;
+    BOOL xInScope = (locationX &lt;= originX &amp;&amp; originX - locationX &lt; 70.5) || (locationX &gt; originX &amp;&amp; locationX - originX - width &lt; 70);
+    BOOL yInScope = (locationY &lt;= originY &amp;&amp; originY - locationY &lt; 70) || (locationY &gt; originY &amp;&amp; locationY - originY - height &lt; 70);
+    if (xInScope &amp;&amp; yInScope) {
+        [self setBackgroundColor:self.backHighlightColor];
+    }
+    else {
+        [self setBackgroundColor:self.backNormalColor];
+    }
+}
+
+-(void)touchesEnded:(NSSet&lt;UITouch *&gt; *)touches withEvent:(UIEvent *)event {
+    [super touchesEnded:touches withEvent:event];
+    [self setBackgroundColor:self.backNormalColor];
+}
+
+-(void)touchesCancelled:(NSSet&lt;UITouch *&gt; *)touches withEvent:(UIEvent *)event {
+    [super touchesCancelled:touches withEvent:event];
+    [self setBackgroundColor:self.backNormalColor];
+}
+</code></pre>
+</div>
+<p>虽然效果一致了，但是显然并不能用于生产环境，因为(70, 70.5, 70, 70)这组边界值完全是我自己测量的，一是可能有些场景我没有覆盖到，二是指不定哪天apple就把这个值改变了，总之这个思路是不可靠的。</p>
+
+<h2 id="思路二借助kvo观察uibutton的highlighted变化">思路二：借助KVO观察UIButton的highlighted变化</h2>
+<p>经过思路一，我发现一定要寻找一个可靠的参考量。自然而然KVO涌上心头，代码如下：</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>[self addObserver:self forKeyPath:@"highlighted" options:NSKeyValueObservingOptionNew context:nil];
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary&lt;NSKeyValueChangeKey,id&gt; *)change context:(void *)context {
+    if ([keyPath isEqualToString:@"highlighted"]) {
+        BOOL highlighted = change[NSKeyValueChangeNewKey];
+        UIColor *backgroundColor = highlighted ? self.backHighlightColor : self.backNormalColor;
+        [self setBackgroundColor:backgroundColor];
+        }
+}
+</code></pre>
+</div>
+<p>经过测试，跟<code class="highlighter-rouge">思路一</code>有同样的问题，highlighted属性在touchDown之后touchEnd之前一直都是YES，也忽略了范围条件。</p>
+
+<h2 id="思路三借助kvo观察uibutton上的backgroundimageview的image变化">思路三：借助KVO观察UIButton上的backgroundImageView的image变化</h2>
+<p>还是没有找到可靠而又准确的参考量，再想想，其实我们直观看到的就是最准确的，UIButton是随着<code class="highlighter-rouge">UIControlStateNormal</code>和<code class="highlighter-rouge">UIControlStateHighlighted</code>的变化来切换UIImageView的image（经验证这部分逻辑在UIButton的<code class="highlighter-rouge">touchesMoved:withEvent:</code>中），通过观察视图层级我们得知UIButton上有两个UIImageView和一个UILabel，分别来承载UIButton的title、image和backgroundImage，那么承载backgroundImage的那个UIImageView的image属性就是我们要找的那个可靠而又准确的参考量。</p>
+
+<p>突破点有了，整理思路如下：</p>
+
+<h3 id="1触发uibutton添加所需的background--uiimageview">1、触发UIButton添加所需的background  UIImageView</h3>
+<p>当我们调用UIButton的<code class="highlighter-rouge">setBackgroundImage:forState:</code>时，UIButton就会<code class="highlighter-rouge">addSubview:</code>所需的UIImageView（如需），同理<code class="highlighter-rouge">setImage:forState:</code>以及<code class="highlighter-rouge">setTitle:forState</code>都有类似的逻辑，当UIButton上有多个UIImageView时我们就不容易区分它们了，因此我们的思路就是<strong>尽早的</strong>触发<code class="highlighter-rouge">setBackgroundImage:forState:</code>便于锁定我们的目标UIImageView，代码如下：</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>- (instancetype)initWithFrame:(CGRect)frame
+{
+    self = [super initWithFrame:frame];
+    if (self) {
+        //保证最先执行
+        //zombie_normal(1px x 1px)和zombie_highlighted(1px x 2px)为两张透明的占位图。
+        self.buttonBackgroundNormalImage = [UIImage imageNamed:@"zombie_normal"];
+        self.buttonBackgroundHighlightedImage = [UIImage imageNamed:@"zombie_highlighted"];
+        [self setBackgroundImage:self.buttonBackgroundNormalImage forState:UIControlStateNormal];
+        [self setBackgroundImage:self.buttonBackgroundHighlightedImage forState:UIControlStateHighlighted];
+        [self setNeedsLayout];
+        [self layoutIfNeeded];
+    }
+    return self;
+}
+
+/*
+ * 重写以达到记录用户设置的background image
+ */
+- (void)setBackgroundImage:(UIImage *)image forState:(UIControlState)state {
+    [super setBackgroundImage:image forState:state];
+    if (state == UIControlStateNormal) {
+        _buttonBackgroundNormalImage = image;
+    }
+    else if (state == UIControlStateHighlighted) {
+        _buttonBackgroundHighlightedImage = image;
+    }
+}
+</code></pre>
+</div>
+
+<h3 id="2锁定background-uiimageview">2、锁定background UIImageView</h3>
+<p>触发<code class="highlighter-rouge">addSubview:</code>之后，紧接着就是锁定这个被添加的UIImageView。</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>-(void)layoutSubviews {
+    [super layoutSubviews];
+    [self findBackgroundImageView];
+}
+
+- (void)findBackgroundImageView {
+    //不考虑用户去主动移除UIButton上的UIImageView，那么这个UIImageView一经确定就不会改变了。
+    if (self.buttonBackgroundImageView) {
+        return;
+    }
+    for (UIView *subview in self.subviews) {
+        if ([subview isMemberOfClass:[UIImageView class]]) {
+            self.buttonBackgroundImageView = (UIImageView*)subview;
+            break;
+        }
+    }
+
+    、、、
+}
+</code></pre>
+</div>
+
+<h3 id="3添加kvo跟踪变化">3、添加KVO跟踪变化</h3>
+<p>锁定之后，添加KVO观察其image属性的变化，根据不同的image设置不同的background color。</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>static void * BackgroundImageViewContext = &amp;BackgroundImageViewContext;
+
+- (void)findBackgroundImageView {
+    、、、
+
+    @try {
+        [self.buttonBackgroundImageView removeObserver:self forKeyPath:@"image" context:BackgroundImageViewContext];
+    } @catch (NSException *exception) {
+    }
+    [self.buttonBackgroundImageView addObserver:self forKeyPath:@"image" options:NSKeyValueObservingOptionNew context:BackgroundImageViewContext];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary&lt;NSKeyValueChangeKey,id&gt; *)change context:(void *)context {
+    if (context == BackgroundImageViewContext &amp;&amp; [keyPath isEqualToString:@"image"]) {
+        UIImage *newImage = change[NSKeyValueChangeNewKey];
+        if ([newImage isEqual:self.buttonBackgroundNormalImage]) {
+            [self setBackgroundColor:self.backNormalColor];
+        }
+        else if ([newImage isEqual:self.buttonBackgroundHighlightedImage]) {
+            [self setBackgroundColor:self.backHighlightColor];
+        }
+    }
+}
+</code></pre>
+</div>
+
+<p>这样就达到了我们的目的，满足易用性并兼顾性能。</p>
+
+<p>一次有趣的探索，感谢阅读~</p>
+
+  </section>
+</article>
+
+<section class="read-more">
+   
+   
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">更早的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/2017/12/iOS%E8%A7%A6%E6%8E%A7%E5%93%8D%E5%BA%94%E4%B8%AD%E9%82%A3%E4%BA%9B%E6%B2%A1%E6%9C%89%E7%BB%86%E6%83%B3%E8%BF%87%E7%9A%84%E9%97%AE%E9%A2%98/" title="link to iOS触控响应中那些没有细想过的问题">iOS触控响应中那些没有细想过的问题</a></h2>
+       <p class="excerpt">  写在前面：这篇文章的重点在于讨论我想到的一些关于iOS触控响应这块容易忽略的问题，限于篇幅就不对基本的iOS触控响应知识做说明了。一、iOS给我们提供的响应触控的方式1、The touch-delivery methods定义在UIResponder中的以下方法，通过重写可以实现自定义的触控响应逻辑。- (void)touchesBegan:(NSSet&lt;UITouch *&gt; *)touches withEvent:(nullable UIEvent *)event;- (...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2017-12-30 23:30:00 +0800" class="post-list__meta--date date">2017-12-30</time> &#8226; <span class="post-list__meta--tags tags">iOS</span><a class="btn-border-small" href=/2017/12/iOS%E8%A7%A6%E6%8E%A7%E5%93%8D%E5%BA%94%E4%B8%AD%E9%82%A3%E4%BA%9B%E6%B2%A1%E6%9C%89%E7%BB%86%E6%83%B3%E8%BF%87%E7%9A%84%E9%97%AE%E9%A2%98/>继续阅读</a></div>
+   </div>
+   
+</section>
+
+<section class="post-comments">
+  
+    <div id="disqus_thread"></div>
+    <script>
+    
+    var disqus_config = function () {
+        this.page.url = "http://localhost:4000/2018/06/UIButton%E8%AE%BE%E7%BD%AE%E4%B8%8D%E5%90%8C%E7%8A%B6%E6%80%81%E4%B8%8B%E7%9A%84%E7%BA%AF%E8%89%B2%E8%83%8C%E6%99%AF%E5%9B%BE%E7%89%87%E7%9A%84%E6%9C%80%E4%BC%98%E6%96%B9%E6%A1%88%E6%8E%A2%E8%AE%A8/";
+        this.page.identifier = "/2018/06/UIButton%E8%AE%BE%E7%BD%AE%E4%B8%8D%E5%90%8C%E7%8A%B6%E6%80%81%E4%B8%8B%E7%9A%84%E7%BA%AF%E8%89%B2%E8%83%8C%E6%99%AF%E5%9B%BE%E7%89%87%E7%9A%84%E6%9C%80%E4%BC%98%E6%96%B9%E6%A1%88%E6%8E%A2%E8%AE%A8/";
+    };
+
+    var disqus_shortname = 'vno-jekyll';
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>要查看<a href="http://disqus.com/?ref_noscript"> Disqus </a>评论，请启用 JavaScript</noscript>
+    
+  
+  
+  
+  
+</section>
+
+
+            <section class="footer">
+    <footer>
+    	<span class="footer__copyright">本站点采用<a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享 署名-非商业性使用-相同方式共享 4.0 国际 许可协议</a></span>
+        <span class="footer__copyright">由 <a href="https://jekyllrb.com">Jekyll</a> 于 2018-06-19 生成，感谢 <a href="https://www.digitalocean.com/?refcode=30ed2d146762">Digital Ocean</a> 为本站提供稳定的 VPS 服务</span>
+        <span class="footer__copyright">本站由 <a href="http://ronghaopger.github.io/about/">@RongHao</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2018</span>
+    </footer>
+</section>
+
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+
+<script type="text/javascript" src="/js/main.js"></script>
+
+
+
+    
+  </body>
+
+</html>
